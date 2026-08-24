@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TalentoUNICAP - Currículos de Alunos da UNICAP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">Talentos<span>UNICAP</span></a>
+      <div class="nav-links" id="navLinks"></div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <p style="margin-bottom:16px;font-size:14px;">📚 Universidade Católica de Pernambuco</p>
+      <h1>Construa seu currículo<br><em>profissional</em></h1>
+      <p>A plataforma oficial para alunos da UNICAP criarem currículos impactantes. Cadastre suas experiências, habilidades e projetos, e exporte em PDF ou DOCX.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <a href="register.html" class="btn btn-primary btn-lg" id="heroBtn">Criar Meu Currículo →</a>
+        <a href="login.html" class="btn btn-secondary btn-lg">Já tenho conta</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <div class="container">
+      <h2>Tudo que você precisa para se destacar</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="icon">📄</div>
+          <h3>Currículo Profissional</h3>
+          <p>Crie um currículo completo com suas experiências, habilidades, projetos e certificações.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">📥</div>
+          <h3>Exporte em PDF e DOCX</h3>
+          <p>Baixe seu currículo em formato PDF profissional ou DOCX editável no Word.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">🌐</div>
+          <h3>Perfil Compartilhável</h3>
+          <p>Compartilhe seu currículo via link público para recrutadores e empresas.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">✅</div>
+          <h3>Fácil de Atualizar</h3>
+          <p>Mantenha seu currículo sempre atualizado com nossa interface intuitiva.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="padding:80px 0;background:var(--gray-50);text-align:center;">
+    <div class="container">
+      <h2 style="font-size:32px;margin-bottom:12px;">Comece agora mesmo</h2>
+      <p style="color:var(--gray-600);margin-bottom:24px;">Crie sua conta gratuita e comece a construir seu currículo profissional em minutos.</p>
+      <a href="register.html" class="btn btn-primary btn-lg">Criar Conta Grátis →</a>
+    </div>
+  </section>
+
+  <footer class="footer">© 2024 TalentoUNICAP — Universidade Católica de Pernambuco</footer>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    Auth.init();
+    Auth.onAuthChange = function(loggedIn) {
+      const nav = document.getElementById('navLinks');
+      const heroBtn = document.getElementById('heroBtn');
+      if (loggedIn) {
+        nav.innerHTML = '<a href="dashboard.html" class="btn btn-primary btn-sm">Meu Currículo</a>';
+        heroBtn.href = 'dashboard.html';
+        heroBtn.textContent = 'Acessar Meu Currículo →';
+      } else {
+        nav.innerHTML = '<a href="login.html" class="btn btn-secondary btn-sm">Entrar</a><a href="register.html" class="btn btn-primary btn-sm">Criar Conta</a>';
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview - TalentoUNICAP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">🎓 Talento<span>UNICAP</span></a>
+      <div class="nav-links">
+        <a href="dashboard.html" class="btn btn-secondary btn-sm">← Voltar ao Editor</a>
+      </div>
+    </div>
+  </nav>
+  <div class="container" style="padding:32px 20px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
+      <h1 style="font-size:24px;">Preview do Currículo</h1>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-secondary" onclick="exportPDF()">📥 Exportar PDF</button>
+        <button class="btn btn-primary" onclick="exportDOCX()">📄 Exportar DOCX</button>
+      </div>
+    </div>
+    <div id="cvContent" style="background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.1);overflow:hidden;">
+      <div style="text-align:center;padding:60px;color:var(--gray-400);">Carregando...</div>
+    </div>
+  </div>
+  <footer class="footer">© 2024 TalentoUNICAP</footer>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/export.js"></script>
+  <script>
+    let profile = null;
+    Auth.init();
+    Auth.onAuthChange = async function(loggedIn) {
+      if (!loggedIn) { window.location.href = 'login.html'; return; }
+      profile = await API.getProfile();
+      if (!profile.error) {
+        document.getElementById('cvContent').innerHTML = renderCVPreview(profile);
+      }
+    };
+  </script>
+</body>
+</html>
