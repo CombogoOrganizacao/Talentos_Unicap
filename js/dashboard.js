@@ -96,16 +96,16 @@ const sectionConfig = {
       ${item.descricao ? `<div style="font-size:13px;color:var(--gray-600);margin-top:4px">${item.descricao}</div>` : ''}`,
     form: (edit) => `
       <div class="form-row">
-        <div class="form-group"><label>Empresa</label><input id="f_empresa" value="${edit?.empresa||''}" required></div>
-        <div class="form-group"><label>Cargo</label><input id="f_cargo" value="${edit?.cargo||''}" required></div>
+        <div class="form-group"><label>Empresa</label><input id="experiencia_f_empresa" value="${edit?.empresa||''}" required></div>
+        <div class="form-group"><label>Cargo</label><input id="experiencia_f_cargo" value="${edit?.cargo||''}" required></div>
       </div>
-      <div class="form-group"><label>Descrição</label><textarea id="f_descricao" rows="3">${edit?.descricao||''}</textarea></div>
+      <div class="form-group"><label>Descrição</label><textarea id="experiencia_f_descricao" rows="3">${edit?.descricao||''}</textarea></div>
       <div class="form-row">
-        <div class="form-group"><label>Data de início</label><input type="date" id="f_data_inicio" value="${edit?.data_inicio||''}" required></div>
-        <div class="form-group"><label>Data de término</label><input type="date" id="f_data_fim" value="${edit?.data_fim||''}"></div>
+        <div class="form-group"><label>Data de início</label><input type="date" id="experiencia_f_data_inicio" value="${edit?.data_inicio||''}" required></div>
+        <div class="form-group"><label>Data de término</label><input type="date" id="experiencia_f_data_fim" value="${edit?.data_fim||''}"></div>
       </div>
-      <div class="form-group"><label><input type="checkbox" id="f_atual" ${edit?.atual?'checked':''}> Trabalho atual</label></div>`,
-    getData: () => ({ empresa: UI.val('f_empresa'), cargo: UI.val('f_cargo'), descricao: UI.val('f_descricao'), data_inicio: UI.val('f_data_inicio'), data_fim: UI.val('f_data_fim'), atual: document.getElementById('f_atual')?.checked ? 'true' : 'false' }),
+      <div class="form-group"><label><input type="checkbox" id="experiencia_f_atual" ${edit?.atual?'checked':''}> Trabalho atual</label></div>`,
+    getData: () => ({ empresa: UI.val('experiencia_f_empresa'), cargo: UI.val('experiencia_f_cargo'), descricao: UI.val('experiencia_f_descricao'), data_inicio: UI.val('experiencia_f_data_inicio'), data_fim: UI.val('experiencia_f_data_fim'), atual: document.getElementById('experiencia_f_atual')?.checked ? 'true' : 'false' }),
     validate: (d) => d.empresa && d.cargo && d.data_inicio
   },
   formacao: {
@@ -116,15 +116,15 @@ const sectionConfig = {
       <div style="font-size:13px;color:var(--gray-500)">${item.instituicao} | ${fmtDate(item.data_inicio)} — ${item.data_fim ? fmtDate(item.data_fim) : 'Presente'}</div>`,
     form: (edit) => `
       <div class="form-row">
-        <div class="form-group"><label>Instituição</label><input id="f_instituicao" value="${edit?.instituicao||''}" required></div>
-        <div class="form-group"><label>Grau</label><input id="f_grau" value="${edit?.grau||''}" placeholder="Graduação, Pós..." required></div>
+        <div class="form-group"><label>Instituição</label><input id="formacao_f_instituicao" value="${edit?.instituicao||''}" required></div>
+        <div class="form-group"><label>Grau</label><input id="formacao_f_grau" value="${edit?.grau||''}" placeholder="Graduação, Pós..." required></div>
       </div>
-      <div class="form-group"><label>Área de Estudo</label><input id="f_area_estudo" value="${edit?.area_estudo||''}" required></div>
+      <div class="form-group"><label>Área de Estudo</label><input id="formacao_f_area_estudo" value="${edit?.area_estudo||''}" required></div>
       <div class="form-row">
-        <div class="form-group"><label>Data de início</label><input type="date" id="f_data_inicio" value="${edit?.data_inicio||''}" required></div>
-        <div class="form-group"><label>Data de término</label><input type="date" id="f_data_fim" value="${edit?.data_fim||''}"></div>
+        <div class="form-group"><label>Data de início</label><input type="date" id="formacao_f_data_inicio" value="${edit?.data_inicio||''}" required></div>
+        <div class="form-group"><label>Data de término</label><input type="date" id="formacao_f_data_fim" value="${edit?.data_fim||''}"></div>
       </div>`,
-    getData: () => ({ instituicao: UI.val('f_instituicao'), grau: UI.val('f_grau'), area_estudo: UI.val('f_area_estudo'), data_inicio: UI.val('f_data_inicio'), data_fim: UI.val('f_data_fim') }),
+    getData: () => ({ instituicao: UI.val('formacao_f_instituicao'), grau: UI.val('formacao_f_grau'), area_estudo: UI.val('formacao_f_area_estudo'), data_inicio: UI.val('formacao_f_data_inicio'), data_fim: UI.val('formacao_f_data_fim') }),
     validate: (d) => d.instituicao && d.grau && d.area_estudo && d.data_inicio
   },
   habilidade: {
@@ -133,14 +133,14 @@ const sectionConfig = {
     render: (item) => `<span class="badge badge-blue">${item.categoria}</span> <strong>${item.nome}</strong> <span style="font-size:12px;color:var(--gray-500)">${item.nivel}</span>`,
     inline: true,
     form: (edit) => `
-      <div class="form-group"><label>Nome</label><input id="f_nome" value="${edit?.nome||''}" required></div>
+      <div class="form-group"><label>Nome</label><input id="habilidade_f_nome" value="${edit?.nome||''}" required></div>
       <div class="form-group"><label>Categoria</label>
-        <select id="f_categoria">${CONFIG.skillCategories.map(c => `<option value="${c}" ${edit?.categoria===c?'selected':''}>${c}</option>`).join('')}</select>
+        <select id="habilidade_f_categoria">${CONFIG.skillCategories.map(c => `<option value="${c}" ${edit?.categoria===c?'selected':''}>${c}</option>`).join('')}</select>
       </div>
       <div class="form-group"><label>Nível</label>
-        <select id="f_nivel">${CONFIG.skillLevels.map(l => `<option value="${l}" ${edit?.nivel===l?'selected':''}>${l}</option>`).join('')}</select>
+        <select id="habilidade_f_nivel">${CONFIG.skillLevels.map(l => `<option value="${l}" ${edit?.nivel===l?'selected':''}>${l}</option>`).join('')}</select>
       </div>`,
-    getData: () => ({ nome: UI.val('f_nome'), categoria: UI.val('f_categoria'), nivel: UI.val('f_nivel') }),
+    getData: () => ({ nome: UI.val('habilidade_f_nome'), categoria: UI.val('habilidade_f_categoria'), nivel: UI.val('habilidade_f_nivel') }),
     validate: (d) => d.nome
   },
   projeto: {
@@ -151,14 +151,14 @@ const sectionConfig = {
       ${item.descricao ? `<div style="font-size:13px;color:var(--gray-600)">${item.descricao}</div>` : ''}
       ${item.data_inicio ? `<div style="font-size:12px;color:var(--gray-500)">${fmtDate(item.data_inicio)} — ${item.data_fim ? fmtDate(item.data_fim) : ''}</div>` : ''}`,
     form: (edit) => `
-      <div class="form-group"><label>Nome do projeto</label><input id="f_nome" value="${edit?.nome||''}" required></div>
-      <div class="form-group"><label>Descrição</label><textarea id="f_descricao" rows="3">${edit?.descricao||''}</textarea></div>
-      <div class="form-group"><label>URL</label><input id="f_url" value="${edit?.url||''}" placeholder="https://..."></div>
+      <div class="form-group"><label>Nome do projeto</label><input id="projeto_f_nome" value="${edit?.nome||''}" required></div>
+      <div class="form-group"><label>Descrição</label><textarea id="projeto_f_descricao" rows="3">${edit?.descricao||''}</textarea></div>
+      <div class="form-group"><label>URL</label><input id="projeto_f_url" value="${edit?.url||''}" placeholder="https://..."></div>
       <div class="form-row">
-        <div class="form-group"><label>Data de início</label><input type="date" id="f_data_inicio" value="${edit?.data_inicio||''}"></div>
-        <div class="form-group"><label>Data de término</label><input type="date" id="f_data_fim" value="${edit?.data_fim||''}"></div>
+        <div class="form-group"><label>Data de início</label><input type="date" id="projeto_f_data_inicio" value="${edit?.data_inicio||''}"></div>
+        <div class="form-group"><label>Data de término</label><input type="date" id="projeto_f_data_fim" value="${edit?.data_fim||''}"></div>
       </div>`,
-    getData: () => ({ nome: UI.val('f_nome'), descricao: UI.val('f_descricao'), url: UI.val('f_url'), data_inicio: UI.val('f_data_inicio'), data_fim: UI.val('f_data_fim') }),
+    getData: () => ({ nome: UI.val('projeto_f_nome'), descricao: UI.val('projeto_f_descricao'), url: UI.val('projeto_f_url'), data_inicio: UI.val('projeto_f_data_inicio'), data_fim: UI.val('projeto_f_data_fim') }),
     validate: (d) => d.nome
   },
   certificado: {
@@ -169,15 +169,15 @@ const sectionConfig = {
       ${item.data_emissao ? `<div style="font-size:12px;color:var(--gray-500)">${fmtDate(item.data_emissao)}</div>` : ''}`,
     form: (edit) => `
       <div class="form-row">
-        <div class="form-group"><label>Nome</label><input id="f_nome" value="${edit?.nome||''}" required></div>
-        <div class="form-group"><label>Emissor</label><input id="f_emissor" value="${edit?.emissor||''}"></div>
+        <div class="form-group"><label>Nome</label><input id="certificado_f_nome" value="${edit?.nome||''}" required></div>
+        <div class="form-group"><label>Emissor</label><input id="certificado_f_emissor" value="${edit?.emissor||''}"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Data de emissão</label><input type="date" id="f_data_emissao" value="${edit?.data_emissao||''}"></div>
-        <div class="form-group"><label>Data de validade</label><input type="date" id="f_data_validade" value="${edit?.data_validade||''}"></div>
+        <div class="form-group"><label>Data de emissão</label><input type="date" id="certificado_f_data_emissao" value="${edit?.data_emissao||''}"></div>
+        <div class="form-group"><label>Data de validade</label><input type="date" id="certificado_f_data_validade" value="${edit?.data_validade||''}"></div>
       </div>
-      <div class="form-group"><label>URL</label><input id="f_url" value="${edit?.url||''}"></div>`,
-    getData: () => ({ nome: UI.val('f_nome'), emissor: UI.val('f_emissor'), data_emissao: UI.val('f_data_emissao'), data_validade: UI.val('f_data_validade'), url: UI.val('f_url') }),
+      <div class="form-group"><label>URL</label><input id="certificado_f_url" value="${edit?.url||''}"></div>`,
+    getData: () => ({ nome: UI.val('certificado_f_nome'), emissor: UI.val('certificado_f_emissor'), data_emissao: UI.val('certificado_f_data_emissao'), data_validade: UI.val('certificado_f_data_validade'), url: UI.val('certificado_f_url') }),
     validate: (d) => d.nome
   }
 };
@@ -202,10 +202,10 @@ function renderList(section, type) {
         <div class="form-group" style="min-width:120px"><label>Nível</label>
           <select id="inline-nivel">${CONFIG.skillLevels.map(l => `<option>${l}</option>`).join('')}</select>
         </div>
-        <button class="btn btn-primary btn-sm" onclick="addItem('${type}')">+ Adicionar</button>
+        <button class="btn btn-primary btn-sm" id="addBtn-${type}" onclick="addItem('${type}')">+ Adicionar</button>
       </div>
       <div class="skill-tags" id="skillsContainer">${items.map(item => `
-        <div class="skill-tag"><span class="badge badge-blue" style="margin-right:4px">${item.categoria}</span>${item.nome} <span style="color:var(--gray-400);font-size:11px">${item.nivel}</span><span class="remove" onclick="deleteItem('${type}','${item.id}')">×</span></div>
+        <div class="skill-tag"><span class="badge badge-blue" style="margin-right:4px">${item.categoria}</span>${item.nome} <span style="color:var(--gray-400);font-size:11px">${item.nivel}</span><button class="btn btn-secondary btn-sm" onclick="editItem('${type}','${item.id}')" style="margin:0 4px;padding:2px 6px;font-size:10px;">✏️</button><span class="remove" onclick="deleteItem('${type}','${item.id}')">×</span></div>
       `).join('')}</div>`;
   } else {
     container.innerHTML = items.map(item => `
@@ -242,16 +242,39 @@ function hideEditForm(type) { UI.hide(`edit-${type}`); }
 
 async function addItem(type) {
   const config = sectionConfig[type];
+  const btn = document.getElementById(`addBtn-${type}`);
+  
   if (config.inline) {
     const data = { nome: UI.val('inline-nome'), categoria: UI.val('inline-categoria'), nivel: UI.val('inline-nivel') };
-    if (!data.nome) return;
-    await API.addItem(config.sheet, data);
+    if (!data.nome) {
+      alert('Por favor, preenchao nome da habilidade');
+      return;
+    }
+    
+    // Desabilitar botão enquanto salva
+    if (btn) btn.disabled = true;
+    if (btn) btn.textContent = 'Salvando...';
+    
+    try {
+      await API.addItem(config.sheet, data);
+      // Limpar campos após sucesso
+      document.getElementById('inline-nome').value = '';
+      document.getElementById('inline-categoria').value = CONFIG.skillCategories[0] || '';
+      document.getElementById('inline-nivel').value = CONFIG.skillLevels[0] || '';
+    } catch (e) {
+      console.error('Erro ao adicionar:', e);
+      alert('Erro ao adicionar. Tente novamente.');
+    } finally {
+      if (btn) btn.disabled = false;
+      if (btn) btn.textContent = '+ Adicionar';
+      await loadProfile();
+    }
   } else {
     const data = config.getData();
     if (!config.validate(data)) return;
     await API.addItem(config.sheet, data);
+    await loadProfile();
   }
-  await loadProfile();
 }
 
 async function saveItem(type, id) {
@@ -272,10 +295,6 @@ async function deleteItem(type, id) {
 }
 
 function editItem(type, id) {
-  const items = profile[sectionConfig[type].sheet === SHEETS.experiences ? 'experiencias' :
-    config.sheet === SHEETS.educations ? 'formacao' :
-    config.sheet === SHEETS.skills ? 'habilidades' :
-    config.sheet === SHEETS.projects ? 'projetos' : 'certificados'] || [];
   // Map type to profile key
   const keyMap = { experiencia: 'experiencias', formacao: 'formacao', habilidade: 'habilidades', projeto: 'projetos', certificado: 'certificados' };
   const item = (profile[keyMap[type]] || []).find(i => i.id === id);

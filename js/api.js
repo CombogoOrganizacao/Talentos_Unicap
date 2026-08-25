@@ -142,14 +142,7 @@ const API = {
 
   _demoAddItem(data) {
     const sheet = data.sheet;
-    const items = this._getDemoSheet(sheet);
-    const id = 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
-    const item = { id };
-    Object.keys(data).forEach(k => {
-      if (k !== 'action' && k !== 'uid' && k !== 'sheet') item[k] = data[k];
-    });
-    items.push(item);
-
+    
     // Mapear sheet name para localStorage key
     const keyMap = {
       'Experiencias': 'experiencias',
@@ -158,7 +151,17 @@ const API = {
       'Projetos': 'projetos',
       'Certificados': 'certificados'
     };
-    this._saveDemoSheet(keyMap[sheet] || sheet, items);
+    const key = keyMap[sheet] || sheet;
+    
+    const items = this._getDemoSheet(key);  // ✅ Usa a key correta
+    const id = 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+    const item = { id };
+    Object.keys(data).forEach(k => {
+      if (k !== 'action' && k !== 'uid' && k !== 'sheet') item[k] = data[k];
+    });
+    items.push(item);
+
+    this._saveDemoSheet(key, items);
     return { success: true, id: id };
   },
 
