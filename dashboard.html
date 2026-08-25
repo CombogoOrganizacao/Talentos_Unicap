@@ -6,11 +6,22 @@
   <title>Meu Currículo - TalentoUNICAP</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css"
+    />
+  
 </head>
 <body>
   <nav class="navbar">
     <div class="container">
-      <a href="index.html" class="navbar-brand">🎓 Talento<span>UNICAP</span></a>
+      <a href="index.html" class="navbar-brand"><img src="img/asabranca_Unicap.png" width="40px" alt="" style="display: block;"> Talento<span>UNICAP</span></a>
       <div class="nav-links">
         <span id="userName" style="font-size:14px;color:var(--gray-600)"></span>
         <button class="btn btn-secondary btn-sm" onclick="Auth.logout()">Sair</button>
@@ -25,14 +36,14 @@
         <h1 style="font-size:28px;">Meu Currículo</h1>
         <p style="color:var(--gray-500)">Preencha suas informações para construir seu currículo profissional.</p>
       </div>
-      <button class="btn btn-primary" onclick="goToPreview()">📄 Preview & Exportar</button>
+      <button class="btn btn-primary" onclick="goToPreview()"><i class="ph-fill ph-scroll"></i> Preview & Exportar</button>
     </div>
 
     <!-- Progress -->
     <div class="card" style="background:linear-gradient(135deg,var(--unicap-50),#eff6ff);border-color:var(--unicap-200);margin-bottom:24px;">
       <div class="card-body">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-          <span style="font-weight:600;">📊 Completude do Currículo</span>
+          <span style="font-weight:600;"><i class="ph-fill ph-chart-bar"></i> Completude do Currículo</span>
           <span id="progressText" style="font-size:20px;font-weight:700;color:var(--unicap-500)">0%</span>
         </div>
         <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
@@ -49,12 +60,12 @@
 
     <!-- Tabs -->
     <div class="tabs">
-      <button class="tab-btn active" data-tab="personal">👤 Dados Pessoais</button>
-      <button class="tab-btn" data-tab="experience">💼 Experiências</button>
-      <button class="tab-btn" data-tab="education">🎓 Formação</button>
-      <button class="tab-btn" data-tab="skills">🛠️ Habilidades</button>
-      <button class="tab-btn" data-tab="projects">📁 Projetos</button>
-      <button class="tab-btn" data-tab="certificates">🏆 Certificados</button>
+      <button class="tab-btn active" data-tab="personal"><i class="ph-fill ph-users"></i> Dados Pessoais</button>
+      <button class="tab-btn" data-tab="experience"><i class="ph-fill ph-briefcase"></i> Experiências</button>
+      <button class="tab-btn" data-tab="education"><i class="ph-fill ph-graduation-cap"></i> Formação</button>
+      <button class="tab-btn" data-tab="skills"><i class="ph-fill ph-wrench"></i> Habilidades</button>
+      <button class="tab-btn" data-tab="projects"><i class="ph-fill ph-box-arrow-up"></i> Projetos</button>
+      <button class="tab-btn" data-tab="certificates"><i class="ph-fill ph-trophy"></i> Certificados</button>
     </div>
 
     <!-- TAB: Dados Pessoais -->
@@ -82,7 +93,7 @@
           </div>
           <div class="form-group"><label>Portfólio</label><input id="portfolio" placeholder="seusite.com"></div>
           <div style="text-align:right;margin-top:16px;">
-            <button class="btn btn-primary" id="savePersonalBtn" onclick="savePersonal()">💾 Salvar Dados Pessoais</button>
+            <button class="btn btn-primary" id="savePersonalBtn" onclick="savePersonal()"><i class="ph-fill ph-floppy-disk"></i> Salvar Dados Pessoais</button>
           </div>
         </div>
       </div>
@@ -156,7 +167,7 @@
     </div>
   </div>
 
-  <footer class="footer">© 2024 TalentoUNICAP — Universidade Católica de Pernambuco</footer>
+  <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
