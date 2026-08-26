@@ -1,0 +1,22 @@
+/* ============================================
+   FORMS
+   Campos de formulário (.form-group), grade de
+   campos lado a lado (.form-row) e versão
+   compacta em linha (.form-inline, veja também
+   list-item.css/skill-tags.css que a utilizam).
+   ============================================ */
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 14px; font-weight: 500; color: var(--gray-700); margin-bottom: 4px; }
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 8px;
+  font-size: 14px; transition: border-color 0.2s;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  outline: none; border-color: var(--unicap-500); box-shadow: 0 0 0 3px rgba(30,64,175,0.1);
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
+
+/* Formulário em linha (ex.: adicionar uma skill rapidamente) */
+.form-inline { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
+.form-inline .form-group { margin-bottom: 0; flex: 1; min-width: 150px; }

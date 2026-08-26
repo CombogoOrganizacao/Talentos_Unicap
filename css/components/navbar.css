@@ -1,0 +1,17 @@
+/* ============================================
+   NAVBAR
+   Barra de navegação fixa no topo, com logo
+   (navbar-brand) e links de navegação.
+   ============================================ */
+.navbar {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 12px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.navbar .container { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: none; padding-left: 30; padding-right: 20px; }
+.navbar-brand { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 700; color: var(--unicap-600); text-decoration: none; margin-left: 0; }
+.navbar-brand span { color: var(--gray-900); }
+.nav-links { display: flex; gap: 12px; align-items: center; }

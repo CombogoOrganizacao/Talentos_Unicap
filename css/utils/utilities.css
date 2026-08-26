@@ -1,0 +1,19 @@
+/* ============================================
+   UTILITIES
+   Classes utilitárias pequenas e reutilizáveis
+   (espaçamento, flexbox, texto, visibilidade).
+   Mantenha este arquivo por último no <head>
+   para que essas classes possam sobrescrever
+   estilos de componentes quando necessário.
+   ============================================ */
+.hidden { display: none !important; }
+.text-center { text-align: center; }
+.mt-2 { margin-top: 8px; }
+.mt-4 { margin-top: 16px; }
+.mt-6 { margin-top: 24px; }
+.mb-4 { margin-bottom: 16px; }
+.gap-4 { gap: 16px; }
+.flex { display: flex; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }

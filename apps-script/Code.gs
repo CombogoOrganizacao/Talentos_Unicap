@@ -24,7 +24,7 @@ function setupSheets() {
     [SHEETS.users]: ['id', 'uid_firebase', 'nome', 'email', 'slug', 'criado_em'],
     [SHEETS.profile]: ['id', 'uid_firebase', 'telefone', 'endereco', 'cidade', 'estado', 'curso', 'periodo', 'bio', 'foto_url', 'linkedin', 'github', 'portfolio'],
     [SHEETS.experiences]: ['id', 'uid_firebase', 'empresa', 'cargo', 'descricao', 'data_inicio', 'data_fim', 'atual'],
-    [SHEETS.educations]: ['id', 'uid_firebase', 'instituicao', 'grau', 'area_estudo', 'data_inicio', 'data_fim'],
+    [SHEETS.educations]: ['id', 'uid_firebase', 'instituicao', 'grau', 'area_estudo', 'data_inicio', 'data_fim', 'atual'],
     [SHEETS.skills]: ['id', 'uid_firebase', 'nome', 'categoria', 'nivel'],
     [SHEETS.projects]: ['id', 'uid_firebase', 'nome', 'descricao', 'url', 'data_inicio', 'data_fim'],
     [SHEETS.certificates]: ['id', 'uid_firebase', 'nome', 'emissor', 'data_emissao', 'data_validade', 'url']
@@ -115,7 +115,7 @@ function addItem(sheetName, uid, data) {
   let values;
   switch(sheetName) {
     case SHEETS.experiences: values = [id, uid, data.empresa||'', data.cargo||'', data.descricao||'', data.data_inicio||'', data.data_fim||'', data.atual||'false']; break;
-    case SHEETS.educations: values = [id, uid, data.instituicao||'', data.grau||'', data.area_estudo||'', data.data_inicio||'', data.data_fim||'']; break;
+    case SHEETS.educations: values = [id, uid, data.instituicao||'', data.grau||'', data.area_estudo||'', data.data_inicio||'', data.data_fim||'', data.atual||'false']; break;
     case SHEETS.skills: values = [id, uid, data.nome||'', data.categoria||'Tecnica', data.nivel||'Intermediario']; break;
     case SHEETS.projects: values = [id, uid, data.nome||'', data.descricao||'', data.url||'', data.data_inicio||'', data.data_fim||'']; break;
     case SHEETS.certificates: values = [id, uid, data.nome||'', data.emissor||'', data.data_emissao||'', data.data_validade||'', data.url||'']; break;
@@ -152,7 +152,7 @@ function getAllByUid(sheetName, uid, parser) {
 }
 
 function parseExperience(d) { return { id: d[0], empresa: d[2], cargo: d[3], descricao: d[4], data_inicio: d[5], data_fim: d[6], atual: d[7] === 'true' || d[7] === true }; }
-function parseEducation(d) { return { id: d[0], instituicao: d[2], grau: d[3], area_estudo: d[4], data_inicio: d[5], data_fim: d[6] }; }
+function parseEducation(d) { return { id: d[0], instituicao: d[2], grau: d[3], area_estudo: d[4], data_inicio: d[5], data_fim: d[6], atual: d[7] === 'true' || d[7] === true }; }
 function parseSkill(d) { return { id: d[0], nome: d[2], categoria: d[3], nivel: d[4] }; }
 function parseProject(d) { return { id: d[0], nome: d[2], descricao: d[3], url: d[4], data_inicio: d[5], data_fim: d[6] }; }
 function parseCertificate(d) { return { id: d[0], nome: d[2], emissor: d[3], data_emissao: d[4], data_validade: d[5], url: d[6] }; }

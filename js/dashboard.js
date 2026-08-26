@@ -12,6 +12,21 @@ const UI = {
   setVal(id, v) { const e = document.getElementById(id); if (e) e.value = v || ''; }
 };
 
+// Interpreta corretamente valores booleanos vindos da planilha (que chegam
+// como string "true"/"false" e não como boolean real). Usar apenas
+// "if (item.atual)" é o bug que fazia a caixa ficar sempre marcada/ativa,
+// pois a string "false" também é um valor "truthy" em JavaScript.
+function isTrue(v) { return v === true || v === 'true'; }
+
+// Mostra/esconde o campo "Data de término" de acordo com a caixa de seleção
+// (usada tanto em "Trabalho atual" quanto em "Em curso").
+function toggleFimVisibility(type) {
+  const checkbox = document.getElementById(`${type}_f_atual`);
+  const wrapper = document.getElementById(`${type}_f_data_fim_wrapper`);
+  if (!checkbox || !wrapper) return;
+  wrapper.classList.toggle('hidden', checkbox.checked);
+}
+
 function initDashboard() {
   Auth.init();
   Auth.onAuthChange = function(loggedIn) {
@@ -92,9 +107,9 @@ const sectionConfig = {
     emptyMsg: 'Nenhuma experiência cadastrada ainda.',
     render: (item) => `
       <div><strong>${item.cargo}</strong> — ${item.empresa}</div>
-      <div style="font-size:13px;color:var(--gray-500)">${fmtDate(item.data_inicio)} — ${item.data_fim ? fmtDate(item.data_fim) : 'Presente'}${item.atual ? ' <span class="badge badge-green">Atual</span>' : ''}</div>
+      <div style="font-size:13px;color:var(--gray-500)">${fmtDate(item.data_inicio)} — ${isTrue(item.atual) ? 'Presente' : (item.data_fim ? fmtDate(item.data_fim) : 'Presente')}${isTrue(item.atual) ? ' <span class="badge badge-green">Atual</span>' : ''}</div>
       ${item.descricao ? `<div style="font-size:13px;color:var(--gray-600);margin-top:4px">${item.descricao}</div>` : ''}`,
-    form: (edit) => `
+    form: (edit) => { const atual = isTrue(edit?.atual); return `
       <div class="form-row">
         <div class="form-group"><label>Empresa</label><input id="experiencia_f_empresa" value="${edit?.empresa||''}" required></div>
         <div class="form-group"><label>Cargo</label><input id="experiencia_f_cargo" value="${edit?.cargo||''}" required></div>
@@ -102,10 +117,19 @@ const sectionConfig = {
       <div class="form-group"><label>Descrição</label><textarea id="experiencia_f_descricao" rows="3">${edit?.descricao||''}</textarea></div>
       <div class="form-row">
         <div class="form-group"><label>Data de início</label><input type="date" id="experiencia_f_data_inicio" value="${edit?.data_inicio||''}" required></div>
-        <div class="form-group"><label>Data de término</label><input type="date" id="experiencia_f_data_fim" value="${edit?.data_fim||''}"></div>
+        <div class="form-group ${atual ? 'hidden' : ''}" id="experiencia_f_data_fim_wrapper"><label>Data de término</label><input type="date" id="experiencia_f_data_fim" value="${edit?.data_fim||''}"></div>
       </div>
-      <div class="form-group"><label><input type="checkbox" id="experiencia_f_atual" ${edit?.atual?'checked':''}> Trabalho atual</label></div>`,
-    getData: () => ({ empresa: UI.val('experiencia_f_empresa'), cargo: UI.val('experiencia_f_cargo'), descricao: UI.val('experiencia_f_descricao'), data_inicio: UI.val('experiencia_f_data_inicio'), data_fim: UI.val('experiencia_f_data_fim'), atual: document.getElementById('experiencia_f_atual')?.checked ? 'true' : 'false' }),
+      <label class="checkbox-field">
+        <input type="checkbox" id="experiencia_f_atual" ${atual ? 'checked' : ''} onchange="toggleFimVisibility('experiencia')">
+        <span class="checkbox-text">
+          <span class="checkbox-title">Este é o meu trabalho atual</span>
+          <span class="checkbox-hint">Marque esta opção se você ainda trabalha nessa empresa. A data de término será ocultada.</span>
+        </span>
+      </label>`; },
+    getData: () => {
+      const atual = document.getElementById('experiencia_f_atual')?.checked || false;
+      return { empresa: UI.val('experiencia_f_empresa'), cargo: UI.val('experiencia_f_cargo'), descricao: UI.val('experiencia_f_descricao'), data_inicio: UI.val('experiencia_f_data_inicio'), data_fim: atual ? '' : UI.val('experiencia_f_data_fim'), atual: atual ? 'true' : 'false' };
+    },
     validate: (d) => d.empresa && d.cargo && d.data_inicio
   },
   formacao: {
@@ -113,8 +137,8 @@ const sectionConfig = {
     emptyMsg: 'Nenhuma formação cadastrada ainda.',
     render: (item) => `
       <div><strong>${item.grau} em ${item.area_estudo}</strong></div>
-      <div style="font-size:13px;color:var(--gray-500)">${item.instituicao} | ${fmtDate(item.data_inicio)} — ${item.data_fim ? fmtDate(item.data_fim) : 'Presente'}</div>`,
-    form: (edit) => `
+      <div style="font-size:13px;color:var(--gray-500)">${item.instituicao} | ${fmtDate(item.data_inicio)} — ${isTrue(item.atual) ? 'Em curso' : (item.data_fim ? fmtDate(item.data_fim) : 'Presente')}${isTrue(item.atual) ? ' <span class="badge badge-green">Em curso</span>' : ''}</div>`,
+    form: (edit) => { const emCurso = isTrue(edit?.atual); return `
       <div class="form-row">
         <div class="form-group"><label>Instituição</label><input id="formacao_f_instituicao" value="${edit?.instituicao||''}" required></div>
         <div class="form-group"><label>Grau</label><input id="formacao_f_grau" value="${edit?.grau||''}" placeholder="Graduação, Pós..." required></div>
@@ -122,9 +146,19 @@ const sectionConfig = {
       <div class="form-group"><label>Área de Estudo</label><input id="formacao_f_area_estudo" value="${edit?.area_estudo||''}" required></div>
       <div class="form-row">
         <div class="form-group"><label>Data de início</label><input type="date" id="formacao_f_data_inicio" value="${edit?.data_inicio||''}" required></div>
-        <div class="form-group"><label>Data de término</label><input type="date" id="formacao_f_data_fim" value="${edit?.data_fim||''}"></div>
-      </div>`,
-    getData: () => ({ instituicao: UI.val('formacao_f_instituicao'), grau: UI.val('formacao_f_grau'), area_estudo: UI.val('formacao_f_area_estudo'), data_inicio: UI.val('formacao_f_data_inicio'), data_fim: UI.val('formacao_f_data_fim') }),
+        <div class="form-group ${emCurso ? 'hidden' : ''}" id="formacao_f_data_fim_wrapper"><label>Data de término</label><input type="date" id="formacao_f_data_fim" value="${edit?.data_fim||''}"></div>
+      </div>
+      <label class="checkbox-field">
+        <input type="checkbox" id="formacao_f_atual" ${emCurso ? 'checked' : ''} onchange="toggleFimVisibility('formacao')">
+        <span class="checkbox-text">
+          <span class="checkbox-title">Em curso</span>
+          <span class="checkbox-hint">Marque esta opção se você ainda não concluiu essa formação. A data de término será ocultada.</span>
+        </span>
+      </label>`; },
+    getData: () => {
+      const atual = document.getElementById('formacao_f_atual')?.checked || false;
+      return { instituicao: UI.val('formacao_f_instituicao'), grau: UI.val('formacao_f_grau'), area_estudo: UI.val('formacao_f_area_estudo'), data_inicio: UI.val('formacao_f_data_inicio'), data_fim: atual ? '' : UI.val('formacao_f_data_fim'), atual: atual ? 'true' : 'false' };
+    },
     validate: (d) => d.instituicao && d.grau && d.area_estudo && d.data_inicio
   },
   habilidade: {

@@ -1,0 +1,6 @@
+/* ============================================
+   PROGRESS BAR
+   Barra de progresso (ex.: % de perfil preenchido).
+   ============================================ */
+.progress-bar { width: 100%; background: var(--gray-200); border-radius: 9999px; height: 10px; overflow: hidden; }
+.progress-fill { background: var(--unicap-500); height: 100%; border-radius: 9999px; transition: width 0.5s; }

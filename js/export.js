@@ -6,6 +6,7 @@ function renderCVPreview(profile) {
     if (!d) return '';
     return new Date(d + 'T00:00:00').toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
   };
+  const isTrue = (v) => v === true || v === 'true';
 
   let html = `<div class="cv-preview">`;
   // Header
@@ -13,11 +14,11 @@ function renderCVPreview(profile) {
     <h1>${profile.nome || 'Seu Nome'}</h1>
     <div class="course">${profile.curso || ''}</div>
     <div class="contacts">
-      ${profile.telefone ? `<span>📞 ${profile.telefone}</span>` : ''}
-      ${profile.cidade ? `<span>📍 ${profile.cidade}${profile.estado ? ' - ' + profile.estado : ''}</span>` : ''}
-      ${profile.linkedin ? `<span>🔗 ${profile.linkedin}</span>` : ''}
-      ${profile.github ? `<span>💻 ${profile.github}</span>` : ''}
-      ${profile.portfolio ? `<span>🌐 ${profile.portfolio}</span>` : ''}
+      ${profile.telefone ? `<span><strong>Telefone:</strong> ${profile.telefone}</span>` : ''}
+      ${profile.cidade ? `<span><strong>Localização:</strong> ${profile.cidade}${profile.estado ? ' - ' + profile.estado : ''}</span>` : ''}
+      ${profile.linkedin ? `<span><strong>LinkedIn:</strong> ${profile.linkedin}</span>` : ''}
+      ${profile.github ? `<span><strong>GitHub:</strong> ${profile.github}</span>` : ''}
+      ${profile.portfolio ? `<span><strong>Portfólio:</strong> ${profile.portfolio}</span>` : ''}
     </div>
   </div>`;
 
@@ -32,7 +33,7 @@ function renderCVPreview(profile) {
     profile.experiencias.forEach(e => {
       html += `<div class="item">
         <h3>${e.cargo} — ${e.empresa}</h3>
-        <div class="date">${formatDate(e.data_inicio)} — ${e.data_fim ? formatDate(e.data_fim) : 'Presente'}${e.atual ? ' <span class="badge badge-green">Atual</span>' : ''}</div>
+        <div class="date">${formatDate(e.data_inicio)} — ${isTrue(e.atual) ? 'Presente' : (e.data_fim ? formatDate(e.data_fim) : 'Presente')}${isTrue(e.atual) ? ' <span class="badge badge-green">Atual</span>' : ''}</div>
         ${e.descricao ? `<div class="desc">${e.descricao}</div>` : ''}
       </div>`;
     });
@@ -46,7 +47,7 @@ function renderCVPreview(profile) {
       html += `<div class="item">
         <h3>${e.grau} em ${e.area_estudo}</h3>
         <div class="subtitle">${e.instituicao}</div>
-        <div class="date">${formatDate(e.data_inicio)} — ${e.data_fim ? formatDate(e.data_fim) : 'Presente'}</div>
+        <div class="date">${formatDate(e.data_inicio)} — ${isTrue(e.atual) ? 'Em curso' : (e.data_fim ? formatDate(e.data_fim) : 'Presente')}${isTrue(e.atual) ? ' <span class="badge badge-green">Em curso</span>' : ''}</div>
       </div>`;
     });
     html += `</div>`;
