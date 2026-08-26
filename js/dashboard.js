@@ -205,15 +205,15 @@ function renderList(section, type) {
         <button class="btn btn-primary btn-sm" id="addBtn-${type}" onclick="addItem('${type}')">+ Adicionar</button>
       </div>
       <div class="skill-tags" id="skillsContainer">${items.map(item => `
-        <div class="skill-tag"><span class="badge badge-blue" style="margin-right:4px">${item.categoria}</span>${item.nome} <span style="color:var(--gray-400);font-size:11px">${item.nivel}</span><button class="btn btn-secondary btn-sm" onclick="editItem('${type}','${item.id}')" style="margin:0 4px;padding:2px 6px;font-size:10px;">✏️</button><span class="remove" onclick="deleteItem('${type}','${item.id}')">×</span></div>
-      `).join('')}</div>`;
+        <<div class="skill-tag"><span class="badge badge-blue" style="margin-right:4px">${item.categoria}</span>${item.nome} <span style="color:var(--gray-400);font-size:11px">${item.nivel}</span><button class="btn btn-secondary btn-sm" onclick="editItem('${type}','${item.id}')" style="margin:0 4px;padding:2px 6px;font-size:10px;"><i class="ph-fill ph-pencil-line" style="font-size:12px; vertical-align:middle;"></i></button><span class="remove" onclick="deleteItem('${type}','${item.id}')">×</span></div>`).join('')}</div>`;
+
   } else {
     container.innerHTML = items.map(item => `
       <div class="list-item">
         <div>${config.render(item)}</div>
         <div class="list-item-actions">
-          <button class="btn btn-secondary btn-sm" onclick="editItem('${type}','${item.id}')">✏️</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteItem('${type}','${item.id}')">🗑️</button>
+          <button class="btn btn-secondary btn-sm" onclick="editItem('${type}','${item.id}')"><i class="ph-fill ph-pencil-line" style="font-size:18px; vertical-align:middle;"></i></button>
+          <button class="btn btn-danger btn-sm" onclick="deleteItem('${type}','${item.id}')"><i class="ph ph-trash" style="font-size:18px; vertical-align:middle;"></i></button>
         </div>
       </div>
     `).join('');
