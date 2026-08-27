@@ -1,43 +1,45 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Preview - TalentoUNICAP</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+  <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css"
+    />
 </head>
-
 <body>
   <nav class="navbar">
     <div class="container">
-      <a href="index.html" class="navbar-brand"><img src="img/asabranca_Unicap.png" width="40px" alt=""
-          style="display: block;"> Talento<span>UNICAP</span></a>
+      <a href="index.html" class="navbar-brand"><img src="img/asabranca_Unicap.png" width="40px" alt="" style="display: block;"> Talento<span>UNICAP</span></a>
       <div class="nav-links">
-        <a href="dashboard.html" class="btn btn-secondary btn-sm"><i
-            style="font-size:18px; vertical-align:middle;"></i> Voltar ao Editor</a>
+<<<<<<< Updated upstream
+        <a href="dashboard.html" class="btn btn-secondary btn-sm"><i class="ph-fill ph-arrow-left" style="font-size:18px; vertical-align:middle;"></i> Voltar ao Editor</a>
+=======
+        <a href="dashboard.html" class="btn btn-secondary btn-sm"><i style="font-size:18px; vertical-align:middle;"></i>
+          Voltar ao Editor</a>
+>>>>>>> Stashed changes
       </div>
     </div>
   </nav>
   <div class="container" style="padding-top:32px;padding-bottom:48px;">
-    <div
-      style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
       <h1 style="font-size:24px;">Preview do Currículo</h1>
       <div style="display:flex;gap:8px;">
-        <button class="btn btn-secondary" onclick="exportPDF()">
-          <div class="icon"><i class="ph-bold ph-scroll" style="font-size:18px;"></i></div> Exportar PDF
-        </button>
-        <button class="btn btn-primary" onclick="exportDOCX()"><i class="ph-bold ph-floppy-disk"
-            style="font-size:18px;"></i> Exportar DOCX</button>
+        <button class="btn btn-secondary" onclick="exportPDF()"><div class="icon"><i class="ph-bold ph-scroll" style="font-size:18px;"></i></div> Exportar PDF</button>
+        <button class="btn btn-primary" onclick="exportDOCX()"><i class="ph-bold ph-floppy-disk" style="font-size:18px;"></i> Exportar DOCX</button>
       </div>
     </div>
-    <div id="cvContent"
-      style="background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.1);overflow:hidden;width:100%;">
+    <div id="cvContent" style="background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.1);overflow:hidden;width:100%;">
       <div style="text-align:center;padding:60px;color:var(--gray-400);">Carregando...</div>
     </div>
   </div>
@@ -51,7 +53,7 @@
   <script>
     let profile = null;
     Auth.init();
-    Auth.onAuthChange = async function (loggedIn) {
+    Auth.onAuthChange = async function(loggedIn) {
       if (!loggedIn) { window.location.href = 'login.html'; return; }
       profile = await API.getProfile();
       if (!profile.error) {
@@ -60,5 +62,4 @@
     };
   </script>
 </body>
-
 </html>

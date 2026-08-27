@@ -3,94 +3,19 @@
    Layout do currículo gerado (preview.html /
    public.html): cabeçalho, seções e habilidades.
    ============================================ */
-.cv-preview {
-   max-width: 800px;
-   margin: 0 auto;
-}
-
-.cv-header {
-   background: var(--unicap-600);
-   color: white;
-   padding: 32px;
-   border-radius: 12px 12px 0 0;
-}
-
-.cv-header h1 {
-   font-size: 28px;
-   margin-bottom: 4px;
-}
-
-.cv-header .course {
-   color: var(--unicap-200);
-   font-size: 16px;
-   margin-bottom: 12px;
-}
-
-.cv-header .contacts {
-   display: flex;
-   flex-wrap: wrap;
-   gap: 16px;
-   font-size: 13px;
-   color: var(--unicap-100);
-}
-
-.cv-section {
-   padding: 24px 32px;
-}
-
-.cv-section h2 {
-   font-size: 16px;
-   font-weight: 700;
-   color: var(--unicap-600);
-   border-bottom: 2px solid var(--unicap-200);
-   padding-bottom: 6px;
-   margin-bottom: 16px;
-}
-
-.cv-section .item {
-   margin-bottom: 16px;
-}
-
-.cv-section .item h3 {
-   font-weight: 600;
-}
-
-.cv-section .item .subtitle {
-   color: var(--unicap-500);
-   font-size: 14px;
-}
-
-.cv-section .item .date {
-   color: var(--gray-500);
-   font-size: 13px;
-}
-
-.cv-section .item .desc {
-   color: var(--gray-600);
-   font-size: 14px;
-   margin-top: 4px;
-}
-
-.cv-section .skill-category {
-   margin-bottom: 12px;
-}
-
-.cv-section .skill-category h4 {
-   font-size: 13px;
-   color: var(--gray-500);
-   text-transform: uppercase;
-   margin-bottom: 6px;
-}
-
-.cv-section .skill-list {
-   display: flex;
-   flex-wrap: wrap;
-   gap: 6px;
-}
-
-.cv-section .skill-chip {
-   padding: 4px 12px;
-   background: var(--gray-100);
-   border-radius: 9999px;
-   font-size: 13px;
-}
+.cv-preview { max-width: 800px; margin: 0 auto; }
+.cv-header { background: var(--unicap-600); color: white; padding: 32px; border-radius: 12px 12px 0 0; }
+.cv-header h1 { font-size: 28px; margin-bottom: 4px; }
+.cv-header .course { color: var(--unicap-200); font-size: 16px; margin-bottom: 12px; }
+.cv-header .contacts { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--unicap-100); }
+.cv-section { padding: 24px 32px; }
+.cv-section h2 { font-size: 16px; font-weight: 700; color: var(--unicap-600); border-bottom: 2px solid var(--unicap-200); padding-bottom: 6px; margin-bottom: 16px; }
+.cv-section .item { margin-bottom: 16px; }
+.cv-section .item h3 { font-weight: 600; }
+.cv-section .item .subtitle { color: var(--unicap-500); font-size: 14px; }
+.cv-section .item .date { color: var(--gray-500); font-size: 13px; }
+.cv-section .item .desc { color: var(--gray-600); font-size: 14px; margin-top: 4px; }
+.cv-section .skill-category { margin-bottom: 12px; }
+.cv-section .skill-category h4 { font-size: 13px; color: var(--gray-500); text-transform: uppercase; margin-bottom: 6px; }
+.cv-section .skill-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.cv-section .skill-chip { padding: 4px 12px; background: var(--gray-100); border-radius: 9999px; font-size: 13px; }

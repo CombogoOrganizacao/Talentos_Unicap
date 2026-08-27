@@ -20,17 +20,16 @@ function isTrue(v) { return v === true || v === 'true'; }
 
 // Mostra/esconde o campo "Data de término" de acordo com a caixa de seleção
 // (usada tanto em "Trabalho atual" quanto em "Em curso").
-
-
 function toggleFimVisibility(type) {
   const checkbox = document.getElementById(`${type}_f_atual`);
   const wrapper = document.getElementById(`${type}_f_data_fim_wrapper`);
   if (!checkbox || !wrapper) return;
   wrapper.classList.toggle('hidden', checkbox.checked);
 }
+
 function initDashboard() {
   Auth.init();
-  Auth.onAuthChange = function (loggedIn) {
+  Auth.onAuthChange = function(loggedIn) {
     if (!loggedIn) { window.location.href = 'login.html'; return; }
     loadProfile();
   };
@@ -63,17 +62,70 @@ function fillPersonalForm() {
   UI.setVal('telefone', profile.telefone);
   UI.setVal('curso', profile.curso);
   UI.setVal('periodo', profile.periodo);
-  UI.setVal('cidade', profile.cidade);
-  UI.setVal('estado', profile.estado);
   UI.setVal('endereco', profile.endereco);
   UI.setVal('bio', profile.bio);
   UI.setVal('linkedin', profile.linkedin);
   UI.setVal('github', profile.github);
   UI.setVal('portfolio', profile.portfolio);
-  // Populate states
+
+  // Popula estados
   const stateSelect = document.getElementById('estado');
   stateSelect.innerHTML = '<option value="">Selecione</option>' +
     CONFIG.states.map(s => `<option value="${s}" ${profile.estado === s ? 'selected' : ''}>${s}</option>`).join('');
+
+  // Liga o listener que atualiza as cidades quando o estado muda
+  stateSelect.onchange = () => atualizarCidadesPorEstado(stateSelect.value);
+
+  // Se já tem estado salvo, carrega as cidades e pré-seleciona a cidade salva
+  if (profile.estado) {
+    atualizarCidadesPorEstado(profile.estado, profile.cidade);
+  } else {
+    const citySelect = document.getElementById('cidade');
+    if (citySelect) citySelect.innerHTML = '<option value="">Selecione o estado primeiro</option>';
+  }
+}
+
+// Cache simples para não repetir chamadas ao IBGE
+const cacheCidades = {};
+
+async function buscarCidadesPorEstado(uf) {
+  if (cacheCidades[uf]) return cacheCidades[uf];
+  try {
+    const res = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
+    if (!res.ok) throw new Error('Falha ao buscar cidades');
+    const data = await res.json();
+    const cidades = data.map(c => c.nome).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+    cacheCidades[uf] = cidades;
+    return cidades;
+  } catch (erro) {
+    console.error('Erro ao buscar cidades do IBGE:', erro);
+    return [];
+  }
+}
+
+async function atualizarCidadesPorEstado(uf, cidadeSelecionada = '') {
+  const citySelect = document.getElementById('cidade');
+  if (!citySelect) return;
+
+  if (!uf) {
+    citySelect.innerHTML = '<option value="">Selecione o estado primeiro</option>';
+    return;
+  }
+
+  citySelect.innerHTML = '<option value="">Carregando cidades...</option>';
+  citySelect.disabled = true;
+
+  const cidades = await buscarCidadesPorEstado(uf);
+
+  if (cidades.length === 0) {
+    citySelect.innerHTML = '<option value="">Erro ao carregar. Tente novamente.</option>';
+    citySelect.disabled = false;
+    return;
+  }
+
+  citySelect.innerHTML = '<option value="">Selecione a cidade</option>' +
+    cidades.map(c => `<option value="${c}" ${c === cidadeSelecionada ? 'selected' : ''}>${c}</option>`).join('');
+  citySelect.disabled = false;
 }
 
 async function savePersonal() {
@@ -110,16 +162,15 @@ const sectionConfig = {
       <div><strong>${item.cargo}</strong> — ${item.empresa}</div>
       <div style="font-size:13px;color:var(--gray-500)">${fmtDate(item.data_inicio)} — ${isTrue(item.atual) ? 'Presente' : (item.data_fim ? fmtDate(item.data_fim) : 'Presente')}${isTrue(item.atual) ? ' <span class="badge badge-green">Atual</span>' : ''}</div>
       ${item.descricao ? `<div style="font-size:13px;color:var(--gray-600);margin-top:4px">${item.descricao}</div>` : ''}`,
-    form: (edit) => {
-      const atual = isTrue(edit?.atual); return `
+    form: (edit) => { const atual = isTrue(edit?.atual); return `
       <div class="form-row">
-        <div class="form-group"><label>Empresa</label><input id="experiencia_f_empresa" value="${edit?.empresa || ''}" required></div>
-        <div class="form-group"><label>Cargo</label><input id="experiencia_f_cargo" value="${edit?.cargo || ''}" required></div>
+        <div class="form-group"><label>Empresa</label><input id="experiencia_f_empresa" value="${edit?.empresa||''}" required></div>
+        <div class="form-group"><label>Cargo</label><input id="experiencia_f_cargo" value="${edit?.cargo||''}" required></div>
       </div>
-      <div class="form-group"><label>Descrição</label><textarea id="experiencia_f_descricao" rows="3">${edit?.descricao || ''}</textarea></div>
+      <div class="form-group"><label>Descrição</label><textarea id="experiencia_f_descricao" rows="3">${edit?.descricao||''}</textarea></div>
       <div class="form-row">
-        <div class="form-group"><label>Data de início</label><input type="date" id="experiencia_f_data_inicio" value="${edit?.data_inicio || ''}" required></div>
-        <div class="form-group ${atual ? 'hidden' : ''}" id="experiencia_f_data_fim_wrapper"><label>Data de término</label><input type="date" id="experiencia_f_data_fim" value="${edit?.data_fim || ''}"></div>
+        <div class="form-group"><label>Data de início</label><input type="date" id="experiencia_f_data_inicio" value="${edit?.data_inicio||''}" required></div>
+        <div class="form-group ${atual ? 'hidden' : ''}" id="experiencia_f_data_fim_wrapper"><label>Data de término</label><input type="date" id="experiencia_f_data_fim" value="${edit?.data_fim||''}"></div>
       </div>
       <label class="checkbox-field">
         <input type="checkbox" id="experiencia_f_atual" ${atual ? 'checked' : ''} onchange="toggleFimVisibility('experiencia')">
@@ -127,8 +178,7 @@ const sectionConfig = {
           <span class="checkbox-title">Este é o meu trabalho atual</span>
           <span class="checkbox-hint">Marque esta opção se você ainda trabalha nessa empresa. A data de término será ocultada.</span>
         </span>
-      </label>`;
-    },
+      </label>`; },
     getData: () => {
       const atual = document.getElementById('experiencia_f_atual')?.checked || false;
       return { empresa: UI.val('experiencia_f_empresa'), cargo: UI.val('experiencia_f_cargo'), descricao: UI.val('experiencia_f_descricao'), data_inicio: UI.val('experiencia_f_data_inicio'), data_fim: atual ? '' : UI.val('experiencia_f_data_fim'), atual: atual ? 'true' : 'false' };
@@ -141,32 +191,22 @@ const sectionConfig = {
     render: (item) => `
       <div><strong>${item.grau} em ${item.area_estudo}</strong></div>
       <div style="font-size:13px;color:var(--gray-500)">${item.instituicao} | ${fmtDate(item.data_inicio)} — ${isTrue(item.atual) ? 'Em curso' : (item.data_fim ? fmtDate(item.data_fim) : 'Presente')}${isTrue(item.atual) ? ' <span class="badge badge-green">Em curso</span>' : ''}</div>`,
-       form: (edit) => {
+<<<<<<< Updated upstream
+    form: (edit) => { const emCurso = isTrue(edit?.atual); return `
+=======
+    form: (edit) => {
       const emCurso = isTrue(edit?.atual);
       const grauSelecionado = edit?.grau || '';
       return `
+>>>>>>> Stashed changes
       <div class="form-row">
-        <div class="form-group"><label>Instituição</label><input id="formacao_f_instituicao" value="${edit?.instituicao || ''}" required></div>
-        <div class="form-group">
-          <label>Grau</label>
-          <select id="formacao_f_grau" required onchange="atualizarCursosPorGrau('formacao', this.value)">
-            <option value="">Selecione o grau</option>
-            <option value="Graduação" ${grauSelecionado === 'Graduação' ? 'selected' : ''}>Graduação</option>
-            <option value="Especialização" ${grauSelecionado === 'Especialização' ? 'selected' : ''}>Especialização</option>
-            <option value="Mestrado" ${grauSelecionado === 'Mestrado' ? 'selected' : ''}>Mestrado</option>
-            <option value="Doutorado" ${grauSelecionado === 'Doutorado' ? 'selected' : ''}>Doutorado</option>
-          </select>
-        </div>
+        <div class="form-group"><label>Instituição</label><input id="formacao_f_instituicao" value="${edit?.instituicao||''}" required></div>
+        <div class="form-group"><label>Grau</label><input id="formacao_f_grau" value="${edit?.grau||''}" placeholder="Graduação, Pós..." required></div>
       </div>
-      <div class="form-group">
-        <label>Curso</label>
-        <select id="formacao_f_area_estudo" required>
-          ${gerarOpcoesCurso(grauSelecionado, edit?.area_estudo)}
-        </select>
-      </div>
+      <div class="form-group"><label>Área de Estudo</label><input id="formacao_f_area_estudo" value="${edit?.area_estudo||''}" required></div>
       <div class="form-row">
-        <div class="form-group"><label>Data de início</label><input type="date" id="formacao_f_data_inicio" value="${edit?.data_inicio || ''}" required></div>
-        <div class="form-group ${emCurso ? 'hidden' : ''}" id="formacao_f_data_fim_wrapper"><label>Data de término</label><input type="date" id="formacao_f_data_fim" value="${edit?.data_fim || ''}"></div>
+        <div class="form-group"><label>Data de início</label><input type="date" id="formacao_f_data_inicio" value="${edit?.data_inicio||''}" required></div>
+        <div class="form-group ${emCurso ? 'hidden' : ''}" id="formacao_f_data_fim_wrapper"><label>Data de término</label><input type="date" id="formacao_f_data_fim" value="${edit?.data_fim||''}"></div>
       </div>
       <label class="checkbox-field">
         <input type="checkbox" id="formacao_f_atual" ${emCurso ? 'checked' : ''} onchange="toggleFimVisibility('formacao')">
@@ -174,8 +214,7 @@ const sectionConfig = {
           <span class="checkbox-title">Em curso</span>
           <span class="checkbox-hint">Marque esta opção se você ainda não concluiu essa formação. A data de término será ocultada.</span>
         </span>
-      </label>`;
-    },
+      </label>`; },
     getData: () => {
       const atual = document.getElementById('formacao_f_atual')?.checked || false;
       return { instituicao: UI.val('formacao_f_instituicao'), grau: UI.val('formacao_f_grau'), area_estudo: UI.val('formacao_f_area_estudo'), data_inicio: UI.val('formacao_f_data_inicio'), data_fim: atual ? '' : UI.val('formacao_f_data_fim'), atual: atual ? 'true' : 'false' };
@@ -188,12 +227,12 @@ const sectionConfig = {
     render: (item) => `<span class="badge badge-blue">${item.categoria}</span> <strong>${item.nome}</strong> <span style="font-size:12px;color:var(--gray-500)">${item.nivel}</span>`,
     inline: true,
     form: (edit) => `
-      <div class="form-group"><label>Nome</label><input id="habilidade_f_nome" value="${edit?.nome || ''}" required></div>
+      <div class="form-group"><label>Nome</label><input id="habilidade_f_nome" value="${edit?.nome||''}" required></div>
       <div class="form-group"><label>Categoria</label>
-        <select id="habilidade_f_categoria">${CONFIG.skillCategories.map(c => `<option value="${c}" ${edit?.categoria === c ? 'selected' : ''}>${c}</option>`).join('')}</select>
+        <select id="habilidade_f_categoria">${CONFIG.skillCategories.map(c => `<option value="${c}" ${edit?.categoria===c?'selected':''}>${c}</option>`).join('')}</select>
       </div>
       <div class="form-group"><label>Nível</label>
-        <select id="habilidade_f_nivel">${CONFIG.skillLevels.map(l => `<option value="${l}" ${edit?.nivel === l ? 'selected' : ''}>${l}</option>`).join('')}</select>
+        <select id="habilidade_f_nivel">${CONFIG.skillLevels.map(l => `<option value="${l}" ${edit?.nivel===l?'selected':''}>${l}</option>`).join('')}</select>
       </div>`,
     getData: () => ({ nome: UI.val('habilidade_f_nome'), categoria: UI.val('habilidade_f_categoria'), nivel: UI.val('habilidade_f_nivel') }),
     validate: (d) => d.nome
@@ -206,63 +245,44 @@ const sectionConfig = {
       ${item.descricao ? `<div style="font-size:13px;color:var(--gray-600)">${item.descricao}</div>` : ''}
       ${item.data_inicio ? `<div style="font-size:12px;color:var(--gray-500)">${fmtDate(item.data_inicio)} — ${item.data_fim ? fmtDate(item.data_fim) : ''}</div>` : ''}`,
     form: (edit) => `
-      <div class="form-group"><label>Nome do projeto</label><input id="projeto_f_nome" value="${edit?.nome || ''}" required></div>
-      <div class="form-group"><label>Descrição</label><textarea id="projeto_f_descricao" rows="3">${edit?.descricao || ''}</textarea></div>
-      <div class="form-group"><label>URL</label><input id="projeto_f_url" value="${edit?.url || ''}" placeholder="https://..."></div>
+      <div class="form-group"><label>Nome do projeto</label><input id="projeto_f_nome" value="${edit?.nome||''}" required></div>
+      <div class="form-group"><label>Descrição</label><textarea id="projeto_f_descricao" rows="3">${edit?.descricao||''}</textarea></div>
+      <div class="form-group"><label>URL</label><input id="projeto_f_url" value="${edit?.url||''}" placeholder="https://..."></div>
       <div class="form-row">
-        <div class="form-group"><label>Data de início</label><input type="date" id="projeto_f_data_inicio" value="${edit?.data_inicio || ''}"></div>
-        <div class="form-group"><label>Data de término</label><input type="date" id="projeto_f_data_fim" value="${edit?.data_fim || ''}"></div>
+        <div class="form-group"><label>Data de início</label><input type="date" id="projeto_f_data_inicio" value="${edit?.data_inicio||''}"></div>
+        <div class="form-group"><label>Data de término</label><input type="date" id="projeto_f_data_fim" value="${edit?.data_fim||''}"></div>
       </div>`,
     getData: () => ({ nome: UI.val('projeto_f_nome'), descricao: UI.val('projeto_f_descricao'), url: UI.val('projeto_f_url'), data_inicio: UI.val('projeto_f_data_inicio'), data_fim: UI.val('projeto_f_data_fim') }),
     validate: (d) => d.nome
   },
-    certificado: {
+  certificado: {
     sheet: SHEETS.certificates, label: 'Certificações',
     emptyMsg: 'Nenhum certificado cadastrado ainda.',
     render: (item) => `
       <div><strong>${item.nome}</strong>${item.emissor ? ` — ${item.emissor}` : ''}</div>
-      <div style="font-size:12px;color:var(--gray-500)">
-        ${item.data_emissao ? fmtDate(item.data_emissao) : ''}
-        ${isTrue(item.sem_validade) ? ' <span class="badge badge-green">Sem validade</span>' : (item.data_validade ? ` — Válido até ${fmtDate(item.data_validade)}` : '')}
-      </div>
-      ${item.carga_horaria ? `<div style="font-size:12px;color:var(--gray-500)">${item.carga_horaria} horas</div>` : ''}`,
-    form: (edit) => {
-      const semValidade = isTrue(edit?.sem_validade); return `
+      ${item.data_emissao ? `<div style="font-size:12px;color:var(--gray-500)">${fmtDate(item.data_emissao)}</div>` : ''}`,
+    form: (edit) => `
       <div class="form-row">
-        <div class="form-group"><label>Nome</label><input id="certificado_f_nome" value="${edit?.nome || ''}" required></div>
-        <div class="form-group"><label>Emissor</label><input id="certificado_f_emissor" value="${edit?.emissor || ''}"></div>
+        <div class="form-group"><label>Nome</label><input id="certificado_f_nome" value="${edit?.nome||''}" required></div>
+        <div class="form-group"><label>Emissor</label><input id="certificado_f_emissor" value="${edit?.emissor||''}"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Data de emissão</label><input type="date" id="certificado_f_data_emissao" value="${edit?.data_emissao || ''}" required></div>
-        <div class="form-group ${semValidade ? 'hidden' : ''}" id="certificado_f_data_validade_wrapper"><label>Data de validade</label><input type="date" id="certificado_f_data_validade" value="${edit?.data_validade || ''}"></div>
+<<<<<<< Updated upstream
+        <div class="form-group"><label>Data de emissão</label><input type="date" id="certificado_f_data_emissao" value="${edit?.data_emissao||''}"></div>
+        <div class="form-group"><label>Data de validade</label><input type="date" id="certificado_f_data_validade" value="${edit?.data_validade||''}"></div>
       </div>
-      <label class="checkbox-field">
-        <input type="checkbox" id="certificado_f_sem_validade" ${semValidade ? 'checked' : ''} onchange="toggleValidadeVisibility('certificado')">
-        <span class="checkbox-text">
-          <span class="checkbox-title">Este certificado não possui data de validade</span>
-          <span class="checkbox-hint">Marque esta opção se o certificado não expira. A data de validade será ocultada.</span>
-        </span>
-      </label>
-      <div class="form-row">
+      <div class="form-group"><label>URL</label><input id="certificado_f_url" value="${edit?.url||''}"></div>`,
+=======
+        <div class="form-group"><label>Data de emissão</label><input type="date" id="certificado_f_data_emissao" value="${edit?.data_emissao || ''}"></div>
+        <div class="form-group"><label>Data de validade</label><input type="date" id="certificado_f_data_validade" value="${edit?.data_validade || ''}"></div>
+      </div>
+      <div class="form-row"> 
         <div class="form-group"><label>URL</label><input id="certificado_f_url" value="${edit?.url || ''}"></div>
-        <div class="form-group"><label>Carga Horária (horas)</label>
-          <input type="number" min="1" step="1" inputmode="numeric" id="certificado_f_carga_horaria" value="${edit?.carga_horaria || ''}" placeholder="Ex: 40" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-        </div>
-      </div>`;
-    },
-    getData: () => {
-      const semValidade = document.getElementById('certificado_f_sem_validade')?.checked || false;
-      return {
-        nome: UI.val('certificado_f_nome'),
-        emissor: UI.val('certificado_f_emissor'),
-        data_emissao: UI.val('certificado_f_data_emissao'),
-        data_validade: semValidade ? '' : UI.val('certificado_f_data_validade'),
-        sem_validade: semValidade ? 'true' : 'false',
-        url: UI.val('certificado_f_url'),
-        carga_horaria: UI.val('certificado_f_carga_horaria')
-      };
-    },
-    validate: (d) => d.nome && d.data_emissao
+        <div class="form-group"><label>Carga Horária</label><input id="certificado_f_Carga_Horária" value="${edit?.CargaHorária || ''}"></div>
+        </div>`,
+>>>>>>> Stashed changes
+    getData: () => ({ nome: UI.val('certificado_f_nome'), emissor: UI.val('certificado_f_emissor'), data_emissao: UI.val('certificado_f_data_emissao'), data_validade: UI.val('certificado_f_data_validade'), url: UI.val('certificado_f_url') }),
+    validate: (d) => d.nome
   }
 };
 
@@ -289,7 +309,7 @@ function renderList(section, type) {
         <button class="btn btn-primary btn-sm" id="addBtn-${type}" onclick="addItem('${type}')">+ Adicionar</button>
       </div>
       <div class="skill-tags" id="skillsContainer">${items.map(item => `
-        <<div class="skill-tag"><span class="badge badge-blue" style="margin-right:4px">${item.categoria}</span>${item.nome} <span style="color:var(--gray-400);font-size:11px">${item.nivel}</span><button class="btn btn-secondary btn-sm" onclick="editItem('${type}','${item.id}')" style="margin:0 4px;padding:2px 6px;font-size:10px;"><i class="ph-fill ph-pencil-line" style="font-size:12px; vertical-align:middle;"></i></button><span class="remove" onclick="deleteItem('${type}','${item.id}')">×</span></div>`).join('')}</div>`;
+        <div class="skill-tag"><span class="badge badge-blue" style="margin-right:4px">${item.categoria}</span>${item.nome} <span style="color:var(--gray-400);font-size:11px">${item.nivel}</span><button class="btn btn-secondary btn-sm" onclick="editItem('${type}','${item.id}')" style="margin:0 4px;padding:2px 6px;font-size:10px;"><i class="ph-fill ph-pencil-line" style="font-size:12px; vertical-align:middle;"></i></button><span class="remove" onclick="deleteItem('${type}','${item.id}')">×</span></div>`).join('')}</div>`;
 
   } else {
     container.innerHTML = items.map(item => `
@@ -327,18 +347,18 @@ function hideEditForm(type) { UI.hide(`edit-${type}`); }
 async function addItem(type) {
   const config = sectionConfig[type];
   const btn = document.getElementById(`addBtn-${type}`);
-
+  
   if (config.inline) {
     const data = { nome: UI.val('inline-nome'), categoria: UI.val('inline-categoria'), nivel: UI.val('inline-nivel') };
     if (!data.nome) {
       alert('Por favor, preenchao nome da habilidade');
       return;
     }
-
+    
     // Desabilitar botão enquanto salva
     if (btn) btn.disabled = true;
     if (btn) btn.textContent = 'Salvando...';
-
+    
     try {
       await API.addItem(config.sheet, data);
       // Limpar campos após sucesso

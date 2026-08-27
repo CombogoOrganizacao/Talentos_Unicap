@@ -2,11 +2,4 @@
    FOOTER
    Rodapé simples, exibido nas páginas públicas.
    ============================================ */
-.footer {
-   border-top: 1px solid var(--gray-200);
-   padding: 24px;
-   text-align: center;
-   color: var(--gray-500);
-   font-size: 14px;
-   background: var(--gray-50);
-}
+.footer { border-top: 1px solid var(--gray-200); padding: 24px; text-align: center; color: var(--gray-500); font-size: 14px; background: var(--gray-50); }

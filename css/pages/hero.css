@@ -5,40 +5,11 @@
    ============================================ */
 .hero {
   background: linear-gradient(135deg, var(--unicap-600), var(--unicap-500), #570016);
-  color: #ffffff;
-  padding: 80px 0;
+  color: #ffffff; padding: 80px 0;
 }
-
-.hero h1 {
-  font-size: 48px;
-  font-weight: 700;
-  line-height: 1.2;
-  margin-bottom: 16px;
-}
-
-.hero h1 em {
-  font-style: normal;
-  color: var(--unicap-200);
-}
-
-.hero p {
-  font-size: 20px;
-  color: var(--unicap-100);
-  max-width: 600px;
-  margin-bottom: 32px;
-}
-
-.hero .btn-primary {
-  background: white;
-  color: var(--unicap-600);
-}
-
-.hero .btn-primary:hover {
-  background: var(--unicap-50);
-}
-
-.hero .btn-secondary {
-  border-color: white;
-  color: white;
-  background: transparent;
-}
+.hero h1 { font-size: 48px; font-weight: 700; line-height: 1.2; margin-bottom: 16px; }
+.hero h1 em { font-style: normal; color: var(--unicap-200); }
+.hero p { font-size: 20px; color: var(--unicap-100); max-width: 600px; margin-bottom: 32px; }
+.hero .btn-primary { background: white; color: var(--unicap-600); }
+.hero .btn-primary:hover { background: var(--unicap-50); }
+.hero .btn-secondary { border-color: white; color: white; background: transparent; }

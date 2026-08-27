@@ -2,28 +2,10 @@
    SKILL TAGS
    "Chips" de habilidades com botão de remover.
    ============================================ */
-.skill-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
+.skill-tags { display: flex; flex-wrap: wrap; gap: 8px; }
 .skill-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: var(--gray-100);
-  border-radius: 8px;
-  font-size: 13px;
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+  background: var(--gray-100); border-radius: 8px; font-size: 13px;
 }
-
-.skill-tag .remove {
-  cursor: pointer;
-  color: var(--gray-400);
-  font-size: 16px;
-}
-
-.skill-tag .remove:hover {
-  color: var(--red-500);
-}
+.skill-tag .remove { cursor: pointer; color: var(--gray-400); font-size: 16px; }
+.skill-tag .remove:hover { color: var(--red-500); }

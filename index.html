@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,24 +7,29 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+   <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css"
+    />
 </head>
-
 <body>
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="container">
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <img src="img/asabranca_Unicap.png" width="40px" alt="" style="display: block;">
-        <a href="index.html" class="navbar-brand" style="display: inline-flex; align-items: center; line-height: 1;">
-          Talentos<span>UNICAP</span>
-        </a>
-      </div>
+      <div style="display: flex; align-items: center; gap: 10px;"> 
+        <img src="img/asabranca_Unicap.png" width="40px" alt="" style="display: block;">   
+      <a href="index.html" class="navbar-brand" style="display: inline-flex; align-items: center; line-height: 1;">
+        Talentos<span>UNICAP</span>
+      </a>
+    </div>
       <div class="nav-links" id="navLinks"></div>
-
+      
     </div>
   </nav>
 
@@ -34,8 +38,7 @@
     <div class="container">
       <img src="\img\Novo_Logo_Unicap.png" alt="">
       <h1>Construa seu currículo<br><em>profissional</em></h1>
-      <p>A plataforma oficial para alunos da UNICAP criarem currículos impactantes. Cadastre suas experiências,
-        habilidades e projetos, e exporte em PDF ou DOCX.</p>
+      <p>A plataforma oficial para alunos da UNICAP criarem currículos impactantes. Cadastre suas experiências, habilidades e projetos, e exporte em PDF ou DOCX.</p>
       <div style="display:flex;gap:12px;flex-wrap:wrap;">
         <a href="register.html" class="btn btn-primary btn-lg" id="heroBtn">Criar Meu Currículo →</a>
         <a href="login.html" class="btn btn-secondary btn-lg">Já tenho conta</a>
@@ -76,8 +79,7 @@
   <section style="padding:80px 0;background:var(--gray-50);text-align:center;">
     <div class="container">
       <h2 style="font-size:32px;margin-bottom:12px;">Comece agora mesmo</h2>
-      <p style="color:var(--gray-600);margin-bottom:24px;">Crie sua conta gratuita e comece a construir seu currículo
-        profissional em minutos.</p>
+      <p style="color:var(--gray-600);margin-bottom:24px;">Crie sua conta gratuita e comece a construir seu currículo profissional em minutos.</p>
       <a href="register.html" class="btn btn-primary btn-lg">Criar Conta Grátis →</a>
     </div>
   </section>
@@ -137,7 +139,7 @@
     })();
 
     Auth.init();
-    Auth.onAuthChange = function (loggedIn) {
+    Auth.onAuthChange = function(loggedIn) {
       const nav = document.getElementById('navLinks');
       const heroBtn = document.getElementById('heroBtn');
       if (loggedIn) {
@@ -150,5 +152,4 @@
     };
   </script>
 </body>
-
 </html>

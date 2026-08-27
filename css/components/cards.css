@@ -4,25 +4,9 @@
    (dashboard, listas, etc.), com cabeçalho e corpo.
    ============================================ */
 .card {
-  background: white;
-  border: 1px solid var(--gray-200);
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background: white; border: 1px solid var(--gray-200); border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-
-.card-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--gray-200);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.card-header h3 {
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.card-body {
-  padding: 24px;
-}
+.card-header { padding: 20px 24px; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; }
+.card-header h3 { font-size: 18px; font-weight: 600; }
+.card-body { padding: 24px; }

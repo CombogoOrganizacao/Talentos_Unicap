@@ -142,7 +142,7 @@ const API = {
 
   _demoAddItem(data) {
     const sheet = data.sheet;
-
+    
     // Mapear sheet name para localStorage key
     const keyMap = {
       'Experiencias': 'experiencias',
@@ -152,7 +152,7 @@ const API = {
       'Certificados': 'certificados'
     };
     const key = keyMap[sheet] || sheet;
-
+    
     const items = this._getDemoSheet(key);  // ✅ Usa a key correta
     const id = 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
     const item = { id };

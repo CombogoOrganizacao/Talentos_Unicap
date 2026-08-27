@@ -1,5 +1,5 @@
 // Perfil público - acessa via /[slug]
-(function () {
+(function() {
   const slug = window.location.pathname.replace(/^\//, '').replace(/\/$/, '');
   if (!slug) { showError(); return; }
 
@@ -22,12 +22,3 @@ function showError() {
       <a href="index.html" class="btn btn-primary">Criar meu currículo</a>
     </div>`;
 }
-
-
-
-
-
-
-
-
-
