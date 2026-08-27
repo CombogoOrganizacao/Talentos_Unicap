@@ -6,6 +6,7 @@ const CONFIG = {
   API_URL: 'https://script.google.com/macros/s/SUA_URL_AQUI/exec',
   
   // Configuração do Firebase
+   firebase: {
     apiKey: "SUA_API_KEY_AQUI",
     authDomain: "seu-projeto.firebaseapp.com",
     projectId: "seu-projeto",
