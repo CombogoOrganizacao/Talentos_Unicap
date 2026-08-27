@@ -14,7 +14,6 @@ const CONFIG = {
     messagingSenderId: "123456789",
     appId: "1:123456789:web:abcdef"
   },
-<<<<<<< Updated upstream
   
   // Estados brasileiros
   states: [
@@ -23,17 +22,9 @@ const CONFIG = {
     'RS','RO','RR','SC','SP','SE','TO'
   ],
   
-=======
-
-
-
->>>>>>> Stashed changes
   skillCategories: ['Técnica', 'Idioma', 'Soft Skill', 'Ferramenta'],
   skillLevels: ['Básico', 'Intermediário', 'Avançado', 'Expert']
 };
-<<<<<<< Updated upstream
-=======
-
 const MAPA_GRAU_PARA_CHAVE = {
   'Graduação': 'cursos',
   'Especialização': 'especializacoes',
@@ -63,13 +54,6 @@ function atualizarCursosPorGrau(key, grau) {
 }
 
 
-// Estados brasileiros
-  states: [
-    'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
-    'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
-    'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
-  ],  
-
 // Busca as cidades de um estado via API do IBGE
 async function buscarCidadesPorEstado(uf) {
   try {
@@ -93,4 +77,8 @@ async function buscarCidadesComCache(uf) {
   cacheCidades[uf] = cidades;
   return cidades;
 }
->>>>>>> Stashed changes
+=======
+  skillCategories: ['Técnica', 'Idioma', 'Soft Skill', 'Ferramenta'],
+  skillLevels: ['Básico', 'Intermediário', 'Avançado', 'Expert']
+};
+>>>>>>> 9a7e2dfeaa8e8f3a4723c1c4d3700c8ec98c10e5

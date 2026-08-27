@@ -191,14 +191,13 @@ const sectionConfig = {
     render: (item) => `
       <div><strong>${item.grau} em ${item.area_estudo}</strong></div>
       <div style="font-size:13px;color:var(--gray-500)">${item.instituicao} | ${fmtDate(item.data_inicio)} — ${isTrue(item.atual) ? 'Em curso' : (item.data_fim ? fmtDate(item.data_fim) : 'Presente')}${isTrue(item.atual) ? ' <span class="badge badge-green">Em curso</span>' : ''}</div>`,
-<<<<<<< Updated upstream
-    form: (edit) => { const emCurso = isTrue(edit?.atual); return `
-=======
     form: (edit) => {
       const emCurso = isTrue(edit?.atual);
       const grauSelecionado = edit?.grau || '';
       return `
->>>>>>> Stashed changes
+=======
+    form: (edit) => { const emCurso = isTrue(edit?.atual); return `
+>>>>>>> 9a7e2dfeaa8e8f3a4723c1c4d3700c8ec98c10e5
       <div class="form-row">
         <div class="form-group"><label>Instituição</label><input id="formacao_f_instituicao" value="${edit?.instituicao||''}" required></div>
         <div class="form-group"><label>Grau</label><input id="formacao_f_grau" value="${edit?.grau||''}" placeholder="Graduação, Pós..." required></div>
@@ -267,20 +266,19 @@ const sectionConfig = {
         <div class="form-group"><label>Emissor</label><input id="certificado_f_emissor" value="${edit?.emissor||''}"></div>
       </div>
       <div class="form-row">
-<<<<<<< Updated upstream
         <div class="form-group"><label>Data de emissão</label><input type="date" id="certificado_f_data_emissao" value="${edit?.data_emissao||''}"></div>
         <div class="form-group"><label>Data de validade</label><input type="date" id="certificado_f_data_validade" value="${edit?.data_validade||''}"></div>
       </div>
       <div class="form-group"><label>URL</label><input id="certificado_f_url" value="${edit?.url||''}"></div>`,
-=======
         <div class="form-group"><label>Data de emissão</label><input type="date" id="certificado_f_data_emissao" value="${edit?.data_emissao || ''}"></div>
         <div class="form-group"><label>Data de validade</label><input type="date" id="certificado_f_data_validade" value="${edit?.data_validade || ''}"></div>
       </div>
       <div class="form-row"> 
         <div class="form-group"><label>URL</label><input id="certificado_f_url" value="${edit?.url || ''}"></div>
         <div class="form-group"><label>Carga Horária</label><input id="certificado_f_Carga_Horária" value="${edit?.CargaHorária || ''}"></div>
-        </div>`,
->>>>>>> Stashed changes
+        </div>`
+=======
+>>>>>>> 9a7e2dfeaa8e8f3a4723c1c4d3700c8ec98c10e5
     getData: () => ({ nome: UI.val('certificado_f_nome'), emissor: UI.val('certificado_f_emissor'), data_emissao: UI.val('certificado_f_data_emissao'), data_validade: UI.val('certificado_f_data_validade'), url: UI.val('certificado_f_url') }),
     validate: (d) => d.nome
   }
