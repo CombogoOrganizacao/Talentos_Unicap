@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
   <nav class="navbar">
     <div class="container">
@@ -27,14 +25,11 @@
         <p class="subtitle">Entre na sua conta para acessar seu currículo</p>
 
         <!-- Conta de teste -->
-        <div
-          style="background:var(--unicap-50);border:1px solid var(--unicap-200);border-radius:8px;padding:14px;margin-bottom:20px;">
+        <div style="background:var(--unicap-50);border:1px solid var(--unicap-200);border-radius:8px;padding:14px;margin-bottom:20px;">
           <p style="font-size:13px;font-weight:600;color:var(--unicap-600);margin-bottom:6px;">🧪 Conta de Teste</p>
           <p style="font-size:12px;color:var(--gray-600);margin:2px 0;">📧 <strong>admin@unicap.edu.br</strong></p>
           <p style="font-size:12px;color:var(--gray-600);margin:2px 0;">🔑 <strong>123456</strong></p>
-          <button onclick="fillTestAccount()"
-            style="margin-top:8px;font-size:12px;color:var(--unicap-500);background:none;border:none;cursor:pointer;text-decoration:underline;">Preencher
-            automaticamente</button>
+          <button onclick="fillTestAccount()" style="margin-top:8px;font-size:12px;color:var(--unicap-500);background:none;border:none;cursor:pointer;text-decoration:underline;">Preencher automaticamente</button>
         </div>
 
         <div id="errorMsg" class="error-msg hidden"></div>
@@ -62,7 +57,7 @@
   <script src="js/auth.js"></script>
   <script>
     Auth.init();
-    Auth.onAuthChange = function (loggedIn) {
+    Auth.onAuthChange = function(loggedIn) {
       if (loggedIn) window.location.href = 'dashboard.html';
     };
 
@@ -71,7 +66,7 @@
       document.getElementById('password').value = '123456';
     }
 
-    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
@@ -92,5 +87,4 @@
     });
   </script>
 </body>
-
 </html>
