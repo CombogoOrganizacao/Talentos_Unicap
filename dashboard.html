@@ -1,115 +1,66 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meu Currículo - TalentoUNICAP</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-  <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css"
-    />
-  
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+
 </head>
+
 <body>
-  <nav class="navbar">
-    <div class="container">
-=======
+
   <body>
-  <nav class="navbar">
-    <div class="container">
->>>>>>> 9a7e2dfeaa8e8f3a4723c1c4d3700c8ec98c10e5
+    <nav class="navbar">
+      <div class="container">
 
-      <a href="index.html" class="navbar-brand">
-        <img src="img/asabranca_Unicap.png" width="40px" alt="">
-        Talento<span>UNICAP</span>
-      </a>
+        <a href="index.html" class="navbar-brand">
+          <img src="img/asabranca_Unicap.png" width="40px" alt="">
+          Talento<span>UNICAP</span>
+        </a>
 
-      <div class="nav-links">
-        <span id="userName" style="font-size:14px;color:var(--gray-600)"></span>
+        <div class="nav-links">
+          <span id="userName" style="font-size:14px;color:var(--gray-600)"></span>
 
-        <button class="btn btn-secondary btn-sm" onclick="Auth.logout()">
-          <i class="ph-fill ph-sign-out" style="font-size:18px; vertical-align:middle;"></i>
-          Sair
-        </button>
-      </div>
-
-    </div>
-  </nav>
-
-
-  <div class="container" style="padding-top:32px;padding-bottom:48px;">
-    <!-- Header -->
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
-      <div>
-        <h1 style="font-size:28px;">Meu Currículo</h1>
-        <p style="color:var(--gray-500)">Preencha suas informações para construir seu currículo profissional.</p>
-      </div>
-      <button class="btn btn-primary" onclick="goToPreview()"><i class="ph-fill ph-scroll"></i> Preview & Exportar</button>
-    </div>
-
-    <!-- Progress -->
-    <div class="card" style="background:linear-gradient(135deg,var(--unicap-50),#eff6ff);border-color:var(--unicap-200);margin-bottom:24px;">
-      <div class="card-body">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-          <span style="font-weight:600;"><i class="ph-fill ph-chart-bar"></i> Completude do Currículo</span>
-          <span id="progressText" style="font-size:20px;font-weight:700;color:var(--unicap-500)">0%</span>
+          <button class="btn btn-secondary btn-sm" onclick="Auth.logout()">
+            <i class="ph-fill ph-sign-out" style="font-size:18px; vertical-align:middle;"></i>
+            Sair
+          </button>
         </div>
-        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-        <p id="progressMsg" style="font-size:13px;color:var(--gray-500);margin-top:8px;">Carregando...</p>
+
       </div>
-    </div>
+    </nav>
 
-    <!-- Public Link -->
-    <div class="card hidden" id="publicLinkCard" style="margin-bottom:24px;">
-      <div class="card-body" style="padding:12px 24px;">
-        <span style="font-size:13px;color:var(--gray-600)" id="publicLink"></span>
+
+    <div class="container" style="padding-top:32px;padding-bottom:48px;">
+      <!-- Header -->
+      <div
+        style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
+        <div>
+          <h1 style="font-size:28px;">Meu Currículo</h1>
+          <p style="color:var(--gray-500)">Preencha suas informações para construir seu currículo profissional.</p>
+        </div>
+        <button class="btn btn-primary" onclick="goToPreview()"><i class="ph-fill ph-scroll"></i> Preview &
+          Exportar</button>
       </div>
-    </div>
 
-    <!-- Tabs -->
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="personal"><i class="ph-fill ph-users"></i> Dados Pessoais</button>
-      <button class="tab-btn" data-tab="experience"><i class="ph-fill ph-briefcase"></i> Experiências</button>
-      <button class="tab-btn" data-tab="education"><i class="ph-fill ph-graduation-cap"></i> Formação</button>
-      <button class="tab-btn" data-tab="skills"><i class="ph-fill ph-wrench"></i> Habilidades</button>
-      <button class="tab-btn" data-tab="projects"><i class="ph-fill ph-box-arrow-up"></i> Projetos</button>
-      <button class="tab-btn" data-tab="certificates"><i class="ph-fill ph-trophy"></i> Certificados</button>
-    </div>
-
-    <!-- TAB: Dados Pessoais -->
-    <div class="tab-content active" id="tab-personal">
-      <div class="card">
-        <div class="card-header"><h3>Dados Pessoais</h3></div>
+      <!-- Progress -->
+      <div class="card"
+        style="background:linear-gradient(135deg,var(--unicap-50),#eff6ff);border-color:var(--unicap-200);margin-bottom:24px;">
         <div class="card-body">
-          <div class="form-row">
-            <div class="form-group"><label>Nome completo</label><input id="nome"></div>
-            <div class="form-group"><label>Telefone</label><input id="telefone" placeholder="(81) 99999-9999"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <span style="font-weight:600;"><i class="ph-fill ph-chart-bar"></i> Completude do Currículo</span>
+            <span id="progressText" style="font-size:20px;font-weight:700;color:var(--unicap-500)">0%</span>
           </div>
-          <div class="form-row">
-            <div class="form-group"><label>Curso</label><input id="curso" placeholder="Ex: Engenharia de Computação"></div>
-            <div class="form-group"><label>Período</label><input id="periodo" placeholder="Ex: 6º período"></div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width:0%"></div>
           </div>
-          <div class="form-row">
-            <div class="form-group"><label>Cidade</label><input id="cidade" placeholder="Recife"></div>
-            <div class="form-group"><label>Estado</label><select id="estado"><option value="">Selecione</option></select></div>
-          </div>
-          <div class="form-group"><label>Endereço</label><input id="endereco" placeholder="Bairro, Rua"></div>
-          <div class="form-group"><label>Sobre mim (Bio)</label><textarea id="bio" rows="3" placeholder="Conte um pouco sobre você..."></textarea></div>
-          <div class="form-row">
-            <div class="form-group"><label>LinkedIn</label><input id="linkedin" placeholder="linkedin.com/in/seuuser"></div>
-            <div class="form-group"><label>GitHub</label><input id="github" placeholder="github.com/seuuser"></div>
-          </div>
-          <div class="form-group"><label>Portfólio</label><input id="portfolio" placeholder="seusite.com"></div>
-          <div style="text-align:right;margin-top:16px;">
-            <button class="btn btn-primary" id="savePersonalBtn" onclick="savePersonal()"><i class="ph-fill ph-floppy-disk"></i> Salvar Dados Pessoais</button>
           <p id="progressMsg" style="font-size:13px;color:var(--gray-500);margin-top:8px;">Carregando...</p>
         </div>
       </div>
@@ -133,39 +84,47 @@
 
       <!-- TAB: Dados Pessoais -->
       <div class="tab-content active" id="tab-personal">
-  <div class="card">
-    <div class="card-header">
-      <h3>Dados Pessoais</h3>
-    </div>
-    <div class="card-body">
-      <div class="form-row">
-        <div class="form-group"><label>Nome completo</label><input id="nome"></div>
-        <div class="form-group">
-          <label>Telefone</label>
-          <input maxlength="15" id="telefone" placeholder="(81) 99999-9999">
+        <div class="card">
+          <div class="card-header">
+            <h3>Dados Pessoais</h3>
+          </div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group"><label>Nome completo</label><input id="nome"></div>
+              <div <div class="form-group">
+                <label>Telefone</label>
+                <input maxlength="15" id="telefone" placeholder="(81) 99999-9999">
+              </div>
+
+              <script src="telefone-mask.js"></script>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Curso</label><input id="curso" placeholder="Ex: Engenharia de Computação">
+              </div>
+              <div class="form-group"><label>Período</label><input id="periodo" placeholder="Ex: 6º período"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Cidade</label><select id="cidade"> <option value="">Selecione</option></select></div>
+              <div class="form-group"><label>Estado</label><select id="estado">
+                  <option value="">Selecione</option>
+                </select></div>
+            </div>
+            <div class="form-group"><label>Endereço</label><input id="endereco" placeholder="Bairro, Rua"></div>
+            <div class="form-group"><label>Sobre mim (Bio)</label><textarea id="bio" rows="3"
+                placeholder="Conte um pouco sobre você..."></textarea></div>
+            <div class="form-row">
+              <div class="form-group"><label>LinkedIn</label><input id="linkedin" placeholder="linkedin.com/in/seuuser">
+              </div>
+              <div class="form-group"><label>GitHub</label><input id="github" placeholder="github.com/seuuser"></div>
+            </div>
+            <div class="form-group"><label>Portfólio</label><input id="portfolio" placeholder="seusite.com"></div>
+            <div style="text-align:right;margin-top:16px;">
+              <button class="btn btn-primary" id="savePersonalBtn" onclick="savePersonal()"><i
+                  class="ph-fill ph-floppy-disk"></i> Salvar Dados Pessoais</button>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="form-row">
-        <div class="form-group"><label>Curso</label><input id="curso" placeholder="Ex: Engenharia de Computação"></div>
-        <div class="form-group"><label>Período</label><input id="periodo" placeholder="Ex: 6º período"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Cidade</label><select id="cidade"><option value="">Selecione o estado primeiro</option></select></div>
-        <div class="form-group"><label>Estado</label><select id="estado"><option value="">Selecione</option></select></div>
-      </div>
-      <div class="form-group"><label>Endereço</label><input id="endereco" placeholder="Bairro, Rua"></div>
-      <div class="form-group"><label>Sobre mim (Bio)</label><textarea id="bio" rows="3" placeholder="Conte um pouco sobre você..."></textarea></div>
-      <div class="form-row">
-        <div class="form-group"><label>LinkedIn</label><input id="linkedin" placeholder="linkedin.com/in/seuuser"></div>
-        <div class="form-group"><label>GitHub</label><input id="github" placeholder="github.com/seuuser"></div>
-      </div>
-      <div class="form-group"><label>Portfólio</label><input id="portfolio" placeholder="seusite.com"></div>
-      <div style="text-align:right;margin-top:16px;">
-        <button class="btn btn-primary" id="savePersonalBtn" onclick="savePersonal()"><i class="ph-fill ph-floppy-disk"></i> Salvar Dados Pessoais</button>
-      </div>
-    </div>
-  </div>
-</div>
 
       <!-- TAB: Experiências -->
       <div class="tab-content" id="tab-experience">
@@ -232,89 +191,20 @@
           <div class="card-body">
             <div id="edit-certificado" class="hidden"></div>
             <div id="list-certificado"></div>
-=======
->>>>>>> 9a7e2dfeaa8e8f3a4723c1c4d3700c8ec98c10e5
           </div>
         </div>
       </div>
     </div>
 
-    <!-- TAB: Experiências -->
-    <div class="tab-content" id="tab-experience">
-      <div class="card">
-        <div class="card-header">
-          <h3>Experiências Profissionais</h3>
-          <button class="btn btn-primary btn-sm" onclick="showEditForm('experiencia')">+ Adicionar</button>
-        </div>
-        <div class="card-body">
-          <div id="edit-experiencia" class="hidden"></div>
-          <div id="list-experiencia"></div>
-        </div>
-      </div>
-    </div>
+    <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
 
-    <!-- TAB: Formação -->
-    <div class="tab-content" id="tab-education">
-      <div class="card">
-        <div class="card-header">
-          <h3>Formação Acadêmica</h3>
-          <button class="btn btn-primary btn-sm" onclick="showEditForm('formacao')">+ Adicionar</button>
-        </div>
-        <div class="card-body">
-          <div id="edit-formacao" class="hidden"></div>
-          <div id="list-formacao"></div>
-        </div>
-      </div>
-    </div>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script>initDashboard();</script>
+  </body>
 
-    <!-- TAB: Habilidades -->
-    <div class="tab-content" id="tab-skills">
-      <div class="card">
-        <div class="card-header"><h3>Habilidades</h3></div>
-        <div class="card-body">
-          <div id="edit-habilidade" class="hidden"></div>
-          <div id="list-habilidade"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: Projetos -->
-    <div class="tab-content" id="tab-projects">
-      <div class="card">
-        <div class="card-header">
-          <h3>Projetos</h3>
-          <button class="btn btn-primary btn-sm" onclick="showEditForm('projeto')">+ Adicionar</button>
-        </div>
-        <div class="card-body">
-          <div id="edit-projeto" class="hidden"></div>
-          <div id="list-projeto"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: Certificados -->
-    <div class="tab-content" id="tab-certificates">
-      <div class="card">
-        <div class="card-header">
-          <h3>Certificações</h3>
-          <button class="btn btn-primary btn-sm" onclick="showEditForm('certificado')">+ Adicionar</button>
-        </div>
-        <div class="card-body">
-          <div id="edit-certificado" class="hidden"></div>
-          <div id="list-certificado"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
-
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <script src="js/config.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/dashboard.js"></script>
-  <script>initDashboard();</script>
-</body>
 </html>

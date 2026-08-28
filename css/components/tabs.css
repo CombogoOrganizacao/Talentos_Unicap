@@ -3,13 +3,39 @@
    Navegação por abas (usada no dashboard) e o
    controle de exibição do conteúdo de cada aba.
    ============================================ */
-.tabs { display: flex; border-bottom: 2px solid var(--gray-200); overflow-x: auto; margin-bottom: 24px; }
+.tabs {
+  display: flex;
+  border-bottom: 2px solid var(--gray-200);
+  overflow-x: auto;
+  margin-bottom: 24px;
+}
+
 .tab-btn {
-  padding: 10px 20px; font-size: 14px; font-weight: 500; background: none; border: none;
-  border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; color: var(--gray-500);
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--gray-500);
   transition: all 0.2s;
 }
-.tab-btn.active { color: var(--unicap-600); border-bottom-color: var(--unicap-500); }
-.tab-btn:hover { color: var(--gray-700); }
-.tab-content { display: none; }
-.tab-content.active { display: block; }
+
+.tab-btn.active {
+  color: var(--unicap-600);
+  border-bottom-color: var(--unicap-500);
+}
+
+.tab-btn:hover {
+  color: var(--gray-700);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}

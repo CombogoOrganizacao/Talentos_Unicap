@@ -5,9 +5,21 @@
    à direita.
    ============================================ */
 .list-item {
-  padding: 16px; border: 1px solid var(--gray-200); border-radius: 8px;
-  margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 16px;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   transition: background 0.15s;
 }
-.list-item:hover { background: var(--gray-50); }
-.list-item-actions { display: flex; gap: 4px; }
+
+.list-item:hover {
+  background: var(--gray-50);
+}
+
+.list-item-actions {
+  display: flex;
+  gap: 4px;
+}

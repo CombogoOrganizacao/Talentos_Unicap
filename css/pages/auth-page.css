@@ -3,12 +3,63 @@
    Telas de login e cadastro: card centralizado,
    divisor "ou" e mensagem de erro.
    ============================================ */
-.auth-page { min-height: calc(100vh - 60px); display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
-.auth-card { max-width: 440px; width: 100%; }
-.auth-card .card-body { padding: 32px; }
-.auth-card h2 { text-align: center; margin-bottom: 8px; }
-.auth-card .subtitle { text-align: center; color: var(--gray-500); margin-bottom: 24px; }
-.auth-card .divider { text-align: center; margin: 20px 0; position: relative; }
-.auth-card .divider::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid var(--gray-200); }
-.auth-card .divider span { background: white; padding: 0 12px; position: relative; color: var(--gray-400); font-size: 12px; text-transform: uppercase; }
-.auth-card .error-msg { background: #fef2f2; color: var(--red-500); padding: 10px 14px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; }
+.auth-page {
+   min-height: calc(100vh - 60px);
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   padding: 40px 20px;
+}
+
+.auth-card {
+   max-width: 440px;
+   width: 100%;
+}
+
+.auth-card .card-body {
+   padding: 32px;
+}
+
+.auth-card h2 {
+   text-align: center;
+   margin-bottom: 8px;
+}
+
+.auth-card .subtitle {
+   text-align: center;
+   color: var(--gray-500);
+   margin-bottom: 24px;
+}
+
+.auth-card .divider {
+   text-align: center;
+   margin: 20px 0;
+   position: relative;
+}
+
+.auth-card .divider::before {
+   content: '';
+   position: absolute;
+   left: 0;
+   right: 0;
+   top: 50%;
+   border-top: 1px solid var(--gray-200);
+}
+
+.auth-card .divider span {
+   background: white;
+   padding: 0 12px;
+   position: relative;
+   color: var(--gray-400);
+   font-size: 12px;
+   text-transform: uppercase;
+}
+
+.auth-card .error-msg {
+   background: #fef2f2;
+   color: var(--red-500);
+   padding: 10px 14px;
+   border-radius: 8px;
+   font-size: 14px;
+   margin-bottom: 16px;
+}

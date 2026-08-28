@@ -6,41 +6,41 @@
    variáveis (var(--...)).
    ============================================ */
 :root {
-  /* CORES DA MARCA (vinho/bordô UNICAP) */
-  --unicap-50:  #fdf2f4;
-  --unicap-100: #f8e1e6;
-  --unicap-200: #D97706;
-  --unicap-300: #dc8f9f;
-  --unicap-400: #b84d67;
-  --unicap-500: #7A001E;
-  --unicap-600: #6B001B;
-  --unicap-700: #570016;
+   /* CORES DA MARCA (vinho/bordô UNICAP) */
+   --unicap-50: #fdf2f4;
+   --unicap-100: #f8e1e6;
+   --unicap-200: #D97706;
+   --unicap-300: #dc8f9f;
+   --unicap-400: #b84d67;
+   --unicap-500: #7A001E;
+   --unicap-600: #6B001B;
+   --unicap-700: #570016;
 
-  /* NEUTROS */
-  --gray-50:  #F4F4F5;
-  --gray-100: #E4E4E7;
-  --gray-200: #D4D4D8;
-  --gray-300: #A1A1AA;
-  --gray-400: #A1A1AA;
-  --gray-500: #71717A;
-  --gray-600: #52525B;
-  --gray-700: #3F3F46;
-  --gray-800: #27272A;
-  --gray-900: #18181B;
+   /* NEUTROS */
+   --gray-50: #F4F4F5;
+   --gray-100: #E4E4E7;
+   --gray-200: #D4D4D8;
+   --gray-300: #A1A1AA;
+   --gray-400: #A1A1AA;
+   --gray-500: #71717A;
+   --gray-600: #52525B;
+   --gray-700: #3F3F46;
+   --gray-800: #27272A;
+   --gray-900: #18181B;
 
-  /* BRANCO */
-  --white: #FFFFFF;
+   /* BRANCO */
+   --white: #FFFFFF;
 
-  /* VERMELHO / ERRO */
-  --red-500: #B91C1C;
+   /* VERMELHO / ERRO */
+   --red-500: #B91C1C;
 
-  /* VERDE / SUCESSO */
-  --green-100: #DCFCE7;
-  --green-500: #16A34A;
-  --green-700: #15803D;
+   /* VERDE / SUCESSO */
+   --green-100: #DCFCE7;
+   --green-500: #16A34A;
+   --green-700: #15803D;
 
-  /* DOURADO / LARANJA QUEIMADO
+   /* DOURADO / LARANJA QUEIMADO
      Usado como cor de apoio/acento */
-  --gold-400: #D97706;
-  --gold-500: #B45309;
+   --gold-400: #D97706;
+   --gold-500: #B45309;
 }

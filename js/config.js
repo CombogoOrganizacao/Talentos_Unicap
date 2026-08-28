@@ -4,9 +4,9 @@
 const CONFIG = {
   // URL do Google Apps Script (depois de publicar como app web)
   API_URL: 'https://script.google.com/macros/s/SUA_URL_AQUI/exec',
-  
+
   // Configuração do Firebase
-   firebase: {
+  firebase: {
     apiKey: "SUA_API_KEY_AQUI",
     authDomain: "seu-projeto.firebaseapp.com",
     projectId: "seu-projeto",
@@ -14,17 +14,58 @@ const CONFIG = {
     messagingSenderId: "123456789",
     appId: "1:123456789:web:abcdef"
   },
-  
+
   // Estados brasileiros
   states: [
-    'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA',
-    'MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN',
-    'RS','RO','RR','SC','SP','SE','TO'
+    'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
+    'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
+    'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
   ],
-  
+
   skillCategories: ['Técnica', 'Idioma', 'Soft Skill', 'Ferramenta'],
-  skillLevels: ['Básico', 'Intermediário', 'Avançado', 'Expert']
+  skillLevels: ['Básico', 'Intermediário', 'Avançado', 'Expert'],
+
+
+// Cursos de Graduação - UNICAP
+cursos: [
+    'Administração', 'Arquitetura e Urbanismo', 'Banco de Dados - IA e Ciências de Dados',
+    'Ciência da Computação', 'Ciência Política', 'Ciências Biológicas - Licenciatura',
+    'Ciências Biológicas - Bacharelado', 'Ciências Contábeis', 'Ciências da Religião',
+    'Ciências Econômicas', 'Direito', 'Enfermagem', 'Engenharia Ambiental',
+    'Engenharia Civil', 'Engenharia da Complexidade', 'Engenharia de Produção',
+    'Engenharia Química', 'Farmácia', 'Filosofia - Licenciatura', 'Filosofia - Bacharelado',
+    'Física', 'Fisioterapia', 'Fonoaudiologia', 'Fotografia', 'Gestão de RH',
+    'História', 'Inteligência Artificial', 'Jogos Digitais', 'Jornalismo',
+    'Letras Português', 'Letras Português e Espanhol', 'Letras Português e Inglês',
+    'Logística', 'Matemática', 'Medicina', 'Mídias Sociais Digitais', 'Nutrição',
+    'Pedagogia', 'Psicologia', 'Publicidade e Propaganda', 'Química',
+    'Serviço Social', 'Sistemas para Internet', 'Teologia'
+  ],
+
+  // Pós-Graduação - Especialização (Lato Sensu)
+  especializacoes: [
+    'As Narrativas Contemporâneas da Fotografia e do Audiovisual',
+    'Ciência Política: Teoria e Prática no Brasil', 'Educação Especial', 'Gerontologia',
+    'Gestão Eclesial', 'Gestão Escolar e Coordenação Pedagógica',
+    'História de Pernambuco: Memória, Território e Práticas de Ensino',
+    'Juventudes: Experiência, Acompanhamento e Projeto de Vida',
+    'Psicanálise: Fundamentos Teóricos, Matrizes e Dispositivos Clínicos',
+    'Psicopedagogia', 'Reprodução Humana Assistida'
+  ],
+
+  // Pós-Graduação - Mestrado (Stricto Sensu)
+  mestrados: [
+    'Ciências da Linguagem', 'Ciências da Religião', 'Direito', 'Filosofia',
+    'História (Profissional)', 'Indústrias Criativas (Profissional)',
+    'Psicologia Clínica', 'Teologia'
+  ],
+
+  // Pós-Graduação - Doutorado (Stricto Sensu)
+  doutorados: [
+    'Ciências da Linguagem', 'Ciências da Religião', 'Direito', 'Psicologia Clínica'
+  ]
 };
+
 const MAPA_GRAU_PARA_CHAVE = {
   'Graduação': 'cursos',
   'Especialização': 'especializacoes',
@@ -52,33 +93,3 @@ function atualizarCursosPorGrau(key, grau) {
   const select = document.getElementById(`${key}_f_area_estudo`);
   if (select) select.innerHTML = gerarOpcoesCurso(grau);
 }
-
-
-// Busca as cidades de um estado via API do IBGE
-async function buscarCidadesPorEstado(uf) {
-  try {
-    const res = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
-    if (!res.ok) throw new Error('Falha ao buscar cidades');
-    const data = await res.json();
-    // Ordena por nome e retorna só os nomes
-    return data.map(cidade => cidade.nome).sort((a, b) => a.localeCompare(b, 'pt-BR'));
-  } catch (erro) {
-    console.error('Erro ao buscar cidades do IBGE:', erro);
-    return [];
-  }
-}
-
-// Cache simples em memória para não repetir a chamada se o usuário trocar de estado e voltar
-const cacheCidades = {};
-
-async function buscarCidadesComCache(uf) {
-  if (cacheCidades[uf]) return cacheCidades[uf];
-  const cidades = await buscarCidadesPorEstado(uf);
-  cacheCidades[uf] = cidades;
-  return cidades;
-}
-=======
-  skillCategories: ['Técnica', 'Idioma', 'Soft Skill', 'Ferramenta'],
-  skillLevels: ['Básico', 'Intermediário', 'Avançado', 'Expert']
-};
->>>>>>> 9a7e2dfeaa8e8f3a4723c1c4d3700c8ec98c10e5

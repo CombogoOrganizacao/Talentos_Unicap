@@ -80,12 +80,16 @@ function renderCVPreview(profile) {
   }
 
   // Certificados
-  if (profile.certificados?.length) {
+     if (profile.certificados?.length) {
     html += `<div class="cv-section"><h2>CERTIFICAÇÕES</h2>`;
     profile.certificados.forEach(c => {
       html += `<div class="item">
-        <h3>${c.nome}${c.emissor ? ` — ${c.emissor}` : ''}</h3>
-        <div class="date">${c.data_emissao ? formatDate(c.data_emissao) : ''}</div>
+        <h3>${c.nome}${c.emissor ? ` — ${c.emissor}` : ''}${c.url ? ` <a href="${c.url}" target="_blank" style="font-size:12px">↗</a>` : ''}</h3>
+        <div class="date">
+          ${c.data_emissao ? formatDate(c.data_emissao) : ''}
+          ${isTrue(c.sem_validade) ? ' <span class="badge badge-green">Sem validade</span>' : (c.data_validade ? ` — Válido até ${formatDate(c.data_validade)}` : '')}
+        </div>
+        ${c.carga_horaria ? `<div class="desc">${c.carga_horaria} horas</div>` : ''}
       </div>`;
     });
     html += `</div>`;
