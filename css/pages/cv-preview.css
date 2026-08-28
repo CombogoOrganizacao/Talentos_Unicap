@@ -15,6 +15,23 @@
    border-radius: 12px 12px 0 0;
 }
 
+.cv-header-top {
+   display: flex;
+   align-items: center;
+   gap: 16px;
+}
+
+.cv-logo {
+   width: 40px;
+   height: 40px;
+   object-fit: contain;
+   flex-shrink: 0;
+}
+
+.cv-header-text {
+   min-width: 0;
+}
+
 .cv-header h1 {
    font-size: 28px;
    margin-bottom: 4px;
