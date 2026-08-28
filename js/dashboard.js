@@ -63,17 +63,52 @@ function fillPersonalForm() {
   UI.setVal('telefone', profile.telefone);
   UI.setVal('curso', profile.curso);
   UI.setVal('periodo', profile.periodo);
-  UI.setVal('cidade', profile.cidade);
-  UI.setVal('estado', profile.estado);
   UI.setVal('endereco', profile.endereco);
   UI.setVal('bio', profile.bio);
   UI.setVal('linkedin', profile.linkedin);
   UI.setVal('github', profile.github);
   UI.setVal('portfolio', profile.portfolio);
-  // Populate states
+
+  // Popula estados
   const stateSelect = document.getElementById('estado');
   stateSelect.innerHTML = '<option value="">Selecione</option>' +
     CONFIG.states.map(s => `<option value="${s}" ${profile.estado === s ? 'selected' : ''}>${s}</option>`).join('');
+
+  // Liga o listener que atualiza as cidades quando o estado muda
+  stateSelect.onchange = () => atualizarCidadesPorEstado(stateSelect.value);
+
+  // Se já tem estado salvo, carrega as cidades e pré-seleciona a cidade salva
+  if (profile.estado) {
+    atualizarCidadesPorEstado(profile.estado, profile.cidade);
+  } else {
+    const citySelect = document.getElementById('cidade');
+    if (citySelect) citySelect.innerHTML = '<option value="">Selecione o estado primeiro</option>';
+  }
+}
+
+async function atualizarCidadesPorEstado(uf, cidadeSelecionada = '') {
+  const citySelect = document.getElementById('cidade');
+  if (!citySelect) return;
+
+  if (!uf) {
+    citySelect.innerHTML = '<option value="">Selecione o estado primeiro</option>';
+    return;
+  }
+
+  citySelect.innerHTML = '<option value="">Carregando cidades...</option>';
+  citySelect.disabled = true;
+
+  const cidades = await buscarCidadesPorEstado(uf);
+
+  if (cidades.length === 0) {
+    citySelect.innerHTML = '<option value="">Erro ao carregar. Tente novamente.</option>';
+    citySelect.disabled = false;
+    return;
+  }
+
+  citySelect.innerHTML = '<option value="">Selecione a cidade</option>' +
+    cidades.map(c => `<option value="${c}" ${c === cidadeSelecionada ? 'selected' : ''}>${c}</option>`).join('');
+  citySelect.disabled = false;
 }
 
 async function savePersonal() {
