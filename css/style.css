@@ -143,6 +143,16 @@ a:hover {
   background: var(--gray-50);
 }
 
+.btn-outline {
+  background: white;
+  color: var(--unicap-500);
+  border: 1px solid var(--unicap-500);
+}
+
+.btn-outline:hover {
+  background: var(--unicap-50);
+}
+
 .btn-danger {
   background: var(--red-500);
   color: white;
@@ -212,8 +222,19 @@ a:hover {
   padding: 10px 12px;
   border: 1px solid var(--gray-300);
   border-radius: 8px;
+  font-family: inherit;
   font-size: 14px;
+  color: var(--gray-900);
   transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.form-group textarea {
+  resize: vertical;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .form-group input:focus,
@@ -253,6 +274,21 @@ a:hover {
 .badge-green {
   background: var(--green-100);
   color: var(--green-700);
+}
+
+.badge-gray {
+  background: var(--gray-100);
+  color: var(--gray-600);
+}
+
+.badge-orange {
+  background: #fef3e2;
+  color: var(--gold-500);
+}
+
+.badge-red {
+  background: #fef2f2;
+  color: var(--red-500);
 }
 
 /* TABS */
@@ -636,10 +672,6 @@ a:hover {
 }
 
 /* CV PREVIEW */
-.cv-preview {
-  width: 100%;
-}
-
 .cv-header {
   background: var(--unicap-600);
   color: white;
@@ -683,8 +715,43 @@ a:hover {
   color: var(--unicap-100);
 }
 
+.cv-preview {
+  width: 100%;
+  overflow: hidden;
+}
+
+.cv-header,
+.cv-section {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.cv-header .contacts span {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+}
+
 .cv-section {
   padding: 24px 32px;
+}
+
+.cv-section p {
+  color: var(--gray-600);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.cv-section .item .desc {
+  color: var(--gray-600);
+  font-size: 14px;
+  margin-top: 4px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
 }
 
 .cv-section h2 {
@@ -712,12 +779,6 @@ a:hover {
 .cv-section .item .date {
   color: var(--gray-500);
   font-size: 13px;
-}
-
-.cv-section .item .desc {
-  color: var(--gray-600);
-  font-size: 14px;
-  margin-top: 4px;
 }
 
 .cv-section .skill-category {
@@ -797,4 +858,381 @@ a:hover {
 
 .justify-between {
   justify-content: space-between;
+}
+/* ============================================
+   PORTAL DE VAGAS
+   Estilos específicos das páginas de cadastro,
+   listagem e divulgação de vagas no Instagram.
+   Usa os mesmos tokens de cor do restante do site.
+   ============================================ */
+
+.page-intro {
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--unicap-500);
+  margin: 0 0 10px;
+}
+
+.page-intro-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.page-desc {
+  color: var(--gray-500);
+  max-width: 60ch;
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-top: 4px;
+  display: block;
+}
+
+.form-status {
+  margin: 14px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+  min-height: 18px;
+}
+.form-status.is-success { color: var(--green-700); }
+.form-status.is-error { color: var(--red-500); }
+
+/* ----- Toolbar (busca + filtros) da listagem ----- */
+.toolbar {
+  display: flex;
+  gap: 12px;
+  margin: 8px 0 20px;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  padding: 0 14px;
+  color: var(--gray-500);
+}
+.search-box input {
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 10px 0;
+  flex: 1;
+  color: var(--gray-900);
+}
+.search-box input:focus { outline: none; }
+.search-box:focus-within { border-color: var(--unicap-500); box-shadow: 0 0 0 3px rgba(122,0,30,.1); }
+
+.toolbar-filters { display: flex; gap: 10px; flex-wrap: wrap; }
+.toolbar-filters select {
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--gray-900);
+  background: white;
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  padding: 10px 34px 10px 12px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2371717A' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  cursor: pointer;
+}
+.toolbar-filters select:focus { outline: none; border-color: var(--unicap-500); }
+
+.tab-btn .count {
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  border-radius: 9999px;
+  padding: 1px 7px;
+  margin-left: 4px;
+}
+.tab-btn.active .count { background: var(--unicap-100); color: var(--unicap-700); }
+
+/* ----- Grid de vagas ----- */
+.vagas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.vagas-grid[hidden] {
+  display: none;
+}
+
+.vaga-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.vaga-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.vaga-menu { position: relative; }
+
+.icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--gray-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.icon-btn:hover { background: var(--gray-50); color: var(--gray-900); }
+
+.vaga-dropdown {
+  position: absolute;
+  top: 34px;
+  right: 0;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.14);
+  min-width: 190px;
+  padding: 6px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+}
+.vaga-dropdown[hidden] {
+  display: none;
+}
+.vaga-dropdown button {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  color: var(--gray-900);
+}
+.vaga-dropdown button:hover { background: var(--gray-50); }
+.vaga-dropdown .danger { color: var(--red-500) !important; }
+.vaga-dropdown .danger:hover { background: #fef2f2 !important; }
+
+.vaga-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  line-height: 1.3;
+}
+.vaga-card .empresa {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--unicap-500);
+  margin: 0 0 14px;
+}
+.vaga-card .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-bottom: 10px;
+}
+.vaga-card .prazo {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  margin: 0 0 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--gray-200);
+}
+.vaga-card-footer { margin-top: auto; display: flex; }
+.vaga-card-footer .btn { flex: 1; justify-content: center; }
+
+.empty-state {
+  text-align: center;
+  padding: 70px 20px;
+  background: white;
+  border: 1px dashed var(--gray-300);
+  border-radius: 12px;
+}
+.empty-state .icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--unicap-50);
+  color: var(--unicap-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+  font-size: 26px;
+}
+.empty-state h2 { font-size: 17px; margin: 0 0 8px; }
+.empty-state p { font-size: 13.5px; color: var(--gray-500); margin: 0 0 20px; }
+
+/* ----- Instagram export card ----- */
+.export-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.panel-header h3 { margin: 0; }
+
+.format-pill {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--unicap-500);
+  background: var(--unicap-50);
+  border-radius: 9999px;
+  padding: 4px 10px;
+}
+
+.post-stage { display: flex; justify-content: center; margin: 14px 0 16px; }
+
+.post-card {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 16px;
+  background: linear-gradient(160deg, var(--unicap-500) 0%, var(--unicap-700) 100%);
+  color: #fff;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(87,0,22,.28);
+  transition: aspect-ratio .2s ease;
+}
+.post-card[data-format="story"] { aspect-ratio: 9 / 16; }
+
+.post-card-top { display: flex; align-items: center; justify-content: space-between; }
+.post-card-brand { display: flex; align-items: center; gap: 8px; }
+.post-card-brand-text { display: flex; flex-direction: column; line-height: 1.2; }
+.post-card-brand-text span { font-size: 12px; font-weight: 700; }
+.post-card-brand-text small { font-size: 8px; letter-spacing: .06em; color: var(--gold-400); font-weight: 700; }
+
+.post-card-pill {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .03em;
+  background: var(--gold-400);
+  color: var(--unicap-700);
+  padding: 4px 10px;
+  border-radius: 9999px;
+}
+
+.post-card h4 { font-size: 22px; line-height: 1.25; font-weight: 700; margin: 10px 0 6px; }
+.post-card .empresa { font-size: 12.5px; font-weight: 600; color: var(--gold-400); margin: 0 0 12px; }
+.post-card hr { border: none; border-top: 1px solid rgba(255,255,255,.22); margin: 0 0 12px; }
+.post-card .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 11.5px; color: rgba(255,255,255,.92); margin-bottom: 8px; }
+.post-card .prazo { font-size: 11px; color: rgba(255,255,255,.7); margin: 0; }
+
+.post-card-cta {
+  background: var(--gold-400);
+  color: var(--unicap-700);
+  border-radius: 9999px;
+  padding: 10px 16px;
+  font-size: 11.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.format-toggle { display: flex; align-items: center; gap: 10px; }
+.format-toggle-label { font-size: 12.5px; font-weight: 600; color: var(--gray-500); }
+.format-toggle-options { display: flex; background: var(--gray-100); border-radius: 9999px; padding: 3px; gap: 2px; }
+.format-btn {
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gray-500);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+.format-btn.is-active { background: white; color: var(--unicap-500); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+
+.legenda-box {
+  width: 100%;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--gray-900);
+  background: var(--gray-50);
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  padding: 14px;
+  resize: vertical;
+}
+.legenda-box:focus { outline: none; border-color: var(--unicap-500); box-shadow: 0 0 0 3px rgba(122,0,30,.1); background: white; }
+
+.hashtags { margin-top: 20px; }
+.hashtags-label { display: block; font-size: 12.5px; font-weight: 700; color: var(--gray-900); margin-bottom: 10px; }
+.hashtags-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.hashtag-chip {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--unicap-600);
+  background: var(--unicap-50);
+  border: 1px solid var(--unicap-100);
+  border-radius: 9999px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.hashtag-chip:hover { background: var(--unicap-100); }
+.hashtag-chip.is-copied { background: var(--green-500); border-color: var(--green-500); color: #fff; }
+
+.btn.is-success { background: var(--green-500); border-color: var(--green-500); color: #fff; }
+.btn-block { width: 100%; margin-top: 14px; justify-content: center; }
+
+/* ----- Responsive ----- */
+@media (max-width: 860px) {
+  .export-layout { grid-template-columns: 1fr; }
+  .post-stage { max-width: 380px; margin-left: auto; margin-right: auto; }
+}
+
+@media (max-width: 720px) {
+  .page-intro-row { flex-direction: column; align-items: stretch; }
+  .page-intro-row .btn { align-self: flex-start; }
+  .vagas-grid { grid-template-columns: 1fr; }
 }

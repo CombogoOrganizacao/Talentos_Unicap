@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Divulgar no Instagram - TalentoUNICAP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <img src="img/asabranca_Unicap.png" width="40px" alt="">
+        Talento<span>UNICAP</span>
+      </a>
+      <div class="nav-links">
+        <a href="lista-vagas.html" class="btn btn-secondary btn-sm">
+          <i class="ph-fill ph-briefcase"></i> Painel de Vagas
+        </a>
+        <button class="btn btn-secondary btn-sm" onclick="window.location.href='index.html'">
+          <i class="ph-fill ph-sign-out"></i> Sair
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container" style="padding-top:32px;padding-bottom:64px;">
+
+    <div class="page-intro">
+      <p class="eyebrow" style="color:var(--green-700);">
+        <i class="ph-fill ph-check-circle"></i> Vaga publicada com sucesso!
+      </p>
+      <h1 style="font-size:28px;margin-bottom:8px;">Divulgar no Instagram</h1>
+      <p class="page-desc">Aumente o alcance da sua oportunidade gerando um card personalizado com a identidade da
+        UNICAP e copiando a legenda automática.</p>
+    </div>
+
+    <div class="export-layout">
+
+      <!-- Coluna esquerda: preview do card -->
+      <div class="card">
+        <div class="card-body">
+          <div class="panel-header">
+            <h3>Visualização do Post</h3>
+            <span class="format-pill" id="formatTag">Feed 1080×1080</span>
+          </div>
+
+          <div class="post-stage">
+            <div class="post-card" id="postCard" data-format="feed">
+              <div class="post-card-top">
+                <div class="post-card-brand">
+                  <img src="img/asabranca_Unicap.png" width="26px" alt="">
+                  <div class="post-card-brand-text">
+                    <span>Talentos UNICAP</span>
+                    <small>VAGAS EXCLUSIVAS</small>
+                  </div>
+                </div>
+                <span class="post-card-pill" id="postTipoPill">ESTÁGIO</span>
+              </div>
+
+              <div>
+                <h4 id="postTitulo">Estágio em Desenvolvimento Frontend React</h4>
+                <p class="empresa" id="postEmpresa">Departamento de TI - UNICAP</p>
+                <hr>
+                <div class="meta">
+                  <span id="postCarga">⏱ 30h/semana</span>
+                  <span id="postSalario">$ R$ 1.500,00</span>
+                  <span id="postLocal">📍 Híbrido</span>
+                </div>
+                <p class="prazo" id="postPrazo">Seleção até 30/10/2026</p>
+              </div>
+
+              <div class="post-card-cta">
+                <span id="postCtaLabel">CANDIDATE-SE! VAGAS.UNICAP.BR</span>
+                <span>→</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="format-toggle">
+            <span class="format-toggle-label">Formato:</span>
+            <div class="format-toggle-options">
+              <button type="button" class="format-btn is-active" data-format="feed">Feed (1:1)</button>
+              <button type="button" class="format-btn" data-format="story">Story (9:16)</button>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-block" id="btnBaixar" type="button">
+            <i class="ph-fill ph-download-simple"></i> Baixar Card em Alta Qualidade (JPEG)
+          </button>
+        </div>
+      </div>
+
+      <!-- Coluna direita: legenda -->
+      <div class="card">
+        <div class="card-body">
+          <div class="panel-header">
+            <h3>Legenda para Instagram</h3>
+          </div>
+          <p class="page-desc" style="margin-bottom:14px;font-size:13.5px;">Copie o texto estruturado abaixo e
+            publique direto na descrição do seu post para atrair mais candidatos.</p>
+
+          <textarea id="legendaTexto" class="legenda-box" rows="16"></textarea>
+
+          <button class="btn btn-outline btn-block" id="btnCopiarLegenda" type="button">
+            <i class="ph-fill ph-copy"></i> Copiar Legenda
+          </button>
+
+          <div class="hashtags">
+            <span class="hashtags-label">Hashtags Sugeridas</span>
+            <div class="hashtags-list" id="hashtagList"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="text-align:center;margin-top:32px;">
+      <a href="lista-vagas.html" class="btn btn-secondary">
+        <i class="ph-fill ph-arrow-left"></i> Voltar para Minhas Vagas
+      </a>
+    </div>
+  </div>
+
+  <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
+
+  <!-- Canvas oculto usado para gerar o JPEG do card -->
+  <canvas id="exportCanvas" style="display:none;"></canvas>
+
+  <script src="js/exportacao-instagram.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastrar Nova Vaga - TalentoUNICAP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <img src="img/asabranca_Unicap.png" width="40px" alt="">
+        Talento<span>UNICAP</span>
+      </a>
+      <div class="nav-links">
+        <a href="lista-vagas.html" class="btn btn-secondary btn-sm">
+          <i class="ph-fill ph-briefcase"></i> Painel de Vagas
+        </a>
+        <button class="btn btn-secondary btn-sm" onclick="window.location.href='index.html'">
+          <i class="ph-fill ph-sign-out"></i> Sair
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container" style="padding-top:32px;padding-bottom:64px;max-width:800px;">
+
+    <div class="page-intro">
+      <p class="eyebrow"><i class="ph-fill ph-briefcase"></i> Portal de Vagas</p>
+      <h1 style="font-size:28px;margin-bottom:8px;">Cadastrar Nova Vaga</h1>
+      <p class="page-desc">Publique oportunidades de estágio, emprego ou trainee direcionadas exclusivamente aos
+        estudantes e egressos da UNICAP.</p>
+    </div>
+
+    <form id="formVaga" novalidate>
+
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-header">
+          <h3>1. Informações Básicas</h3>
+        </div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Título da vaga</label>
+              <input type="text" id="titulo" name="titulo" placeholder="Ex: Estágio em Desenvolvimento Frontend React" required>
+            </div>
+            <div class="form-group">
+              <label>Nome da empresa/setor</label>
+              <input type="text" id="empresa" name="empresa" placeholder="Ex: Departamento de TI - UNICAP" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Área/Curso relacionado</label>
+              <select id="area" name="area" required>
+                <option value="">Selecione uma área</option>
+                <option>Sistemas para Internet / Ciência da Computação</option>
+                <option>Administração</option>
+                <option>Design</option>
+                <option>Engenharia Civil</option>
+                <option>Direito</option>
+                <option>Psicologia</option>
+                <option>Marketing</option>
+                <option>Outra</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Carga horária</label>
+              <select id="carga" name="carga" required>
+                <option value="">Selecione</option>
+                <option>20h semanais</option>
+                <option>25h semanais</option>
+                <option>30h semanais</option>
+                <option>40h semanais</option>
+                <option>44h semanais</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-header">
+          <h3>2. Detalhes da Oportunidade</h3>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label>Descrição da vaga</label>
+            <textarea id="descricao" name="descricao" rows="3"
+              placeholder="Atuar no desenvolvimento de novas interfaces responsivas em React; integrar APIs RESTful; trabalhar em colaboração direta com o time de design UI/UX da universidade."
+              required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Requisitos</label>
+            <textarea id="requisitos" name="requisitos" rows="4"
+              placeholder="• Estar regularmente matriculado em curso de TI ou Design na UNICAP&#10;• Conhecimentos sólidos em ReactJS e versionamento Git&#10;• Boa comunicação e vontade de aprender metodologias ágeis."
+              required></textarea>
+            <span class="hint">Use uma linha por item, iniciando com "•" para formar uma lista.</span>
+          </div>
+          <div class="form-group">
+            <label>Desejável/Diferenciais</label>
+            <textarea id="desejavel" name="desejavel" rows="3"
+              placeholder="Competências ou vivências adicionais que se destacam (Ex: conhecimento em Tailwind, NextJS ou participação em projetos de extensão)..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-header">
+          <h3>3. Condições &amp; Prazos</h3>
+        </div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Remuneração / Bolsa Auxílio</label>
+              <input type="text" id="remuneracao" name="remuneracao" placeholder="Ex: R$ 1.500,00 + Vale Transporte" required>
+            </div>
+            <div class="form-group">
+              <label>Local de trabalho</label>
+              <select id="local" name="local" required>
+                <option value="">Selecione</option>
+                <option>Presencial (Recife - PE)</option>
+                <option>Híbrido (Recife - PE)</option>
+                <option>Remoto</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row" style="grid-template-columns:1fr 1fr 1fr;">
+            <div class="form-group">
+              <label>Período de Seleção (Início)</label>
+              <input type="date" id="periodoInicio" name="periodoInicio" required>
+            </div>
+            <div class="form-group">
+              <label>Período de Seleção (Fim)</label>
+              <input type="date" id="periodoFim" name="periodoFim" required>
+            </div>
+            <div class="form-group">
+              <label>Status inicial da vaga</label>
+              <select id="status" name="status" required>
+                <option>Ativa</option>
+                <option>Rascunho</option>
+                <option>Pausada</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Contato ou link para candidatura</label>
+            <input type="text" id="contato" name="contato" placeholder="carreiras@unicap.br">
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <a href="lista-vagas.html" class="btn btn-secondary" id="btnCancelar">Cancelar</a>
+        <div style="display:flex;gap:10px;">
+          <button type="button" class="btn btn-outline" id="btnRascunho">
+            <i class="ph-fill ph-floppy-disk"></i> Salvar Rascunho
+          </button>
+          <button type="submit" class="btn btn-primary" id="btnPublicar">
+            <i class="ph-fill ph-check-circle"></i> Publicar Vaga
+          </button>
+        </div>
+      </div>
+
+      <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+
+  <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
+
+  <script src="js/cadastro-vaga.js"></script>
+</body>
+
+</html>

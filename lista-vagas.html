@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minhas Vagas - TalentoUNICAP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <img src="img/asabranca_Unicap.png" width="40px" alt="">
+        Talento<span>UNICAP</span>
+      </a>
+      <div class="nav-links">
+        <a href="dashboard.html" class="btn btn-secondary btn-sm">
+          <i class="ph-fill ph-scroll"></i> Meu Currículo
+        </a>
+        <button class="btn btn-secondary btn-sm" onclick="window.location.href='index.html'">
+          <i class="ph-fill ph-sign-out"></i> Sair
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container" style="padding-top:32px;padding-bottom:64px;">
+
+    <div class="page-intro">
+      <p class="eyebrow"><i class="ph-fill ph-briefcase"></i> Portal de Vagas</p>
+      <div class="page-intro-row">
+        <div>
+          <h1 style="font-size:28px;margin-bottom:8px;">Minhas Vagas</h1>
+          <p class="page-desc">Acompanhe, edite e gerencie todas as oportunidades cadastradas para estudantes e
+            egressos da UNICAP.</p>
+        </div>
+        <a class="btn btn-primary" href="cadastro-vaga.html">
+          <i class="ph-fill ph-plus"></i> Nova Vaga
+        </a>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="ph ph-magnifying-glass"></i>
+        <input type="search" id="busca" placeholder="Buscar por título, empresa ou área...">
+      </div>
+      <div class="toolbar-filters">
+        <select id="filtroStatus" aria-label="Filtrar por status">
+          <option value="">Todos os status</option>
+          <option value="Ativa">Ativa</option>
+          <option value="Rascunho">Rascunho</option>
+          <option value="Pausada">Pausada</option>
+          <option value="Encerrada">Encerrada</option>
+        </select>
+        <select id="ordenacao" aria-label="Ordenar vagas">
+          <option value="recentes">Mais recentes</option>
+          <option value="antigas">Mais antigas</option>
+          <option value="titulo">Título (A-Z)</option>
+          <option value="prazo">Prazo mais próximo</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="tabs" id="statusTabs">
+      <button class="tab-btn active" data-status="">Todas <span class="count" id="countTodas">0</span></button>
+      <button class="tab-btn" data-status="Ativa">Ativas <span class="count" id="countAtiva">0</span></button>
+      <button class="tab-btn" data-status="Rascunho">Rascunhos <span class="count" id="countRascunho">0</span></button>
+      <button class="tab-btn" data-status="Pausada">Pausadas <span class="count" id="countPausada">0</span></button>
+      <button class="tab-btn" data-status="Encerrada">Encerradas <span class="count" id="countEncerrada">0</span></button>
+    </div>
+
+    <div class="vagas-grid" id="vagasGrid"></div>
+
+    <div class="empty-state" id="emptyState" hidden>
+      <div class="icon"><i class="ph-fill ph-briefcase"></i></div>
+      <h2 id="emptyTitle">Nenhuma vaga cadastrada ainda</h2>
+      <p id="emptyDesc">Publique a primeira oportunidade para estudantes e egressos da UNICAP.</p>
+      <a class="btn btn-primary" href="cadastro-vaga.html">Cadastrar Nova Vaga</a>
+    </div>
+  </div>
+
+  <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
+
+  <!-- Template de card de vaga (clonado via JS) -->
+  <template id="vagaCardTemplate">
+    <article class="card vaga-card">
+      <div class="vaga-card-top">
+        <span class="badge" data-role="status"></span>
+        <div class="vaga-menu">
+          <button class="icon-btn" type="button" data-action="menu" aria-haspopup="true" aria-expanded="false"
+            aria-label="Mais ações">
+            <i class="ph-fill ph-dots-three-vertical"></i>
+          </button>
+          <div class="vaga-dropdown" data-role="dropdown" hidden>
+            <button type="button" data-action="instagram">Divulgar no Instagram</button>
+            <button type="button" data-action="pausar" data-role="pausar-btn">Pausar vaga</button>
+            <button type="button" data-action="encerrar">Encerrar vaga</button>
+            <button type="button" class="danger" data-action="excluir">Excluir vaga</button>
+          </div>
+        </div>
+      </div>
+
+      <h3 data-role="titulo"></h3>
+      <p class="empresa" data-role="empresa"></p>
+
+      <div class="meta">
+        <span data-role="carga"></span>
+        <span data-role="local"></span>
+        <span data-role="salario"></span>
+      </div>
+
+      <p class="prazo" data-role="prazo"></p>
+
+      <div class="vaga-card-footer">
+        <button class="btn btn-outline btn-sm" type="button" data-action="instagram-footer">
+          <i class="ph ph-instagram-logo"></i> Divulgar
+        </button>
+      </div>
+    </article>
+  </template>
+
+  <script src="js/lista-vagas.js"></script>
+</body>
+
+</html>
