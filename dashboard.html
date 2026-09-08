@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+hab<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
@@ -94,23 +94,33 @@
             <h3>Dados Pessoais</h3>
           </div>
           <div class="card-body">
+            <div class="form-alert hidden" id="alert-personal">
+              <i class="ph-fill ph-warning-circle"></i>
+              <span id="alert-personal-text"></span>
+            </div>
             <div class="form-row">
-              <div class="form-group"><label>Nome completo</label><input id="nome"></div>
-              <div <div class="form-group">
-                <label>Telefone</label>
+              <div class="form-group" id="group-nome"><label>Nome completo<span
+                    class="required-mark">*</span></label><input id="nome"></div>
+              <div class="form-group" id="group-telefone">
+                <label>Telefone<span class="required-mark">*</span></label>
                 <input maxlength="15" id="telefone" placeholder="(81) 99999-9999">
               </div>
 
               <script src="js/telefone-mask.js"></script>
             </div>
             <div class="form-row">
-              <div class="form-group"><label>Curso</label><input id="curso" placeholder="Ex: Engenharia de Computação">
+              <div class="form-group" id="group-curso"><label>Curso<span class="required-mark">*</span></label><input
+                  id="curso" placeholder="Ex: Engenharia de Computação">
               </div>
               <div class="form-group"><label>Período</label><input id="periodo" placeholder="Ex: 6º período"></div>
             </div>
             <div class="form-row">
-              <div class="form-group"><label>Cidade</label><select id="cidade"> <option value="">Selecione</option></select></div>
-              <div class="form-group"><label>Estado</label><select id="estado">
+              <div class="form-group" id="group-cidade"><label>Cidade<span class="required-mark">*</span></label><select
+                  id="cidade">
+                  <option value="">Selecione</option>
+                </select></div>
+              <div class="form-group" id="group-estado"><label>Estado<span class="required-mark">*</span></label><select
+                  id="estado">
                   <option value="">Selecione</option>
                 </select></div>
             </div>
@@ -160,17 +170,19 @@
       </div>
 
       <!-- TAB: Habilidades -->
-      <div class="tab-content" id="tab-skills">
-        <div class="card">
-          <div class="card-header">
-            <h3>Habilidades</h3>
-          </div>
-          <div class="card-body">
-            <div id="edit-habilidade" class="hidden"></div>
-            <div id="list-habilidade"></div>
-          </div>
-        </div>
-      </div>
+     <!-- TAB: Habilidades -->
+<div class="tab-content" id="tab-skills">
+  <div class="card">
+    <div class="card-header">
+      <h3>Habilidades</h3>
+      <button class="btn btn-primary btn-sm" onclick="showEditForm('habilidade')">+ Adicionar</button>
+    </div>
+    <div class="card-body">
+      <div id="edit-habilidade" class="hidden"></div>
+      <div id="list-habilidade"></div>
+    </div>
+  </div>
+</div>
 
       <!-- TAB: Projetos -->
       <div class="tab-content" id="tab-projects">
@@ -205,7 +217,10 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
     <script src="js/config.js"></script>
+    <script src="js/firebase.js"></script>
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/dashboard.js"></script>

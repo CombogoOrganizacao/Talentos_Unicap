@@ -1,0 +1,692 @@
+709ab4cb-0e3e-4723-aa36-0b0c4a3ecffb
+
+# 📋 Regras de Negócio - TalentoUNICAP
+
+## Integração Firebase Firestore
+
+Este documento descreve todas as regras de negócio, estrutura de dados e validações necessárias para a integração do sistema TalentoUNICAP com o banco de dados Firebase Firestore.
+
+---
+
+## 🏗️ Estrutura de Coleções
+
+```
+users/
+  └── {uid}/
+      ├── (dados do perfil)
+      ├── experiencias/
+      │   └── {experienciaId}
+      ├── formacao/
+      │   └── {formacaoId}
+      ├── habilidades/
+      │   └── {habilidadeId}
+      ├── projetos/
+      │   └── {projetoId}
+      └── certificados/
+          └── {certificadoId}
+```
+
+---
+
+## 👤 Coleção `users` - Dados do Perfil
+
+### Campos Obrigatórios
+| Campo | Tipo | Validação | Descrição |
+|-------|------|-----------|-----------|
+| `uid` | string | Igual ao ID do documento | ID único do usuário (Firebase Auth UID) |
+| `nome` | string | `required`, min 2 caracteres | Nome completo do aluno |
+| `email` | string | `required`, formato email válido | Email institucional ou pessoal |
+| `slug` | string | `required`, único, lowercase, sem acentos | URL amigável para perfil público |
+
+### Campos Opcionais
+| Campo | Tipo | Validação | Descrição |
+|-------|------|-----------|-----------|
+| `telefone` | string | Max 15 caracteres, formato (XX) XXXXX-XXXX | Telefone para contato |
+| `endereco` | string | Max 200 caracteres | Bairro, Rua |
+| `cidade` | string | Max 100 caracteres | Cidade de residência |
+| `estado` | string | 2 caracteres (UF válida) | Estado (AC, AL, AP, AM, BA, CE, DF, ES, GO, MA, MT, MS, MG, PA, PB, PR, PE, PI, RJ, RN, RS, RO, RR, SC, SP, SE, TO) |
+| `curso` | string | Max 150 caracteres | Curso de graduação/pós |
+| `periodo` | string | Max 20 caracteres | Período atual (ex: "6º período") |
+| `bio` | string | Max 500 caracteres | Biografia resumida |
+| `foto_url` | string | URL válida | URL da foto de perfil |
+| `linkedin` | string | Max 100 caracteres | URL ou username do LinkedIn |
+| `github` | string | Max 100 caracteres | URL ou username do GitHub |
+| `portfolio` | string | Max 100 caracteres | URL do portfólio pessoal |
+| `createdAt` | timestamp | Automático | Data de criação do perfil |
+| `updatedAt` | timestamp | Automático | Data da última atualização |
+
+### Validação do Slug
+```javascript
+// Geração do slug
+function generateSlug(nome) {
+  return nome
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // remove acentos
+    .replace(/[^a-z0-9]+/g, '-')    // substitui não-alfanuméricos por -
+    .replace(/(^-|-$)/g, '');        // remove - do início e fim
+}
+
+// Validação: slug deve ser único entre todos os usuários
+```
+
+---
+
+## 💼 Subcoleção `experiencias` - Experiências Profissionais
+
+### Campos
+| Campo | Tipo | Validação | Descrição |
+|-------|------|-----------|-----------|
+| `empresa` | string | `required`, max 100 caracteres | Nome da empresa |
+| `cargo` | string | `required`, max 100 caracteres | Cargo/função exercida |
+| `descricao` | string | Max 1000 caracteres | Descrição das atividades |
+| `data_inicio` | string | `required`, formato YYYY-MM-DD | Data de início |
+| `data_fim` | string | Formato YYYY-MM-DD, obrigatório se `atual = false` | Data de término |
+| `atual` | string | 'true' ou 'false' | Indica se é o trabalho atual |
+
+### Regras de Validação
+- `data_inicio` deve ser anterior ou igual a `data_fim` (quando informada)
+- Se `atual = 'true'`, `data_fim` deve ser vazia
+- Se `atual = 'false'`, `data_fim` é obrigatória
+
+---
+
+## 🎓 Subcoleção `formacao` - Formação Acadêmica
+
+### Campos
+| Campo | Tipo | Validação | Descrição |
+|-------|------|-----------|-----------|
+| `instituicao` | string | `required`, max 150 caracteres | Nome da instituição |
+| `grau` | string | `required`, enum válido | Grau acadêmico |
+| `area_estudo` | string | `required`, max 150 caracteres | Curso/área de estudo |
+| `data_inicio` | string | `required`, formato YYYY-MM-DD | Data de início |
+| `data_fim` | string | Formato YYYY-MM-DD, obrigatório se `atual = false` | Data de conclusão |
+| `atual` | string | 'true' ou 'false' | Indica se está em curso |
+
+### Valores Válidos para `grau`
+```javascript
+const grausValidos = [
+  'Graduação',
+  'Especialização',
+  'Mestrado',
+  'Doutorado'
+];
+```
+
+### Cursos por Grau (UNICAP)
+
+#### Graduação
+```javascript
+const cursosGraduacao = [
+  'Administração',
+  'Arquitetura e Urbanismo',
+  'Banco de Dados - IA e Ciências de Dados',
+  'Ciência da Computação',
+  'Ciência Política',
+  'Ciências Biológicas - Licenciatura',
+  'Ciências Biológicas - Bacharelado',
+  'Ciências Contábeis',
+  'Ciências da Religião',
+  'Ciências Econômicas',
+  'Direito',
+  'Enfermagem',
+  'Engenharia Ambiental',
+  'Engenharia Civil',
+  'Engenharia da Complexidade',
+  'Engenharia de Produção',
+  'Engenharia Química',
+  'Farmácia',
+  'Filosofia - Licenciatura',
+  'Filosofia - Bacharelado',
+  'Física',
+  'Fisioterapia',
+  'Fonoaudiologia',
+  'Fotografia',
+  'Gestão de RH',
+  'História',
+  'Inteligência Artificial',
+  'Jogos Digitais',
+  'Jornalismo',
+  'Letras Português',
+  'Letras Português e Espanhol',
+  'Letras Português e Inglês',
+  'Logística',
+  'Matemática',
+  'Medicina',
+  'Mídias Sociais Digitais',
+  'Nutrição',
+  'Pedagogia',
+  'Psicologia',
+  'Publicidade e Propaganda',
+  'Química',
+  'Serviço Social',
+  'Sistemas para Internet',
+  'Teologia'
+];
+```
+
+#### Especialização (Lato Sensu)
+```javascript
+const especializacoes = [
+  'As Narrativas Contemporâneas da Fotografia e do Audiovisual',
+  'Ciência Política: Teoria e Prática no Brasil',
+  'Educação Especial',
+  'Gerontologia',
+  'Gestão Eclesial',
+  'Gestão Escolar e Coordenação Pedagógica',
+  'História de Pernambuco: Memória, Território e Práticas de Ensino',
+  'Juventudes: Experiência, Acompanhamento e Projeto de Vida',
+  'Psicanálise: Fundamentos Teóricos, Matrizes e Dispositivos Clínicos',
+  'Psicopedagogia',
+  'Reprodução Humana Assistida'
+];
+```
+
+#### Mestrado (Stricto Sensu)
+```javascript
+const mestrados = [
+  'Ciências da Linguagem',
+  'Ciências da Religião',
+  'Direito',
+  'Filosofia',
+  'História (Profissional)',
+  'Indústrias Criativas (Profissional)',
+  'Psicologia Clínica',
+  'Teologia'
+];
+```
+
+#### Doutorado (Stricto Sensu)
+```javascript
+const doutorados = [
+  'Ciências da Linguagem',
+  'Ciências da Religião',
+  'Direito',
+  'Psicologia Clínica'
+];
+```
+
+### Regras de Validação
+- `data_inicio` deve ser anterior ou igual a `data_fim` (quando informada)
+- Se `atual = 'true'`, `data_fim` deve ser vazia
+- Se `atual = 'false'`, `data_fim` é obrigatória
+- `area_estudo` deve estar na lista correspondente ao `grau` selecionado
+
+---
+
+## 🛠️ Subcoleção `habilidades` - Habilidades
+
+### Campos
+| Campo | Tipo | Validação | Descrição |
+|-------|------|-----------|-----------|
+| `nome` | string | `required`, max 50 caracteres | Nome da habilidade |
+| `categoria` | string | `required`, enum válido | Categoria da habilidade |
+| `nivel` | string | `required`, enum válido | Nível de proficiência |
+
+### Valores Válidos
+```javascript
+const categoriasHabilidade = [
+  'Técnica',
+  'Idioma',
+  'Soft Skill',
+  'Ferramenta'
+];
+
+const niveisHabilidade = [
+  'Básico',
+  'Intermediário',
+  'Avançado',
+  'Expert'
+];
+```
+
+### Regras de Validação
+- Cada usuário pode ter múltiplas habilidades
+- Não há limite máximo de habilidades
+- Não é permitido duplicar habilidade com mesmo nome e categoria
+
+---
+
+## 📂 Subcoleção `projetos` - Projetos
+
+### Campos
+| Campo | Tipo | Validação | Descrição |
+|-------|------|-----------|-----------|
+| `nome` | string | `required`, max 100 caracteres | Nome do projeto |
+| `descricao` | string | Max 1000 caracteres | Descrição do projeto |
+| `url` | string | Formato URL válido | Link do projeto (GitHub, site, etc.) |
+| `data_inicio` | string | Formato YYYY-MM-DD | Data de início |
+| `data_fim` | string | Formato YYYY-MM-DD | Data de conclusão |
+
+### Regras de Validação
+- `data_inicio` deve ser anterior ou igual a `data_fim` (quando ambas informadas)
+- `url` deve ser uma URL válida (http:// ou https://)
+
+---
+
+## 🏆 Subcoleção `certificados` - Certificações
+
+### Campos
+| Campo | Tipo | Validação | Descrição |
+|-------|------|-----------|-----------|
+| `nome` | string | `required`, max 150 caracteres | Nome do certificado |
+| `emissor` | string | Max 100 caracteres | Instituição emissor |
+| `data_emissao` | string | `required`, formato YYYY-MM-DD | Data de emissão |
+| `data_validade` | string | Formato YYYY-MM-DD, obrigatório se `sem_validade = false` | Data de validade |
+| `sem_validade` | string | 'true' ou 'false' | Indica se não possui validade |
+| `url` | string | Formato URL válido | Link do certificado |
+| `carga_horaria` | string | Numérico, min 1 | Carga horária em horas |
+
+### Regras de Validação
+- Se `sem_validade = 'true'`, `data_validade` deve ser vazia
+- Se `sem_validade = 'false'`, `data_validade` é obrigatória
+- `data_emissao` deve ser anterior ou igual a `data_validade` (quando informada)
+- `carga_horaria` deve ser um número inteiro positivo
+
+---
+
+## 🔐 Regras de Autenticação (Firebase Auth)
+
+### Métodos Habilitados
+```javascript
+// Apenas autenticação por email/senha
+firebase.auth().signInWithEmailAndPassword(email, password)
+firebase.auth().createUserWithEmailAndPassword(email, password)
+```
+
+### Validações de Cadastro
+```javascript
+// Validações no registro
+const registroValidacoes = {
+  nome: {
+    required: true,
+    minLength: 2,
+    maxLength: 100
+  },
+  email: {
+    required: true,
+    format: 'email'
+  },
+  password: {
+    required: true,
+    minLength: 6
+  }
+};
+```
+
+### Conta de Teste
+```javascript
+// Conta admin para testes (apenas em ambiente de desenvolvimento)
+const contaTeste = {
+  email: 'admin@unicap.edu.br',
+  senha: '123456',
+  uid: 'admin-test-001',
+  nome: 'Admin Teste UNICAP'
+};
+```
+
+---
+
+## 🔒 Regras de Autorização (Firestore Security Rules)
+
+### Regra Geral
+```
+// Apenas o próprio usuário pode acessar seus dados
+match /users/{userId} {
+  allow read, write: if request.auth != null && request.auth.uid == userId;
+  
+  match /{document=**} {
+    allow read, write: if request.auth != null && request.auth.uid == userId;
+  }
+}
+```
+
+### Exceção: Perfil Público
+```
+// Perfil público pode ser lido por qualquer pessoa (via slug)
+// Implementação via Cloud Function ou API externa
+```
+
+---
+
+## 📊 Regras de Progresso do Currículo
+
+### Cálculo de Completude
+```javascript
+function calcularProgresso(profile) {
+  const camposObrigatorios = [
+    'bio',
+    'curso',
+    'telefone',
+    'cidade'
+  ];
+  
+  const secoesObrigatorias = [
+    'experiencias',
+    'habilidades',
+    'projetos',
+    'certificados'
+  ];
+  
+  let preenchidos = 0;
+  const total = 8; // 4 campos + 4 seções
+  
+  // Verifica campos obrigatórios
+  camposObrigatorios.forEach(campo => {
+    if (profile[campo] && profile[campo].trim() !== '') {
+      preenchidos++;
+    }
+  });
+  
+  // Verifica seções com pelo menos 1 item
+  secoesObrigatorias.forEach(secao => {
+    if (profile[secao] && profile[secao].length > 0) {
+      preenchidos++;
+    }
+  });
+  
+  return Math.round((preenchidos / total) * 100);
+}
+```
+
+### Mensagens de Progresso
+```javascript
+function getMensagemProgresso(porcentagem) {
+  if (porcentagem < 50) return 'Continue preenchendo!';
+  if (porcentagem < 100) return 'Quase lá!';
+  return 'Parabéns! Currículo completo!';
+}
+```
+
+---
+
+## 🌐 Regras do Perfil Público
+
+### Geração de URL
+```
+https://talentosunicap.vercel.app/{slug}
+```
+
+### Validação de Slug
+```javascript
+// Slug deve ser:
+// 1. Único no sistema
+// 2. Lowercase
+// 3. Sem caracteres especiais
+// 4. Separados por hífens
+// 5. Sem hífens no início ou fim
+
+// Exemplos:
+// "João Silva" → "joao-silva"
+// "Maria José da Silva" → "maria-jose-da-silva"
+// "Pedro123" → "pedro123"
+```
+
+### Acesso Público
+```javascript
+// O perfil público NÃO expõe:
+// - Email do usuário
+// - Dados sensíveis
+
+// O perfil público EXPOE:
+// - nome, telefone, cidade, estado
+// - curso, periodo, bio
+// - linkedin, github, portfolio
+// - Todas as seções do currículo (experiências, formação, habilidades, projetos, certificados)
+```
+
+---
+
+## 📱 Regras de Formatação
+
+### Telefone
+```javascript
+// Formato aceito: (XX) XXXXX-XXXX ou (XX) XXXX-XXXX
+// Máximo 11 dígitos numéricos
+// Máscara aplicada: (XX) XXXXX-XXXX
+
+function formatarTelefone(telefone) {
+  const numeros = telefone.replace(/\D/g, '').slice(0, 11);
+  if (numeros.length > 10) {
+    return numeros.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+  } else if (numeros.length > 6) {
+    return numeros.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+  }
+  return numeros;
+}
+```
+
+### Datas
+```javascript
+// Formato aceito: YYYY-MM-DD (ISO 8601)
+// Exibição: Mês Ano (ex: "jan. 2024")
+
+function formatarData(data) {
+  if (!data) return '';
+  const dt = new Date(data + 'T00:00:00');
+  return dt.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
+}
+```
+
+---
+
+## ⚠️ Regras de Integridade
+
+### Validações Cross-Field
+
+1. **Experiência Atual**
+   - Se `atual = 'true'`, `data_fim` DEVE ser vazia
+   - Se `atual = 'false'`, `data_fim` É OBRIGATÓRIA
+
+2. **Formação Em Curso**
+   - Se `atual = 'true'`, `data_fim` DEVE ser vazia
+   - Se `atual = 'false'`, `data_fim` É OBRIGATÓRIA
+
+3. **Certificado Sem Validade**
+   - Se `sem_validade = 'true'`, `data_validade` DEVE ser vazia
+   - Se `sem_validade = 'false'`, `data_validade` É OBRIGATÓRIA
+
+4. **Datas Consistentes**
+   - `data_inicio` DEVE ser anterior ou igual a `data_fim`
+
+5. **Slug Único**
+   - Ao salvar perfil, verificar se o slug já existe
+   - Se existir, adicionar sufixo numérico (ex: "joao-silva-2")
+
+---
+
+## 🔄 Fluxo de Dados
+
+### Cadastro de Novo Usuário
+```
+1. Usuário preenche formulário (nome, email, senha)
+2. Validações client-side:
+   - Senhas coincidem
+   - Senha >= 6 caracteres
+   - Email válido
+3. Firebase Auth cria conta
+4. Documento criado em users/{uid} com:
+   - nome, email, slug (gerado automaticamente)
+   - Campos opcionais vazios
+5. Redireciona para dashboard
+```
+
+### Edição de Perfil
+```
+1. Usuário edita dados pessoais
+2. Validações client-side dos campos
+3. Chamada API.updateProfile(data)
+4. Documento atualizado em users/{uid}
+5. Progresso recalculado
+```
+
+### Adição de Item (Experiência/Formação/etc)
+```
+1. Usuário clica "+ Adicionar"
+2. Formulário é exibido
+3. Usuário preenche e clica "Salvar"
+4. Validações dos campos obrigatórios
+5. Chamada API.addItem(sheet, data)
+6. Documento criado em users/{uid}/{sheet}/{itemId}
+7. Lista atualizada na tela
+```
+
+### Edição de Item
+```
+1. Usuário clica no ícone de editar
+2. Formulário é exibido com dados preenchidos
+3. Usuário modifica e clica "Salvar"
+4. Validações dos campos
+5. Chamada API.updateItem(sheet, id, data)
+6. Documento atualizado em users/{uid}/{sheet}/{itemId}
+```
+
+### Exclusão de Item
+```
+1. Usuário clica no ícone de excluir
+2. Confirmação exibida ("Tem certeza?")
+3. Chamada API.deleteItem(sheet, id)
+4. Documento removido de users/{uid}/{sheet}/{itemId}
+5. Lista atualizada
+```
+
+---
+
+## 📋 Estrutura Firestore Completa
+
+```javascript
+// Exemplo de documento completo
+{
+  uid: "abc123xyz",
+  nome: "João Silva",
+  email: "joao@unicap.edu.br",
+  slug: "joao-silva",
+  telefone: "(81) 99999-9999",
+  endereco: "Boa Viagem, Rua 123",
+  cidade: "Recife",
+  estado: "PE",
+  curso: "Ciência da Computação",
+  periodo: "6º período",
+  bio: "Desenvolvedor apaixonado por tecnologia...",
+  foto_url: "https://...",
+  linkedin: "linkedin.com/in/joaosilva",
+  github: "github.com/joaosilva",
+  portfolio: "joaosilva.com.br",
+  createdAt: Timestamp,
+  updatedAt: Timestamp,
+  
+  // Subcoleções
+  experiencias: [
+    {
+      id: "exp1",
+      empresa: "Tech Company",
+      cargo: "Desenvolvedor Full Stack",
+      descricao: "Desenvolvimento de aplicações web...",
+      data_inicio: "2023-01-15",
+      data_fim: "",
+      atual: "true"
+    }
+  ],
+  
+  formacao: [
+    {
+      id: "form1",
+      instituicao: "UNICAP",
+      grau: "Graduação",
+      area_estudo: "Ciência da Computação",
+      data_inicio: "2020-03-01",
+      data_fim: "",
+      atual: "true"
+    }
+  ],
+  
+  habilidades: [
+    {
+      id: "hab1",
+      nome: "JavaScript",
+      categoria: "Técnica",
+      nivel: "Avançado"
+    }
+  ],
+  
+  projetos: [
+    {
+      id: "proj1",
+      nome: "TalentoUNICAP",
+      descricao: "Plataforma de currículos para alunos",
+      url: "https://github.com/...",
+      data_inicio: "2024-01-01",
+      data_fim: "2024-06-30"
+    }
+  ],
+  
+  certificados: [
+    {
+      id: "cert1",
+      nome: "AWS Cloud Practitioner",
+      emissor: "Amazon",
+      data_emissao: "2024-03-15",
+      data_validade: "2027-03-15",
+      sem_validade: "false",
+      url: "https://...",
+      carga_horaria: "40"
+    }
+  ]
+}
+```
+
+---
+
+## 🧪 Casos de Teste
+
+### Validações de Slug
+```javascript
+// Deve aceitar:
+"João Silva" → "joao-silva"
+"Maria José da Silva" → "maria-jose-da-silva"
+"Pedro123" → "pedro123"
+"Ana-Silva" → "ana-silva"
+
+// Deve rejeitar:
+"" (vazio)
+"  " (espaços apenas)
+"joao-silva" (duplicado - deve adicionar sufixo)
+```
+
+### Validações de Data
+```javascript
+// Deve aceitar:
+"data_inicio": "2023-01-15"
+"data_fim": "2024-06-30"
+"atual": "true" (data_fim vazia)
+
+// Deve rejeitar:
+"data_inicio": "2024-01-01"
+"data_fim": "2023-06-30" (data_fim anterior a data_inicio)
+```
+
+### Validações de Telefone
+```javascript
+// Deve aceitar:
+"(81) 99999-9999"
+"(81) 9999-9999"
+"81999999999"
+
+// Deve rejeitar:
+"12345" (muito curto)
+"1234567890123456" (muito longo)
+```
+
+---
+
+## 📚 Referências
+
+- [Firebase Auth Documentation](https://firebase.google.com/docs/auth)
+- [Firestore Security Rules](https://firebase.google.com/docs/firestore/security/rules)
+- [Firestore Data Model](https://firebase.google.com/docs/firestore/data-model)
+
+---
+
+**Versão do Documento:** 1.0  
+**Última Atualização:** Setembro 2026  
+**Autor:** Equipe TalentoUNICAP

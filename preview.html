@@ -19,8 +19,8 @@
       <a href="index.html" class="navbar-brand"><img src="img/asabranca_Unicap.png" width="40px" alt=""
           style="display: block;"> Talento<span>UNICAP</span></a>
       <div class="nav-links">
-        <a href="dashboard.html" class="btn btn-secondary btn-sm"><i
-            style="font-size:18px; vertical-align:middle;"></i> Voltar ao Editor</a>
+        <a href="dashboard.html" class="btn btn-secondary btn-sm"><i style="font-size:18px; vertical-align:middle;"></i>
+          Voltar ao Editor</a>
       </div>
     </div>
   </nav>
@@ -37,7 +37,8 @@
           <button class="btn btn-secondary" onclick="exportPDF()">
             <div class="icon"><i class="ph-bold ph-scroll" style="font-size:18px;"></i></div> Exportar PDF
           </button>
-          <button id="btnExportDocx" class="btn btn-primary" onclick="exportDOCX(document.getElementById('toggleLogo').checked)">
+          <button id="btnExportDocx" class="btn btn-primary"
+            onclick="exportDOCX(document.getElementById('toggleLogo').checked)">
             <i class="ph-bold ph-floppy-disk" style="font-size:18px;"></i> Exportar DOCX
           </button>
         </div>
@@ -51,10 +52,13 @@
   <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
   <script src="js/config.js"></script>
+  <script src="js/firebase.js"></script>
   <script src="js/api.js"></script>
-  <script src="js/auth.js"></script>
   <script src="js/export.js"></script>
+  <script src="js/auth.js"></script>
   <script>
     let profile = null;
 
@@ -64,7 +68,6 @@
       document.getElementById('cvContent').innerHTML = renderCVPreview(profile, showLogo);
     }
 
-    Auth.init();
     Auth.onAuthChange = async function (loggedIn) {
       if (!loggedIn) { window.location.href = 'login.html'; return; }
       profile = await API.getProfile();
@@ -73,6 +76,7 @@
         document.getElementById('cvContent').innerHTML = renderCVPreview(profile, showLogo);
       }
     };
+    Auth.init();
   </script>
 </body>
 

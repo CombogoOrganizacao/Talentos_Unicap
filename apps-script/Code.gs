@@ -3,7 +3,7 @@
 // TalentoUNICAP - Currículos de Alunos
 // ============================================
 
-const SPREADSHEET_ID = 'SEU_SPREADSHEET_ID_AQUI';
+const SPREADSHEET_ID = '1x1m0qsWd8kFae3TkvtFEcoSrTZ_4EBSBkLMIG04ahEM';
 
 const SHEETS = {
   users: 'Usuarios',
@@ -27,7 +27,7 @@ function setupSheets() {
     [SHEETS.educations]: ['id', 'uid_firebase', 'instituicao', 'grau', 'area_estudo', 'data_inicio', 'data_fim', 'atual'],
     [SHEETS.skills]: ['id', 'uid_firebase', 'nome', 'categoria', 'nivel'],
     [SHEETS.projects]: ['id', 'uid_firebase', 'nome', 'descricao', 'url', 'data_inicio', 'data_fim'],
-    [SHEETS.certificates]: ['id', 'uid_firebase', 'nome', 'emissor', 'data_emissao', 'data_validade', 'url']
+    [SHEETS.certificates]: ['id', 'uid_firebase', 'nome', 'emissor', 'data_emissao', 'data_validade', 'sem_validade', 'url', 'carga_horaria']
   };
   for (const [sheetName, headers] of Object.entries(configs)) {
     let sheet = ss.getSheetByName(sheetName);
@@ -118,7 +118,7 @@ function addItem(sheetName, uid, data) {
     case SHEETS.educations: values = [id, uid, data.instituicao||'', data.grau||'', data.area_estudo||'', data.data_inicio||'', data.data_fim||'', data.atual||'false']; break;
     case SHEETS.skills: values = [id, uid, data.nome||'', data.categoria||'Tecnica', data.nivel||'Intermediario']; break;
     case SHEETS.projects: values = [id, uid, data.nome||'', data.descricao||'', data.url||'', data.data_inicio||'', data.data_fim||'']; break;
-    case SHEETS.certificates: values = [id, uid, data.nome||'', data.emissor||'', data.data_emissao||'', data.data_validade||'', data.url||'']; break;
+    case SHEETS.certificates: values = [id, uid, data.nome||'', data.emissor||'', data.data_emissao||'', data.data_validade||'', data.sem_validade||'false', data.url||'', data.carga_horaria||'']; break;
   }
   sheet.appendRow(values);
   return JSON.stringify({ success: true, id: id });
@@ -129,8 +129,19 @@ function updateItem(sheetName, id, data) {
   if (!row) return JSON.stringify({ error: 'Item nao encontrado' });
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = ss.getSheetByName(sheetName);
-  const vals = Object.values(data);
-  sheet.getRange(row.row, 1, 1, vals.length).setValues([[id, row.data[1], ...vals]]);
+  const uid = row.data[1];
+  // Monta as colunas na mesma ordem/estrutura usada em addItem, evitando
+  // gravar campos soltos (action, uid, sheet, id) que vinham junto no payload.
+  let values;
+  switch (sheetName) {
+    case SHEETS.experiences: values = [id, uid, data.empresa||'', data.cargo||'', data.descricao||'', data.data_inicio||'', data.data_fim||'', data.atual||'false']; break;
+    case SHEETS.educations: values = [id, uid, data.instituicao||'', data.grau||'', data.area_estudo||'', data.data_inicio||'', data.data_fim||'', data.atual||'false']; break;
+    case SHEETS.skills: values = [id, uid, data.nome||'', data.categoria||'Tecnica', data.nivel||'Intermediario']; break;
+    case SHEETS.projects: values = [id, uid, data.nome||'', data.descricao||'', data.url||'', data.data_inicio||'', data.data_fim||'']; break;
+    case SHEETS.certificates: values = [id, uid, data.nome||'', data.emissor||'', data.data_emissao||'', data.data_validade||'', data.sem_validade||'false', data.url||'', data.carga_horaria||'']; break;
+    default: return JSON.stringify({ error: 'Aba invalida' });
+  }
+  sheet.getRange(row.row, 1, 1, values.length).setValues([values]);
   return JSON.stringify({ success: true });
 }
 
@@ -155,7 +166,7 @@ function parseExperience(d) { return { id: d[0], empresa: d[2], cargo: d[3], des
 function parseEducation(d) { return { id: d[0], instituicao: d[2], grau: d[3], area_estudo: d[4], data_inicio: d[5], data_fim: d[6], atual: d[7] === 'true' || d[7] === true }; }
 function parseSkill(d) { return { id: d[0], nome: d[2], categoria: d[3], nivel: d[4] }; }
 function parseProject(d) { return { id: d[0], nome: d[2], descricao: d[3], url: d[4], data_inicio: d[5], data_fim: d[6] }; }
-function parseCertificate(d) { return { id: d[0], nome: d[2], emissor: d[3], data_emissao: d[4], data_validade: d[5], url: d[6] }; }
+function parseCertificate(d) { return { id: d[0], nome: d[2], emissor: d[3], data_emissao: d[4], data_validade: d[5], sem_validade: d[6] === 'true' || d[6] === true, url: d[7], carga_horaria: d[8] }; }
 
 function getPublicProfile(slug) {
   const usersSheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEETS.users);
@@ -164,7 +175,10 @@ function getPublicProfile(slug) {
   let uid = null;
   for (let i = 1; i < data.length; i++) { if (data[i][4] === slug) { uid = data[i][1]; break; } }
   if (!uid) return JSON.stringify({ error: 'Perfil nao encontrado' });
-  return getProfile(uid);
+  // Perfil publico nao deve expor o email do usuario (ver Regras de Negocio)
+  const profile = JSON.parse(getProfile(uid));
+  delete profile.email;
+  return JSON.stringify(profile);
 }
 
 function doPost(e) {

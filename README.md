@@ -6,9 +6,9 @@ Plataforma para alunos da **Universidade Católica de Pernambuco** criarem, gere
 
 | Serviço | Uso |
 |---------|-----|
-| **Firebase** | Autenticação (email/senha) |
-| **Google Apps Script** | Backend API (grátis, ilimitado) |
-| **Google Sheets** | Banco de dados |
+| **Firebase Authentication** | Autenticação (email/senha) |
+| **Firebase Authentication** | Autenticação (email/senha) |
+| **Firebase Realtime Database** | Banco de dados em tempo real |
 | **Vercel** | Hosting estático (free tier) |
 | **GitHub** | Controle de versão |
 | **jsPDF + html2canvas** | Exportação PDF |

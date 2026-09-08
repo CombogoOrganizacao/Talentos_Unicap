@@ -57,14 +57,18 @@
   </div>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
   <script src="js/config.js"></script>
+  <script src="js/firebase.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
   <script>
-    Auth.init();
     Auth.onAuthChange = function (loggedIn) {
       if (loggedIn) window.location.href = 'dashboard.html';
     };
+
+    Auth.init();
 
     function fillTestAccount() {
       document.getElementById('email').value = 'admin@unicap.edu.br';
@@ -73,19 +77,27 @@
 
     document.getElementById('loginForm').addEventListener('submit', async function (e) {
       e.preventDefault();
-      const email = document.getElementById('email').value;
+
+      const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
       const btn = document.getElementById('loginBtn');
       const errDiv = document.getElementById('errorMsg');
+
       btn.disabled = true;
       btn.textContent = 'Entrando...';
       errDiv.classList.add('hidden');
+
       try {
         await Auth.login(email, password);
         window.location.href = 'dashboard.html';
       } catch (error) {
-        errDiv.textContent = error.message || 'Email ou senha incorretos';
+        console.error('Erro ao fazer login:', error);
+
+        errDiv.textContent =
+          error.message || 'Email ou senha incorretos';
+
         errDiv.classList.remove('hidden');
+
         btn.disabled = false;
         btn.textContent = 'Entrar';
       }

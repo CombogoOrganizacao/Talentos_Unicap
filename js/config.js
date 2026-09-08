@@ -2,18 +2,18 @@
 // Configuração - TalentoUNICAP
 // ============================================
 const CONFIG = {
-  // URL do Google Apps Script (depois de publicar como app web)
-  API_URL: 'https://script.google.com/macros/s/SUA_URL_AQUI/exec',
 
   // Configuração do Firebase
   firebase: {
-    apiKey: "SUA_API_KEY_AQUI",
-    authDomain: "seu-projeto.firebaseapp.com",
-    projectId: "seu-projeto",
-    storageBucket: "seu-projeto.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abcdef"
-  },
+    apiKey: "AIzaSyCxiOfxy6HPAiJ4hz3fmYPamNl8XpVb-IE",
+    authDomain: "talentos-unicap.firebaseapp.com",
+    databaseURL: "https://talentos-unicap-default-rtdb.firebaseio.com",
+    projectId: "talentos-unicap",
+    storageBucket: "talentos-unicap.firebasestorage.app",
+    messagingSenderId: "936743315009",
+    appId: "1:936743315009:web:3d4964704577c1934548c0",
+    measurementId: "G-0BLD35NF7J"
+},
 
   // Estados brasileiros
   states: [

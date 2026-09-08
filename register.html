@@ -52,31 +52,93 @@
   </div>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
   <script src="js/config.js"></script>
+  <script src="js/firebase.js"></script>
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
   <script>
+    Auth.onAuthChange = function () {};
+
     Auth.init();
-    Auth.onAuthChange = function (loggedIn) { if (loggedIn) window.location.href = 'dashboard.html'; };
+
     document.getElementById('registerForm').addEventListener('submit', async function (e) {
       e.preventDefault();
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
       const confirm = document.getElementById('confirmPassword').value;
       const btn = document.getElementById('registerBtn');
       const errDiv = document.getElementById('errorMsg');
+
       errDiv.classList.add('hidden');
-      if (password !== confirm) { errDiv.textContent = 'As senhas não coincidem'; errDiv.classList.remove('hidden'); return; }
-      if (password.length < 6) { errDiv.textContent = 'A senha deve ter pelo menos 6 caracteres'; errDiv.classList.remove('hidden'); return; }
-      btn.disabled = true; btn.textContent = 'Criando...';
+      errDiv.textContent = '';
+
+      if (!name) {
+        errDiv.textContent = 'Informe seu nome completo.';
+        errDiv.classList.remove('hidden');
+        return;
+      }
+
+      if (password !== confirm) {
+        errDiv.textContent = 'As senhas não coincidem.';
+        errDiv.classList.remove('hidden');
+        return;
+      }
+
+      if (password.length < 6) {
+        errDiv.textContent = 'A senha deve ter pelo menos 6 caracteres.';
+        errDiv.classList.remove('hidden');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Criando...';
+
       try {
         await Auth.register(name, email, password);
+
+        const result = await API.createUser({
+          nome: name,
+          email: email
+        });
+
+        if (!result || result.error) {
+          throw new Error(
+            result?.error ||
+            'Não foi possível criar o perfil.'
+          );
+        }
+
         window.location.href = 'dashboard.html';
+
       } catch (error) {
-        errDiv.textContent = error.message || 'Erro ao criar conta';
+        console.error('Erro ao criar conta:', error);
+
+        let message = error.message || 'Erro ao criar conta.';
+
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            message = 'Este email já está cadastrado.';
+            break;
+          case 'auth/invalid-email':
+            message = 'O email informado é inválido.';
+            break;
+          case 'auth/weak-password':
+            message = 'A senha é muito fraca.';
+            break;
+          case 'auth/network-request-failed':
+            message = 'Erro de conexão com o Firebase.';
+            break;
+        }
+
+        errDiv.textContent = message;
         errDiv.classList.remove('hidden');
-        btn.disabled = false; btn.textContent = 'Criar Conta';
+
+        btn.disabled = false;
+        btn.textContent = 'Criar Conta';
       }
     });
   </script>
