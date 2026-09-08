@@ -79,7 +79,7 @@ const API = {
 
     try {
       const snapshot = await firebaseDB
-        .ref(`users/${Auth.uid}`)
+        .ref(`usuario_aluno/${Auth.uid}`)
         .once('value');
 
       if (!snapshot.exists()) {
@@ -139,7 +139,7 @@ const API = {
       }
 
       await firebaseDB
-        .ref(`users/${Auth.uid}`)
+        .ref(`usuario_aluno/${Auth.uid}`)
         .set({
           nome: data.nome || '',
           email:
@@ -201,7 +201,7 @@ const API = {
 
     try {
       const userRef = firebaseDB
-        .ref(`users/${Auth.uid}`);
+        .ref(`usuario_aluno/${Auth.uid}`);
 
       const currentSnapshot =
         await userRef.once('value');
@@ -254,7 +254,7 @@ const API = {
 
     try {
       const collectionRef = firebaseDB.ref(
-        `users/${Auth.uid}/${campo}`
+        `usuario_aluno/${Auth.uid}/${campo}`
       );
 
       const itemRef = collectionRef.push();
@@ -306,7 +306,7 @@ const API = {
 
     try {
       await firebaseDB
-        .ref(`users/${Auth.uid}/${campo}/${id}`)
+        .ref(`usuario_aluno/${Auth.uid}/${campo}/${id}`)
         .update({
           ...data,
           atualizado_em: Date.now()
@@ -349,7 +349,7 @@ const API = {
 
     try {
       await firebaseDB
-        .ref(`users/${Auth.uid}/${campo}/${id}`)
+        .ref(`usuario_aluno/${Auth.uid}/${campo}/${id}`)
         .remove();
 
       await this._syncPublicProfile(Auth.uid);
@@ -369,7 +369,7 @@ const API = {
 
   async _syncPublicProfile(uid, oldSlug = null) {
     const snapshot = await firebaseDB
-      .ref(`users/${uid}`)
+      .ref(`usuario_aluno/${uid}`)
       .once('value');
 
     if (!snapshot.exists()) {

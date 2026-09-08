@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastre sua Empresa - TalentoUNICAP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+</head>
+
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <img src="img/asabranca_Unicap.png" width="40px" alt="">
+        Talento<span>UNICAP</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-text-link">Para Alunos</a>
+        <a href="cadastro-empresa.html" class="nav-text-link active">Área da Empresa</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="company-hero">
+    <div class="container">
+      <p class="brand-line"><i class="ph-fill ph-feather"></i> Talentos UNICAP</p>
+      <h1>Cadastre sua Empresa</h1>
+      <p>Encontre os melhores alunos e egressos da Universidade Católica de Pernambuco para impulsionar o seu
+        negócio.</p>
+    </div>
+  </section>
+
+  <!-- FORMULÁRIO -->
+  <div style="background:var(--gray-50);padding:48px 20px 64px;">
+    <div class="card" style="max-width:800px;margin:0 auto;">
+      <div class="card-body" style="padding:32px 36px;">
+        <h2 style="margin-bottom:24px;">Dados de Cadastro</h2>
+
+        <div class="form-alert hidden" id="formAlert">
+          <i class="ph-bold ph-warning-circle"></i>
+          <span id="formAlertMsg"></span>
+        </div>
+
+        <form id="empresaForm" novalidate>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nome da empresa<span class="required-mark">*</span></label>
+              <input type="text" id="nome_empresa" placeholder="Ex: TechCorp LTDA" required>
+            </div>
+            <div class="form-group">
+              <label>CNPJ<span class="required-mark">*</span></label>
+              <input type="text" id="cnpj" placeholder="00.000.000/0000-00" maxlength="18" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>E-mail corporativo<span class="required-mark">*</span></label>
+              <input type="email" id="email" placeholder="exemplo@suaempresa.com" required>
+            </div>
+            <div class="form-group">
+              <label>Senha<span class="required-mark">*</span></label>
+              <div class="password-field">
+                <input type="password" id="senha" placeholder="Digite sua senha" minlength="6" required>
+                <button type="button" class="password-toggle" id="toggleSenha" aria-label="Mostrar senha">
+                  <i class="ph ph-eye-slash" id="toggleSenhaIcon"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Setor/Segmento<span class="required-mark">*</span></label>
+              <select id="setor" required>
+                <option value="">Selecione o setor</option>
+                <option>Tecnologia</option>
+                <option>Saúde</option>
+                <option>Educação</option>
+                <option>Varejo</option>
+                <option>Indústria</option>
+                <option>Serviços</option>
+                <option>Financeiro</option>
+                <option>Construção Civil</option>
+                <option>Comunicação e Marketing</option>
+                <option>Jurídico</option>
+                <option>Outro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Telefone de contato</label>
+              <input type="text" id="telefone" placeholder="(81) 99999-9999" maxlength="15">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Site institucional (Opcional)</label>
+              <input type="url" id="site" placeholder="https://suaempresa.com">
+            </div>
+            <div class="form-group">
+              <label>Responsável pela conta</label>
+              <input type="text" id="responsavel" placeholder="Nome completo do responsável">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Logo da empresa</label>
+            <div class="dropzone" id="dropzone">
+              <input type="file" id="logoInput" accept="image/png,image/jpeg">
+              <div id="dropzoneEmpty">
+                <div class="icon"><i class="ph-bold ph-upload-simple"></i></div>
+                <div class="dz-title">Clique para fazer upload da logo</div>
+                <div class="dz-hint">Formatos suportados: PNG, JPG (Mínimo 400x400px)</div>
+              </div>
+              <div class="dropzone-preview hidden" id="dropzonePreview">
+                <img id="logoPreviewImg" alt="Logo da empresa">
+                <div style="text-align:left;">
+                  <div style="font-size:13px;font-weight:600;color:var(--gray-900);" id="logoFileName"></div>
+                  <button type="button" class="dz-remove" id="removeLogo">Remover</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg" style="width:100%;margin-top:8px;" id="submitBtn">
+            Criar Conta
+          </button>
+
+          <p class="terms-text">
+            Ao criar uma conta você concorda com nossos <a href="#">Termos de Uso</a> e
+            <a href="#">Políticas de Privacidade</a>.
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+
+  <script src="js/config.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api-empresa.js"></script>
+  <script src="js/telefone-mask.js"></script>
+  <script src="js/cadastro-empresa.js"></script>
+</body>
+
+</html>
