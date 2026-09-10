@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Busca de Talentos - TalentoUNICAP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <img src="img/asabranca_Unicap.png" width="40px" alt="">
+        Talento<span>UNICAP</span>
+      </a>
+      <div class="nav-links">
+        <a href="busca-talentos.html" class="nav-text-link active">Buscar Talentos</a>
+        <a href="caixa-saida-empresa.html" class="nav-text-link">Mensagens Enviadas</a>
+        <span class="avatar" id="empresaAvatar" style="width:32px;height:32px;border-radius:50%;background:var(--unicap-500);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">T</span>
+        <span id="empresaNome" style="font-size:14px;font-weight:600;color:var(--gray-800);"></span>
+        <button class="btn btn-secondary btn-sm" id="btnSair">Sair</button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="empresa-hero">
+    <div class="container">
+      <h1>Busca de Talentos UNICAP</h1>
+      <p>Explore perfis de estudantes preparados para as demandas do mercado de trabalho</p>
+      <div class="search-bar-lg">
+        <span class="icon-inline"><i class="ph ph-magnifying-glass"></i></span>
+        <input type="text" id="buscaTexto" placeholder="Buscar por nome, habilidade, curso...">
+        <button class="btn btn-primary" id="btnBuscar">Buscar</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="filters-panel">
+      <h3>Filtros Avançados</h3>
+      <div class="filters-grid">
+        <div class="form-group">
+          <label>Curso/Área</label>
+          <select id="fCurso"><option value="">Todos os cursos</option></select>
+        </div>
+        <div class="form-group">
+          <label>Grau Acadêmico</label>
+          <select id="fGrau">
+            <option value="">Qualquer grau</option>
+            <option>Graduação</option>
+            <option>Especialização</option>
+            <option>Mestrado</option>
+            <option>Doutorado</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Período/Semestre</label>
+          <select id="fPeriodo"><option value="">Qualquer período</option></select>
+        </div>
+        <div class="form-group">
+          <label>Cidade/Estado</label>
+          <select id="fCidade"><option value="">Todas as cidades</option></select>
+        </div>
+        <div class="form-group">
+          <label>Habilidades</label>
+          <select id="fHabilidade"><option value="">Todas as habilidades</option></select>
+        </div>
+        <div class="form-group">
+          <label>Nível</label>
+          <select id="fNivel">
+            <option value="">Qualquer nível</option>
+            <option>Básico</option>
+            <option>Intermediário</option>
+            <option>Avançado</option>
+            <option>Expert</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="fStatus">
+            <option value="">Todos</option>
+            <option value="completo">Completo</option>
+            <option value="incompleto">Em preenchimento</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Ordenar por</label>
+          <select id="fOrdenar">
+            <option value="recentes">Mais recentes</option>
+            <option value="nome">Nome A-Z</option>
+            <option value="relevancia">Relevância da busca</option>
+          </select>
+        </div>
+      </div>
+      <div class="filters-actions">
+        <button class="btn btn-secondary" id="btnLimpar">Limpar Filtros</button>
+        <button class="btn btn-primary" id="btnFiltrar">Filtrar</button>
+      </div>
+    </div>
+
+    <div class="results-header">
+      <span><strong id="totalCount">0</strong> talentos encontrados</span>
+      <span id="rangeInfo"></span>
+    </div>
+
+    <div class="talentos-grid" id="talentosGrid"></div>
+
+    <div class="empty-state" id="emptyState" hidden style="max-width:1100px;margin:0 auto;">
+      <div class="icon"><i class="ph-fill ph-users"></i></div>
+      <h2 id="emptyStateTitle">Nenhum talento encontrado</h2>
+      <p id="emptyStateMsg">Ajuste a busca ou os filtros para ver outros perfis.</p>
+    </div>
+
+    <div style="text-align:center;margin:24px 0 8px;">
+      <button class="btn btn-secondary" id="btnCarregarMais" hidden>Carregar mais</button>
+    </div>
+  </div>
+
+  <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
+
+  <!-- Modal de pré-visualização -->
+  <div class="modal-overlay hidden" id="cvModalOverlay">
+    <div class="modal cv-modal">
+      <div class="privacy-banner">
+        <i class="ph-fill ph-shield-check"></i> Contato disponível apenas via mensagem pela plataforma
+      </div>
+      <div class="cv-modal-header">
+        <div class="cv-modal-avatar" id="modalAvatar">?</div>
+        <div style="flex:1;">
+          <h2><span id="modalNome"></span> <span class="badge" id="modalDisponibilidade" hidden></span></h2>
+          <div class="subline" id="modalSubline"></div>
+          <div class="skill-tags" id="modalSkillTags"></div>
+        </div>
+      </div>
+      <div class="tabs" style="margin:0 24px;" id="modalTabs">
+        <button class="tab-btn active" data-tab="dados">Dados Pessoais</button>
+        <button class="tab-btn" data-tab="experiencias">Experiências</button>
+        <button class="tab-btn" data-tab="formacao">Formação</button>
+        <button class="tab-btn" data-tab="habilidades">Habilidades</button>
+        <button class="tab-btn" data-tab="projetos">Projetos</button>
+        <button class="tab-btn" data-tab="certificados">Certificados</button>
+      </div>
+      <div class="cv-modal-body" id="modalBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnFecharModal">Fechar</button>
+        <a class="btn btn-outline" id="btnVerCurriculoCompleto" href="#" target="_blank" rel="noopener">
+          <i class="ph-fill ph-scroll"></i> Ver Currículo Completo
+        </a>
+        <button class="btn btn-primary" id="btnEnviarMensagemModal">Enviar Mensagem</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de envio de mensagem -->
+  <div class="modal-overlay hidden" id="msgModalOverlay">
+    <div class="modal" style="max-width:480px;">
+      <div class="modal-header">
+        <h3>Enviar mensagem para <span id="msgDestNome"></span></h3>
+      </div>
+      <div class="modal-body">
+        <div class="form-alert hidden" id="msgAlert"><i class="ph-bold ph-warning-circle"></i><span id="msgAlertText"></span></div>
+        <div class="form-group">
+          <label>Assunto</label>
+          <input type="text" id="msgAssunto" placeholder="Ex: Oportunidade de Estágio na TechCorp">
+        </div>
+        <div class="form-group">
+          <label>Vaga relacionada (opcional)</label>
+          <input type="text" id="msgVaga" placeholder="Ex: Estágio Front-end">
+        </div>
+        <div class="form-group">
+          <label>Mensagem</label>
+          <textarea id="msgTexto" rows="5" placeholder="Escreva sua mensagem..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCancelarMsg">Cancelar</button>
+        <button class="btn btn-primary" id="btnConfirmarMsg">Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+  <script src="js/config.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api-empresa.js"></script>
+  <script src="js/mensagens.js"></script>
+  <script src="js/busca-talentos.js"></script>
+</body>
+
+</html>

@@ -37,6 +37,16 @@ const APIEmpresa = {
         atualizado_em: Date.now()
       });
 
+      // Índice CNPJ -> {uid, email}, para permitir login por CNPJ ou e-mail.
+      // (o CNPJ no índice é só dígitos, igual ao campo digitado no login)
+      const cnpjDigits = String(cnpj || '').replace(/\D/g, '');
+      if (cnpjDigits) {
+        await firebaseDB.ref(`empresa_index/${cnpjDigits}`).set({
+          uid,
+          email: String(email || '').toLowerCase()
+        });
+      }
+
       return { success: true, uid };
     } catch (error) {
       return this._errorMessage(error, 'Erro ao criar conta da empresa');
@@ -74,13 +84,63 @@ const APIEmpresa = {
     }
   },
 
+  // ============================================
+  // LOGIN POR CNPJ OU E-MAIL
+  // Recebe o que o usuário digitou (com ou sem máscara); se forem 11+
+  // dígitos, trata como CNPJ e resolve o e-mail via empresa_index.
+  // ============================================
+  async resolverEmailPorIdentificador(identifier) {
+    const raw = String(identifier || '').trim();
+    const digits = raw.replace(/\D/g, '');
+
+    if (raw.includes('@')) {
+      return { email: raw.toLowerCase() };
+    }
+
+    if (digits.length >= 11) {
+      try {
+        const snap = await firebaseDB
+          .ref(`empresa_index/${digits}`)
+          .once('value');
+        if (!snap.exists()) {
+          return { error: 'CNPJ não encontrado. Verifique os números digitados ou entre com seu e-mail.' };
+        }
+        const email = (snap.val().email || '').toLowerCase();
+        if (!email) {
+          return { error: 'Cadastro sem e-mail vinculado ao CNPJ. Entre com seu e-mail.' };
+        }
+        return { email };
+      } catch (e) {
+        console.error('Erro ao resolver CNPJ:', e);
+        return { error: 'Erro ao consultar o CNPJ. Tente novamente ou use o e-mail.' };
+      }
+    }
+
+    return { error: 'Digite um CNPJ válido (14 números) ou seu e-mail.' };
+  },
+
   async updatePerfil(data) {
     if (!Auth.uid) return { error: 'Usuário não autenticado' };
     try {
-      await firebaseDB.ref(`usuario_empresa/${Auth.uid}`).update({
+      const ref = firebaseDB.ref(`usuario_empresa/${Auth.uid}`);
+      const before = (await ref.once('value')).val() || {};
+
+      await ref.update({
         ...data,
         atualizado_em: Date.now()
       });
+
+      // Mantém o índice de login por CNPJ sincronizado com o perfil
+      const cnpj = data.cnpj ?? before.cnpj ?? '';
+      const email = (data.email ?? before.email ?? '').toString().toLowerCase();
+      const cnpjDigits = String(cnpj).replace(/\D/g, '');
+      if (cnpjDigits && email) {
+        await firebaseDB.ref(`empresa_index/${cnpjDigits}`).set({
+          uid: Auth.uid,
+          email
+        });
+      }
+
       return { success: true };
     } catch (error) {
       return this._errorMessage(error, 'Erro ao atualizar perfil da empresa');

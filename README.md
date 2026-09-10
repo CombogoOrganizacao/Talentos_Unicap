@@ -45,6 +45,8 @@ firebase: {
 ```
 usuario_aluno/{uid}          # perfil + currículo de cada aluno
   ├── nome, email, slug, telefone, cidade, estado, curso, periodo, bio...
+  ├── visivel_para_empresas       # consentimento p/ aparecer na busca de talentos (default: true)
+  ├── disponibilidade_estagio     # badge exibido às empresas (ex.: "Disponível para Estágio")
   ├── experiencias/{id}
   ├── formacao/{id}
   ├── habilidades/{id}
@@ -55,12 +57,24 @@ usuario_empresa/{uid}        # perfil de cada empresa cadastrada
   ├── nome_empresa, cnpj, email, setor, telefone, site, responsavel, logo_url...
 
 publicProfiles/{slug}        # cópia pública (só leitura) do currículo, usada em /[slug]
+  ├── ... (mesmos campos do currículo)
+  ├── uid                        # uid real do aluno — identifica o destinatário das mensagens
+  ├── visivel_para_empresas      # espelho do consentimento (busca de talentos só lista quem autorizou)
+  └── disponibilidade_estagio    # espelho do badge de disponibilidade
+
+mensagens/{msgId}            # mensagens empresa -> aluno (Busca de Talentos)
+  ├── remetenteId, remetenteNome # uid da empresa logada
+  ├── destinatarioId, destinatarioNome # uid do aluno (vem de publicProfiles)
+  ├── assunto, mensagem, vagaRelacionada
+  ├── status                     # Enviada | Lida | Respondida
+  └── criadoEm                   # timestamp
 
 talentosUnicap.vagas         # (Portal de Vagas) — hoje ainda em localStorage no navegador
 ```
 
 - `usuario_aluno` e `usuario_empresa` só podem ser lidos/escritos pelo próprio dono (uid autenticado).
-- `publicProfiles` tem leitura pública (é o que alimenta o link de currículo compartilhável) e escrita restrita ao dono do perfil correspondente.
+- `publicProfiles` tem leitura pública (é o que alimenta o link de currículo compartilhável e a busca de talentos) e escrita restrita ao dono do perfil correspondente.
+- `mensagens` só pode ser lida pelo remetente e pelo destinatário; criar exige ser o remetente.
 - A conta de teste `admin@unicap.edu.br` / `123456` continua funcionando em **modo demo** (dados só no `localStorage` do navegador), sem precisar de Firebase configurado — útil para testar a interface rapidamente.
 
 ### 2. Deploy no Vercel
@@ -80,6 +94,8 @@ No Vercel, vá em **Settings** → **Domains** → adicione seu domínio.
 ├── login.html               # Login (alunos)
 ├── register.html             # Cadastro (alunos)
 ├── cadastro-empresa.html     # Cadastro de empresas
+├── busca-talentos.html       # Painel da empresa — busca de talentos + envio de mensagens
+├── caixa-saida-empresa.html  # Painel da empresa — mensagens enviadas
 ├── dashboard.html            # Editor de currículo (aluno)
 ├── preview.html              # Preview + exportação PDF/DOCX
 ├── public.html                # Perfil público (/[slug])
@@ -95,9 +111,12 @@ No Vercel, vá em **Settings** → **Domains** → adicione seu domínio.
 │   ├── firebase.js               # Inicialização do Firebase (Auth + Database)
 │   ├── api.js                    # Cliente de dados — perfil de aluno (usuario_aluno)
 │   ├── api-empresa.js             # Cliente de dados — perfil de empresa (usuario_empresa)
-│   ├── auth.js                    # Autenticação Firebase + modo demo
+│   ├── auth.js                    # Autenticação Firebase + modo demo (detecta aluno/empresa no login)
 │   ├── dashboard.js                # Lógica do editor de currículo
 │   ├── cadastro-empresa.js          # Lógica da página de cadastro de empresa
+│   ├── busca-talentos.js            # Busca de talentos (consentimento + filtros + mensagens)
+│   ├── caixa-saida-empresa.js       # Caixa de saída das mensagens da empresa
+│   ├── mensagens.js                 # Módulo de mensagens empresa <-> aluno (nó mensagens)
 │   ├── export.js                     # Exportação PDF/DOCX
 │   ├── public-profile.js              # Perfil público
 │   ├── telefone-mask.js                # Máscara de telefone reutilizável

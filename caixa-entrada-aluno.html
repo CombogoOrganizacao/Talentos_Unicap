@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caixa de Entrada - TalentoUNICAP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <img src="img/asabranca_Unicap.png" width="40px" alt="">
+        Talentos<span>UNICAP</span>
+      </a>
+      <div class="nav-links">
+        <a href="dashboard.html" class="nav-text-link">Meu Currículo</a>
+        <a href="lista-vagas.html" class="nav-text-link">Painel de Vagas</a>
+        <a href="caixa-entrada-aluno.html" class="nav-text-link active">Mensagens</a>
+        <span class="avatar" id="alunoAvatar" style="width:32px;height:32px;border-radius:50%;background:var(--unicap-500);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">A</span>
+        <span id="alunoNome" style="font-size:14px;font-weight:600;color:var(--gray-800);"></span>
+        <button class="btn btn-secondary btn-sm" id="btnSair">Sair</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container" style="padding-top:32px;padding-bottom:64px;max-width:900px;">
+    <div class="page-intro">
+      <h1 style="font-size:26px;margin-bottom:8px;">Caixa de Entrada</h1>
+      <p class="page-desc">Mensagens enviadas pelas empresas interessadas no seu perfil. Responda por aqui — seu
+        contato pessoal não é compartilhado.</p>
+    </div>
+
+    <div class="msg-toolbar">
+      <div class="search-box">
+        <i class="ph ph-magnifying-glass"></i>
+        <input type="search" id="buscaMsg" placeholder="Buscar por empresa ou assunto...">
+      </div>
+      <select id="filtroStatusMsg">
+        <option value="">Status: Todos</option>
+        <option value="Enviada">Não lidas</option>
+        <option value="Lida">Lidas</option>
+        <option value="Respondida">Respondidas</option>
+      </select>
+      <select id="filtroPeriodoMsg">
+        <option value="0">Período: Todo o período</option>
+        <option value="7">Últimos 7 dias</option>
+        <option value="30" selected>Últimos 30 dias</option>
+        <option value="90">Últimos 90 dias</option>
+      </select>
+    </div>
+
+    <div id="msgList"></div>
+
+    <div class="empty-state" id="emptyMsgState" hidden>
+      <div class="icon"><i class="ph-fill ph-chat-circle-dots"></i></div>
+      <h2 id="emptyMsgTitle">Nenhuma mensagem recebida ainda</h2>
+      <p>Quando uma empresa se interessar pelo seu currículo, a mensagem aparece aqui.</p>
+      <a class="btn btn-primary" href="dashboard.html">Completar meu currículo</a>
+    </div>
+  </div>
+
+  <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+  <script src="js/config.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/mensagens.js"></script>
+  <script src="js/caixa-entrada-aluno.js"></script>
+</body>
+
+</html>

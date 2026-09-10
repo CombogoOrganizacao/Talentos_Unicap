@@ -158,6 +158,14 @@ function fillPersonalForm() {
   UI.setVal('linkedin', profile.linkedin);
   UI.setVal('github', profile.github);
   UI.setVal('portfolio', profile.portfolio);
+
+  // Privacidade: autorização para aparecer na busca de talentos das empresas
+  const visivel = document.getElementById('visivel_para_empresas');
+  if (visivel) visivel.checked = isTrue(profile.visivel_para_empresas);
+
+  // Disponibilidade exibida às empresas (badge na busca de talentos)
+  const disp = document.getElementById('disponibilidade_estagio');
+  if (disp) disp.value = profile.disponibilidade_estagio || 'Disponível para Estágio';
  
   // Popula estados
   const stateSelect = document.getElementById('estado');
@@ -222,7 +230,9 @@ async function savePersonal() {
     nome: UI.val('nome'), telefone: UI.val('telefone'), curso: UI.val('curso'),
     periodo: UI.val('periodo'), cidade: UI.val('cidade'), estado: UI.val('estado'),
     endereco: UI.val('endereco'), bio: UI.val('bio'), linkedin: UI.val('linkedin'),
-    github: UI.val('github'), portfolio: UI.val('portfolio')
+    github: UI.val('github'), portfolio: UI.val('portfolio'),
+    visivel_para_empresas: document.getElementById('visivel_para_empresas')?.checked || false,
+    disponibilidade_estagio: UI.val('disponibilidade_estagio') || 'Disponível para Estágio'
   };
   const btn = document.getElementById('savePersonalBtn');
   btn.disabled = true; btn.textContent = 'Salvando...';

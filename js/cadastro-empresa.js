@@ -172,17 +172,20 @@
         }
       }
 
-      // 3. Sucesso: mostra confirmação e desabilita o formulário
+      // 3. Sucesso: mostra confirmação e redireciona para o painel da empresa
       form.innerHTML = `
         <div style="text-align:center;padding:20px 0;">
           <div style="font-size:40px;color:var(--green-500);margin-bottom:12px;"><i class="ph-fill ph-check-circle"></i></div>
           <h3 style="margin-bottom:8px;">Conta criada com sucesso!</h3>
           <p style="color:var(--gray-600);margin-bottom:20px;">
-            Sua empresa <strong>${nome_empresa}</strong> foi cadastrada na plataforma. Em breve você poderá acessar
-            o painel da empresa para buscar talentos.
+            Sua empresa <strong>${nome_empresa}</strong> foi cadastrada na plataforma.
+            Redirecionando para o painel...
           </p>
-          <a href="index.html" class="btn btn-primary">Voltar ao início</a>
         </div>`;
+
+      setTimeout(() => {
+        window.location.href = 'busca-talentos.html';
+      }, 1200);
     } catch (error) {
       console.error("Erro ao criar conta da empresa:", error);
       showAlert(friendlyAuthError(error));

@@ -1,4 +1,4 @@
-hab<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
@@ -133,6 +133,22 @@ hab<!DOCTYPE html>
               <div class="form-group"><label>GitHub</label><input id="github" placeholder="github.com/seuuser"></div>
             </div>
             <div class="form-group"><label>Portfólio</label><input id="portfolio" placeholder="seusite.com"></div>
+            <label class="checkbox-field" style="margin:16px 0;">
+              <input type="checkbox" id="visivel_para_empresas" checked>
+              <span class="checkbox-text">
+                <span class="checkbox-title">Visível para empresas (Busca de Talentos)</span>
+                <span class="checkbox-hint">Autoriza as empresas cadastradas a encontrarem seu currículo na busca de talentos e enviarem mensagens pela plataforma. Desmarque para sair da busca.</span>
+              </span>
+            </label>
+            <div class="form-group">
+              <label>Disponibilidade (exibida para as empresas)</label>
+              <select id="disponibilidade_estagio">
+                <option>Disponível para Estágio</option>
+                <option>Disponível para Estágio ou Jovem Aprendiz</option>
+                <option>Disponível para Trainee</option>
+                <option>Sem interesse no momento</option>
+              </select>
+            </div>
             <div style="text-align:right;margin-top:16px;">
               <button class="btn btn-primary" id="savePersonalBtn" onclick="savePersonal()"><i
                   class="ph-fill ph-floppy-disk"></i> Salvar Dados Pessoais</button>

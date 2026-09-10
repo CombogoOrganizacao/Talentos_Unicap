@@ -162,6 +162,13 @@ const API = {
           github: '',
           portfolio: '',
 
+          // Privacidade: por padrão o aluno autoriza aparecer na busca de
+          // talentos das empresas; pode desmarcar no dashboard a qualquer momento.
+          visivel_para_empresas: true,
+
+          // Disponibilidade exibida para as empresas (badge no perfil).
+          disponibilidade_estagio: 'Disponível para Estágio',
+
           experiencias: {},
           formacao: {},
           habilidades: {},
@@ -415,6 +422,13 @@ const API = {
 
       certificados:
         this._normalizeCollection(data.certificados),
+
+      // Privacidade e disponibilidade (usados pelo painel de busca de talentos)
+      visivel_para_empresas:
+        data.visivel_para_empresas === true ||
+        data.visivel_para_empresas === 'true',
+
+      disponibilidade_estagio: data.disponibilidade_estagio || '',
 
       atualizado_em: Date.now()
     };
@@ -742,6 +756,13 @@ const API = {
 
       portfolio:
         profile.portfolio || '',
+
+      visivel_para_empresas:
+        profile.visivel_para_empresas !== false,
+
+      disponibilidade_estagio:
+        profile.disponibilidade_estagio ||
+        'Disponível para Estágio',
 
       experiencias:
         this._getDemoSheet(

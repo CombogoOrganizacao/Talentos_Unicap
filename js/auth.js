@@ -38,12 +38,13 @@ const Auth = {
         CONFIG.firebase.apiKey &&
         CONFIG.firebase.apiKey !== 'SUA_API_KEY_AQUI'
       ) {
-        firebaseAuth.onAuthStateChanged(user => {
+        firebaseAuth.onAuthStateChanged(async (user) => {
           if (user) {
             this.uid = user.uid;
             this.user = user;
             this.isDemo = false;
-            this.onAuthChange(true);
+            const tipoConta = await this._detectarTipoConta();
+            this.onAuthChange(true, tipoConta);
           } else {
             this.uid = null;
             this.user = null;
@@ -66,8 +67,25 @@ const Auth = {
     }
   },
 
-  onAuthChange(loggedIn) {
+  onAuthChange(loggedIn, tipoConta) {
     // Sobrescrito pelas páginas.
+    // tipoConta: 'empresa' | 'aluno' | null (quando não foi possível detectar)
+  },
+
+  // Detecta o tipo da conta logada consultando o Realtime Database:
+  // se existe perfil em usuario_empresa/{uid} é uma empresa; caso contrário,
+  // tratamos como aluno. Retorna null se a detecção falhar (ex.: sem permissão
+  // de leitura), e aí cada página decide o destino padrão.
+  async _detectarTipoConta() {
+    try {
+      const snap = await firebaseDB
+        .ref(`usuario_empresa/${this.uid}`)
+        .once('value');
+      return snap.exists() ? 'empresa' : 'aluno';
+    } catch (e) {
+      console.error('Erro ao identificar tipo de conta:', e);
+      return null;
+    }
   },
 
   async register(name, email, password) {
@@ -155,6 +173,30 @@ const Auth = {
     this.isDemo = true;
 
     return user;
+  },
+
+  // Login aceitando CNPJ (empresas) ou e-mail (empresas e alunos).
+  // Se o identificador for um CNPJ, resolve o e-mail via empresa_index
+  // antes de autenticar no Firebase.
+  async loginWithIdentifier(identifier, password) {
+    if (this.isDemo) {
+      return this.login(identifier, password);
+    }
+
+    if (
+      CONFIG.firebase &&
+      CONFIG.firebase.apiKey &&
+      CONFIG.firebase.apiKey !== 'SUA_API_KEY_AQUI' &&
+      typeof APIEmpresa !== 'undefined'
+    ) {
+      const resolved = await APIEmpresa.resolverEmailPorIdentificador(identifier);
+      if (resolved.error) {
+        throw new Error(resolved.error);
+      }
+      return this.login(resolved.email, password);
+    }
+
+    return this.login(identifier, password);
   },
 
   async logout() {
