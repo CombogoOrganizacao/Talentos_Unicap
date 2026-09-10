@@ -33,6 +33,7 @@
 
     "mensagens": {
       ".indexOn": ["remetenteId", "destinatarioId"],
+      ".read": "auth != null && ((query.orderByChild === 'remetenteId' && query.equalTo === auth.uid) || (query.orderByChild === 'destinatarioId' && query.equalTo === auth.uid))",
       "$msgId": {
         ".read": "auth != null && (data.child('remetenteId').val() === auth.uid || data.child('destinatarioId').val() === auth.uid)",
         ".write": "auth != null && ((!data.exists() && newData.child('remetenteId').val() === auth.uid) || (data.exists() && (data.child('remetenteId').val() === auth.uid || data.child('destinatarioId').val() === auth.uid)))"

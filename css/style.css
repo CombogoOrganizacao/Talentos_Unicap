@@ -1601,3 +1601,28 @@ a:hover {
 .msg-bubble .label { font-size: 11.5px; font-weight: 700; color: var(--gray-600); margin-bottom: 4px; }
 .msg-bubble.reply .label { color: var(--green-700); }
 .msg-bubble .timestamp { font-size: 11px; color: var(--gray-400); float: right; }
+
+
+/* ============================================
+   PAINEL DO ALUNO — Aba Mensagens integrada
+   ============================================ */
+#tab-messages .msg-toolbar {
+  margin-bottom: 18px;
+}
+
+#tab-messages .msg-item-meta {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+@media (max-width: 700px) {
+  #tab-messages .msg-item-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  #tab-messages .msg-item-meta {
+    justify-content: flex-start;
+    width: 100%;
+  }
+}

@@ -30,11 +30,64 @@
     return `Atualizado há ${d} dia${d > 1 ? 's' : ''}`;
   }
 
-  function grauMaisAlto(formacao) {
-    const ordem = ['Doutorado', 'Mestrado', 'Especialização', 'Graduação'];
-    for (const g of ordem) {
-      if (formacao?.some((f) => f.grau === g)) return g;
+  // Firebase pode retornar coleções como objeto ({id: {...}}) ou array.
+  // Normalizamos antes de usar .some(), .map(), .flatMap() etc.
+  function normalizarColecao(value) {
+    if (!value) return [];
+
+    if (Array.isArray(value)) {
+      return value.filter(Boolean);
     }
+
+    if (typeof value === 'object') {
+      return Object.entries(value).map(([id, item]) => ({
+        ...(item && typeof item === 'object' ? item : {}),
+        id: item?.id || id
+      }));
+    }
+
+    return [];
+  }
+
+  function textoNormalizado(value) {
+    return String(value || '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  }
+
+  // Verifica se o perfil possui qualquer formação do grau selecionado.
+  // Um aluno pode ter Graduação e Especialização ao mesmo tempo,
+  // portanto o filtro deve procurar em TODAS as formações.
+  function possuiGrau(profile, grauSelecionado) {
+    if (!grauSelecionado) return true;
+
+    const formacao = normalizarColecao(profile?.formacao);
+    const grauFiltro = textoNormalizado(grauSelecionado);
+
+    return formacao.some((f) => {
+      const grau = textoNormalizado(f?.grau);
+      return (
+        grau === grauFiltro ||
+        grau.startsWith(grauFiltro + ' em') ||
+        grau.startsWith(grauFiltro + ' -') ||
+        grau.startsWith(grauFiltro + ':')
+      );
+    });
+  }
+
+  // Retorna o maior grau encontrado no perfil.
+  function grauMaisAlto(profile) {
+    const ordem = ['Doutorado', 'Mestrado', 'Especialização', 'Graduação'];
+    for (const grau of ordem) {
+      if (possuiGrau(profile, grau)) return grau;
+    }
+
+    if (profile?.curso && String(profile.curso).trim() !== '') {
+      return 'Graduação';
+    }
+
     return '';
   }
 
@@ -85,9 +138,18 @@
       allProfiles = [];
       if (snap.exists()) {
         snap.forEach((child) => {
-          const p = child.val();
+          const p = child.val() || {};
           if (p.visivel_para_empresas === false || p.visivel_para_empresas === 'false') return; // consentimento
-          allProfiles.push({ uid: child.key, ...p });
+
+          allProfiles.push({
+            uid: child.key,
+            ...p,
+            experiencias: normalizarColecao(p.experiencias),
+            formacao: normalizarColecao(p.formacao),
+            habilidades: normalizarColecao(p.habilidades),
+            projetos: normalizarColecao(p.projetos),
+            certificados: normalizarColecao(p.certificados)
+          });
         });
       }
     } catch (e) {
@@ -102,7 +164,7 @@
     const cursos = [...new Set(allProfiles.map((p) => p.curso).filter(Boolean))].sort();
     const cidades = [...new Set(allProfiles.map((p) => p.cidade && p.estado ? `${p.cidade}, ${p.estado}` : p.cidade).filter(Boolean))].sort();
     const periodos = [...new Set(allProfiles.map((p) => p.periodo).filter(Boolean))].sort();
-    const habilidades = [...new Set(allProfiles.flatMap((p) => (p.habilidades || []).map((h) => h.nome)).filter(Boolean))].sort();
+    const habilidades = [...new Set(allProfiles.flatMap((p) => normalizarColecao(p.habilidades).map((h) => h.nome)).filter(Boolean))].sort();
 
     const fill = (id, values) => {
       const sel = document.getElementById(id);
@@ -137,18 +199,20 @@
         const loc = p.cidade && p.estado ? `${p.cidade}, ${p.estado}` : p.cidade;
         if (loc !== cidade) return false;
       }
-      if (grau && grauMaisAlto(p.formacao) !== grau) return false;
-      if (habilidade && !(p.habilidades || []).some((h) => h.nome === habilidade)) return false;
-      if (nivel && !(p.habilidades || []).some((h) => h.nivel === nivel)) return false;
+      if (grau && !possuiGrau(p, grau)) return false;
+
+      const habilidadesPerfil = normalizarColecao(p.habilidades);
+      if (habilidade && !habilidadesPerfil.some((h) => h.nome === habilidade)) return false;
+      if (nivel && !habilidadesPerfil.some((h) => h.nivel === nivel)) return false;
       if (status === 'completo' && !isCompleto(p)) return false;
       if (status === 'incompleto' && isCompleto(p)) return false;
 
       if (termo) {
         const haystack = [
           p.nome, p.bio, p.curso,
-          ...(p.habilidades || []).map((h) => h.nome),
-          ...(p.experiencias || []).flatMap((e) => [e.cargo, e.empresa]),
-          ...(p.projetos || []).map((pr) => pr.nome)
+          ...normalizarColecao(p.habilidades).map((h) => h.nome),
+          ...normalizarColecao(p.experiencias).flatMap((e) => [e.cargo, e.empresa]),
+          ...normalizarColecao(p.projetos).map((pr) => pr.nome)
         ].filter(Boolean).join(' ').toLowerCase();
         if (!haystack.includes(termo)) return false;
       }
@@ -203,7 +267,7 @@
     slice.forEach((p) => {
       const card = document.createElement('div');
       card.className = 'talento-card';
-      const skills = (p.habilidades || []).slice(0, 4);
+      const skills = normalizarColecao(p.habilidades).slice(0, 4);
       card.innerHTML = `
         <div class="talento-card-top">
           <div class="talento-avatar">${initials(p.nome)}</div>
@@ -278,7 +342,7 @@
       `${profile.curso || ''}${profile.periodo ? ' — ' + profile.periodo : ''}${profile.cidade ? ' | ' + profile.cidade + (profile.estado ? ', ' + profile.estado : '') : ''}`;
 
     const tagsEl = document.getElementById('modalSkillTags');
-    tagsEl.innerHTML = (profile.habilidades || []).slice(0, 6)
+    tagsEl.innerHTML = normalizarColecao(profile.habilidades).slice(0, 6)
       .map((h) => `<span class="skill-tag">${h.nome}</span>`).join('');
 
     document.querySelectorAll('#modalTabs .tab-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
@@ -318,7 +382,7 @@
     }
 
     if (tab === 'experiencias') {
-      const items = p.experiencias || [];
+      const items = normalizarColecao(p.experiencias);
       body.innerHTML = items.length ? items.map((e) => `
         <div class="cv-tab-item">
           <h4>${e.cargo || ''}</h4>
@@ -330,7 +394,7 @@
     }
 
     if (tab === 'formacao') {
-      const items = p.formacao || [];
+      const items = normalizarColecao(p.formacao);
       body.innerHTML = items.length ? items.map((f) => `
         <div class="cv-tab-item">
           <h4>${f.grau || ''} em ${f.area_estudo || ''}</h4>
@@ -341,7 +405,7 @@
     }
 
     if (tab === 'habilidades') {
-      const items = p.habilidades || [];
+      const items = normalizarColecao(p.habilidades);
       body.innerHTML = items.length
         ? `<div class="skill-tags">${items.map((h) => `<span class="skill-tag">${h.nome} <small style="color:var(--gray-400)">· ${h.nivel || ''}</small></span>`).join('')}</div>`
         : `<div class="cv-empty-tab">Nenhuma habilidade cadastrada.</div>`;
@@ -349,7 +413,7 @@
     }
 
     if (tab === 'projetos') {
-      const items = p.projetos || [];
+      const items = normalizarColecao(p.projetos);
       body.innerHTML = items.length ? items.map((pr) => `
         <div class="cv-tab-item">
           <h4>${pr.nome || ''}</h4>
@@ -360,7 +424,7 @@
     }
 
     if (tab === 'certificados') {
-      const items = p.certificados || [];
+      const items = normalizarColecao(p.certificados);
       body.innerHTML = items.length ? items.map((c) => `
         <div class="cv-tab-item">
           <h4>${c.nome || ''}</h4>

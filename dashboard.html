@@ -85,6 +85,10 @@
         <button class="tab-btn" data-tab="skills"><i class="ph-fill ph-wrench"></i> Habilidades</button>
         <button class="tab-btn" data-tab="projects"><i class="ph-fill ph-box-arrow-up"></i> Projetos</button>
         <button class="tab-btn" data-tab="certificates"><i class="ph-fill ph-trophy"></i> Certificados</button>
+        <button class="tab-btn" data-tab="messages" id="messagesTabBtn">
+          <i class="ph-fill ph-chat-circle-text"></i> Mensagens
+          <span id="messagesUnreadBadge" class="badge badge-blue hidden" style="margin-left:6px;">0</span>
+        </button>
       </div>
 
       <!-- TAB: Dados Pessoais -->
@@ -214,6 +218,50 @@
         </div>
       </div>
 
+      <!-- TAB: Mensagens -->
+      <div class="tab-content" id="tab-messages">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3>Mensagens</h3>
+              <p style="font-size:13px;color:var(--gray-500);margin-top:4px;">
+                Mensagens enviadas pelas empresas interessadas no seu perfil.
+              </p>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="msg-toolbar">
+              <div class="search-box">
+                <i class="ph ph-magnifying-glass"></i>
+                <input type="search" id="buscaMensagensPainel" placeholder="Buscar por empresa ou assunto...">
+              </div>
+              <select id="filtroStatusMensagensPainel">
+                <option value="">Status: Todos</option>
+                <option value="Enviada">Não lidas</option>
+                <option value="Lida">Lidas</option>
+                <option value="Respondida">Respondidas</option>
+              </select>
+              <select id="filtroPeriodoMensagensPainel">
+                <option value="0">Período: Todo o período</option>
+                <option value="7">Últimos 7 dias</option>
+                <option value="30" selected>Últimos 30 dias</option>
+                <option value="90">Últimos 90 dias</option>
+              </select>
+            </div>
+
+            <div id="mensagensPainelList"></div>
+
+            <div class="empty-state" id="mensagensPainelEmpty" hidden>
+              <div class="icon"><i class="ph-fill ph-chat-circle-dots"></i></div>
+              <h2 id="mensagensPainelEmptyTitle">Nenhuma mensagem recebida ainda</h2>
+              <p id="mensagensPainelEmptyText">
+                Quando uma empresa se interessar pelo seu currículo, a mensagem aparecerá aqui.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- TAB: Certificados -->
       <div class="tab-content" id="tab-certificates">
         <div class="card">
@@ -239,7 +287,9 @@
     <script src="js/firebase.js"></script>
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/mensagens.js"></script>
     <script src="js/dashboard.js"></script>
+    <script src="js/mensagens-painel-aluno.js"></script>
     <script>initDashboard();</script>
   </body>
 

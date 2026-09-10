@@ -133,6 +133,12 @@ async function loadProfile() {
   fillPersonalForm();
   renderAllSections();
   updateProgress();
+
+  // Inicializa a caixa de mensagens integrada ao painel do usuário
+  // somente depois que a autenticação e o perfil estiverem carregados.
+  if (typeof initMensagensPainelAluno === 'function') {
+    initMensagensPainelAluno();
+  }
 }
  
 // Alterna qual aba do dashboard fica visível (Dados Pessoais, Experiência,
