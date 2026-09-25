@@ -51,7 +51,7 @@
 
     document.title = `${profile.nome || 'Candidato'} - TalentoUNICAP`;
 
-    // Mesmo renderer do preview do aluno (js/export.js), com logo da UNICAP
+    // Mesmo renderer do preview do aluno (js/services/export-service.js), com logo da UNICAP
     cvContent.innerHTML = renderCVPreview(profile, true);
   }
 })();

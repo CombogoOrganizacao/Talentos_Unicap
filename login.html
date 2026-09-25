@@ -26,12 +26,13 @@
         <h2>Bem-vindo de volta</h2>
         <p class="subtitle">Entre na sua conta para acessar seu currículo</p>
 
-        <!-- Conta de teste -->
+        <!-- Conta de teste: inserida pelo DataLoader do backend somente
+             quando o banco está vazio (ver BackendApplication -> DataLoader.java) -->
         <div
           style="background:var(--unicap-50);border:1px solid var(--unicap-200);border-radius:8px;padding:14px;margin-bottom:20px;">
-          <p style="font-size:13px;font-weight:600;color:var(--unicap-600);margin-bottom:6px;">🧪 Conta de Teste</p>
-          <p style="font-size:12px;color:var(--gray-600);margin:2px 0;">📧 <strong>admin@unicap.edu.br</strong></p>
-          <p style="font-size:12px;color:var(--gray-600);margin:2px 0;">🔑 <strong>123456</strong></p>
+          <p style="font-size:13px;font-weight:600;color:var(--unicap-600);margin-bottom:6px;">🧪 Conta de Teste (aluno)</p>
+          <p style="font-size:12px;color:var(--gray-600);margin:2px 0;">📧 <strong>kaualucasds21@gmail.com</strong></p>
+          <p style="font-size:12px;color:var(--gray-600);margin:2px 0;">🔑 <strong>1234567890</strong></p>
           <button onclick="fillTestAccount()"
             style="margin-top:8px;font-size:12px;color:var(--unicap-500);background:none;border:none;cursor:pointer;text-decoration:underline;">Preencher
             automaticamente</button>
@@ -56,18 +57,15 @@
       </div>
     </div>
   </div>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>  <script src="js/config.js"></script>
-  <script src="js/firebase.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/api-empresa.js"></script>
+  <script src="js/config/config.js"></script>
+  <script src="js/security/http.js"></script>
+  <script src="js/services/aluno-service.js"></script>
+  <script src="js/security/auth.js"></script>
+  <script src="js/services/empresa-service.js"></script>
   <script>
     // Redireciona de acordo com o tipo de conta: empresa -> painel de busca
-    // de talentos; aluno (e modo demo) -> editor de currículo.
+    // de talentos; aluno -> editor de currículo.
     function destinoPorTipoConta(tipoConta) {
-      if (Auth.isDemo) return 'dashboard.html';
       return tipoConta === 'empresa' ? 'busca-talentos.html' : 'dashboard.html';
     }
 
@@ -78,15 +76,12 @@
     Auth.init();
 
     function fillTestAccount() {
-      document.getElementById('email').value = 'admin@unicap.edu.br';
-      document.getElementById('password').value = '123456';
+      document.getElementById('email').value = 'kaualucasds21@gmail.com';
+      document.getElementById('password').value = '1234567890';
     }
 
-    // Aceita e-mail ou CNPJ (empresas). CNPJ pode vir com ou sem máscara.
-    function identificadorEhCnpj(valor) {
-      const digits = valor.replace(/\D/g, '');
-      return !!valor && !valor.includes('@') && digits.length >= 11;
-    }
+    // Aceita e-mail (aluno/empresa) ou CNPJ (empresa) no mesmo campo -
+    // é o backend quem resolve qual dos dois foi digitado.
 
     document.getElementById('loginForm').addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -112,19 +107,13 @@
       errDiv.classList.add('hidden');
 
       try {
-        await Auth.loginWithIdentifier(identifier, password);
-
-        if (!Auth.isDemo) {
-          const tipoConta = await Auth._detectarTipoConta();
-          window.location.href = destinoPorTipoConta(tipoConta);
-        } else {
-          window.location.href = destinoPorTipoConta(null);
-        }
+        const user = await Auth.loginWithIdentifier(identifier, password);
+        window.location.href = destinoPorTipoConta(user.tipoConta);
       } catch (error) {
         console.error('Erro ao fazer login:', error);
 
         errDiv.textContent =
-          error.message || 'Email ou senha incorretos';
+          error.message || 'Email/CNPJ ou senha incorretos';
 
         errDiv.classList.remove('hidden');
 

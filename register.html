@@ -50,16 +50,14 @@
       </div>
     </div>
   </div>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-
-  <script src="js/config.js"></script>
-  <script src="js/firebase.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/auth.js"></script>
+  <script src="js/config/config.js"></script>
+  <script src="js/security/http.js"></script>
+  <script src="js/services/aluno-service.js"></script>
+  <script src="js/security/auth.js"></script>
   <script>
-    Auth.onAuthChange = function () {};
+    Auth.onAuthChange = function (loggedIn, tipoConta) {
+      if (loggedIn) window.location.href = tipoConta === 'empresa' ? 'busca-talentos.html' : 'dashboard.html';
+    };
 
     Auth.init();
 
@@ -98,43 +96,16 @@
       btn.textContent = 'Criando...';
 
       try {
+        // Um único request no backend já cria o Usuario (ALUNO) e devolve
+        // o token JWT - não existe mais um segundo passo de "criar perfil".
         await Auth.register(name, email, password);
-
-        const result = await API.createUser({
-          nome: name,
-          email: email
-        });
-
-        if (!result || result.error) {
-          throw new Error(
-            result?.error ||
-            'Não foi possível criar o perfil.'
-          );
-        }
 
         window.location.href = 'dashboard.html';
 
       } catch (error) {
         console.error('Erro ao criar conta:', error);
 
-        let message = error.message || 'Erro ao criar conta.';
-
-        switch (error.code) {
-          case 'auth/email-already-in-use':
-            message = 'Este email já está cadastrado.';
-            break;
-          case 'auth/invalid-email':
-            message = 'O email informado é inválido.';
-            break;
-          case 'auth/weak-password':
-            message = 'A senha é muito fraca.';
-            break;
-          case 'auth/network-request-failed':
-            message = 'Erro de conexão com o Firebase.';
-            break;
-        }
-
-        errDiv.textContent = message;
+        errDiv.textContent = error.message || 'Erro ao criar conta.';
         errDiv.classList.remove('hidden');
 
         btn.disabled = false;

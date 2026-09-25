@@ -42,7 +42,6 @@
       </div>
     </nav>
 
-
     <div class="container" style="padding-top:32px;padding-bottom:48px;">
       <!-- Header -->
       <div
@@ -110,7 +109,7 @@
                 <input maxlength="15" id="telefone" placeholder="(81) 99999-9999">
               </div>
 
-              <script src="js/telefone-mask.js"></script>
+              <script src="js/utils/mascaras.js"></script>
             </div>
             <div class="form-row">
               <div class="form-group" id="group-curso"><label>Curso<span class="required-mark">*</span></label><input
@@ -279,17 +278,15 @@
 
     <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
 
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-
-    <script src="js/config.js"></script>
-    <script src="js/firebase.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/mensagens.js"></script>
-    <script src="js/dashboard.js"></script>
-    <script src="js/mensagens-painel-aluno.js"></script>
+    <script src="js/config/config.js"></script>
+    <script src="js/utils/cursos.js"></script>
+    <script src="js/utils/cidades.js"></script>
+    <script src="js/security/http.js"></script>
+    <script src="js/services/aluno-service.js"></script>
+    <script src="js/security/auth.js"></script>
+    <script src="js/services/mensagem-service.js"></script>
+    <script src="js/pages/dashboard.js"></script>
+    <script src="js/pages/mensagens-painel-aluno.js"></script>
     <script>initDashboard();</script>
   </body>
 

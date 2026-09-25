@@ -1,19 +1,15 @@
 // ============================================
-// Configuração - TalentoUNICAP
+// Config - dados estáticos da aplicação
+// (equivalente ao pacote Config/ do backend: só dados de configuração,
+// sem lógica de negócio. Lógica de cidades/cursos foi para js/utils/)
 // ============================================
 const CONFIG = {
 
-  // Configuração do Firebase
-  firebase: {
-    apiKey: "AIzaSyCxiOfxy6HPAiJ4hz3fmYPamNl8XpVb-IE",
-    authDomain: "talentos-unicap.firebaseapp.com",
-    databaseURL: "https://talentos-unicap-default-rtdb.firebaseio.com",
-    projectId: "talentos-unicap",
-    storageBucket: "talentos-unicap.firebasestorage.app",
-    messagingSenderId: "936743315009",
-    appId: "1:936743315009:web:3d4964704577c1934548c0",
-    measurementId: "G-0BLD35NF7J"
-},
+  // URL base da API REST (Spring Boot).
+  apiBaseUrl: (function () {
+    const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    return isLocal ? 'http://localhost:8080/api' : 'https://SEU-BACKEND-EM-PRODUCAO/api';
+  })(),
 
   // Estados brasileiros
   states: [
@@ -25,9 +21,8 @@ const CONFIG = {
   skillCategories: ['Técnica', 'Idioma', 'Soft Skill', 'Ferramenta'],
   skillLevels: ['Básico', 'Intermediário', 'Avançado', 'Expert'],
 
-
-// Cursos de Graduação - UNICAP
-cursos: [
+  // Cursos de Graduação - UNICAP
+  cursos: [
     'Administração', 'Arquitetura e Urbanismo', 'Banco de Dados - IA e Ciências de Dados',
     'Ciência da Computação', 'Ciência Política', 'Ciências Biológicas - Licenciatura',
     'Ciências Biológicas - Bacharelado', 'Ciências Contábeis', 'Ciências da Religião',
@@ -72,44 +67,3 @@ const MAPA_GRAU_PARA_CHAVE = {
   'Mestrado': 'mestrados',
   'Doutorado': 'doutorados'
 };
-
-// Gera as <option> do dropdown de curso, de acordo com o grau escolhido
-function gerarOpcoesCurso(grau, cursoSelecionado = '') {
-  const chave = MAPA_GRAU_PARA_CHAVE[grau];
-  const lista = chave ? CONFIG[chave] : null;
-
-  if (!lista) {
-    return `<option value="">Selecione o grau primeiro</option>`;
-  }
-
-  const opcoes = lista
-    .map(c => `<option value="${c}" ${c === cursoSelecionado ? 'selected' : ''}>${c}</option>`)
-    .join('');
-  return `<option value="">Selecione um curso</option>${opcoes}`;
-}
-
-// Atualiza o dropdown de curso quando o grau muda
-function atualizarCursosPorGrau(key, grau) {
-  const select = document.getElementById(`${key}_f_area_estudo`);
-  if (select) select.innerHTML = gerarOpcoesCurso(grau);
-}
-
-// ============================================
-// Cidades - busca dinâmica via API do IBGE
-// ============================================
-const cacheCidades = {};
-
-async function buscarCidadesPorEstado(uf) {
-  if (cacheCidades[uf]) return cacheCidades[uf];
-  try {
-    const res = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
-    if (!res.ok) throw new Error('Falha ao buscar cidades');
-    const data = await res.json();
-    const cidades = data.map(c => c.nome).sort((a, b) => a.localeCompare(b, 'pt-BR'));
-    cacheCidades[uf] = cidades;
-    return cidades;
-  } catch (erro) {
-    console.error('Erro ao buscar cidades do IBGE:', erro);
-    return [];
-  }
-}

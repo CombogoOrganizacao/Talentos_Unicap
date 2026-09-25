@@ -1,6 +1,6 @@
 // ============================================
 // Mensagens - Caixa de entrada integrada ao painel do aluno
-// Reutiliza js/mensagens.js e o nó Firebase: mensagens/{msgId}
+// Reutiliza js/services/mensagem-service.js e o nó Firebase: mensagens/{msgId}
 // ============================================
 (function () {
   "use strict";

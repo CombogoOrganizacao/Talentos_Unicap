@@ -106,21 +106,6 @@
     if (input) input.closest(".form-group")?.classList.add("has-error");
   }
 
-  function friendlyAuthError(error) {
-    switch (error.code) {
-      case "auth/email-already-in-use":
-        return "Este e-mail já está cadastrado.";
-      case "auth/invalid-email":
-        return "O e-mail informado é inválido.";
-      case "auth/weak-password":
-        return "A senha é muito fraca. Use pelo menos 6 caracteres.";
-      case "auth/network-request-failed":
-        return "Erro de conexão com o Firebase.";
-      default:
-        return error.message || "Erro ao criar conta da empresa.";
-    }
-  }
-
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     hideAlert();
@@ -128,17 +113,17 @@
 
     const nome_empresa = document.getElementById("nome_empresa").value.trim();
     const cnpj = document.getElementById("cnpj").value.trim();
-    const email = document.getElementById("email").value.trim();
     const senha = document.getElementById("senha").value;
     const setor = document.getElementById("setor").value;
-    const telefone = document.getElementById("telefone").value.trim();
-    const site = document.getElementById("site").value.trim();
-    const responsavel = document.getElementById("responsavel").value.trim();
+
+    // Observação: o backend (AuthController.registrarEmpresa) hoje não tem
+    // campos para e-mail/telefone/site/responsável de empresa - por isso
+    // eles não são enviados. O login da empresa é feito pelo CNPJ. Ver
+    // relatório de análise para o que falta no backend para persistir isso.
 
     let missing = [];
     if (!nome_empresa) { markError("nome_empresa"); missing.push("nome_empresa"); }
     if (!cnpj) { markError("cnpj"); missing.push("cnpj"); }
-    if (!email) { markError("email"); missing.push("email"); }
     if (!senha || senha.length < 6) { markError("senha"); missing.push("senha"); }
     if (!setor) { markError("setor"); missing.push("setor"); }
 
@@ -151,21 +136,21 @@
     submitBtn.textContent = "Criando...";
 
     try {
-      // 1. Cria a conta no Firebase Auth + reserva o perfil (sem logo ainda)
-      const result = await APIEmpresa.createEmpresa({
-        nome_empresa, cnpj, email, senha, setor, telefone, site, responsavel, logo_url: ""
+      // 1. Cria o Usuario + PerfilEmpresa no backend e já recebe o JWT
+      await Auth.registerEmpresa({
+        cnpj,
+        razaoSocial: nome_empresa,
+        nomeFantasia: nome_empresa,
+        setor,
+        senha
       });
 
-      if (!result || result.error) {
-        throw { message: result?.error || "Não foi possível criar a conta." };
-      }
-
-      // 2. Se houver logo, envia ao Storage e atualiza o perfil com a URL
+      // 2. Se houver logo, envia para o backend (Cloudflare R2)
       if (logoFile) {
         try {
-          const logoUrl = await APIEmpresa.uploadLogo(result.uid, logoFile);
-          if (logoUrl) {
-            await firebaseDB.ref(`usuario_empresa/${result.uid}`).update({ logo_url: logoUrl });
+          const result = await APIEmpresa.uploadFotoPerfil(logoFile);
+          if (result && result.error) {
+            console.warn("Conta criada, mas o upload da logo falhou:", result.error);
           }
         } catch (logoErr) {
           console.warn("Conta criada, mas o upload da logo falhou:", logoErr);
@@ -188,7 +173,7 @@
       }, 1200);
     } catch (error) {
       console.error("Erro ao criar conta da empresa:", error);
-      showAlert(friendlyAuthError(error));
+      showAlert(error.message || "Erro ao criar conta da empresa.");
       submitBtn.disabled = false;
       submitBtn.textContent = "Criar Conta";
     }
