@@ -48,9 +48,9 @@ function renderCVPreview(profile, showLogo = true) {
   }
 
   // Formação
-  if (profile.formacao?.length) {
+  if (profile.formacoes?.length) {
     html += `<div class="cv-section"><h2>FORMAÇÃO ACADÊMICA</h2>`;
-    profile.formacao.forEach(e => {
+    profile.formacoes.forEach(e => {
       html += `<div class="item">
         <h3>${e.grau} em ${e.area_estudo}</h3>
         <div class="subtitle">${e.instituicao}</div>
@@ -87,9 +87,9 @@ function renderCVPreview(profile, showLogo = true) {
   }
 
   // Certificados
-     if (profile.certificados?.length) {
+  if (profile.certificacoes?.length) {
     html += `<div class="cv-section"><h2>CERTIFICAÇÕES</h2>`;
-    profile.certificados.forEach(c => {
+    profile.certificacoes.forEach(c => {
       html += `<div class="item">
         <h3>${c.nome}${c.emissor ? ` — ${c.emissor}` : ''}${c.url ? ` <a href="${c.url}" target="_blank" style="font-size:12px">↗</a>` : ''}</h3>
         <div class="date">
@@ -107,17 +107,49 @@ function renderCVPreview(profile, showLogo = true) {
 }
 
 async function exportPDF() {
-  const { default: html2canvas } = await import('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm');
-  const { default: jsPDF } = await import('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/+esm');
+  const btn = document.querySelector('button[onclick="exportPDF()"]');
+  const originalBtnHtml = btn ? btn.innerHTML : null;
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ph-bold ph-circle-notch" style="font-size:18px;"></i> Gerando...';
+  }
 
-  const el = document.getElementById('cvContent');
-  const canvas = await html2canvas(el, { scale: 2, useCORS: true, logging: false });
-  const imgData = canvas.toDataURL('image/png');
-  const pdf = new jsPDF('p', 'mm', 'a4');
-  const w = pdf.internal.pageSize.getWidth();
-  const h = (canvas.height * w) / canvas.width;
-  pdf.addImage(imgData, 'PNG', 0, 0, w, h);
-  pdf.save(`curriculo_${profile?.nome?.replace(/\s+/g, '_') || 'aluno'}.pdf`);
+  try {
+    // html2canvas exporta como "default" — ok. jsPDF v2 exporta como
+    // NOMEADO ({ jsPDF }), não como "default" (que aponta pro módulo
+    // inteiro, não para a classe) — esse era o bug que quebrava o import.
+    const html2canvasMod = await loadModuleWithFallback([
+      'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm',
+      'https://esm.sh/html2canvas@1.4.1',
+      'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.esm.js'
+    ]);
+    const html2canvas = html2canvasMod.default || html2canvasMod.html2canvas || html2canvasMod;
+
+    const jsPDFMod = await loadModuleWithFallback([
+      'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/+esm',
+      'https://esm.sh/jspdf@2.5.1',
+      'https://unpkg.com/jspdf@2.5.1/dist/jspdf.es.min.js'
+    ]);
+    const jsPDF = jsPDFMod.jsPDF || jsPDFMod.default?.jsPDF || jsPDFMod.default;
+
+    const el = document.getElementById('cvContent');
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true, logging: false });
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const w = pdf.internal.pageSize.getWidth();
+    const h = (canvas.height * w) / canvas.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, w, h);
+    pdf.save(`curriculo_${profile?.nome?.replace(/\s+/g, '_') || 'aluno'}.pdf`);
+  } catch (err) {
+    console.error('Erro ao exportar PDF:', err);
+    const detail = err?.message ? `\n\nDetalhe técnico: ${err.message}` : '';
+    alert(`Não foi possível gerar o arquivo PDF. Verifique sua conexão com a internet e tente novamente.${detail}`);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = originalBtnHtml;
+    }
+  }
 }
 
 // Carrega um módulo ESM tentando algumas fontes diferentes, já que CDNs
@@ -283,9 +315,9 @@ async function exportDOCX(includeLogo = true) {
     }
 
     // Formação
-    if (profile?.formacao?.length) {
+    if (profile?.formacoes?.length) {
       children.push(heading('FORMAÇÃO ACADÊMICA'));
-      profile.formacao.forEach(e => {
+      profile.formacoes.forEach(e => {
         children.push(new Paragraph({
           children: [new TextRun({ text: `${e.grau} em ${e.area_estudo}`, bold: true, size: 24 })],
           spacing: { before: 100 }
@@ -335,9 +367,9 @@ async function exportDOCX(includeLogo = true) {
     }
 
     // Certificados
-    if (profile?.certificados?.length) {
+    if (profile?.certificacoes?.length) {
       children.push(heading('CERTIFICAÇÕES'));
-      profile.certificados.forEach(c => {
+      profile.certificacoes.forEach(c => {
         children.push(new Paragraph({
           children: [new TextRun({ text: c.nome + (c.emissor ? ` — ${c.emissor}` : ''), bold: true, size: 24 })],
           spacing: { before: 100 }

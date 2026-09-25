@@ -35,7 +35,7 @@ const Auth = {
 
     try {
 
-      const perfil = await Http.get('/api/aluno/perfil');
+      const perfil = await Http.get('/aluno/perfil');
 
       this.user = {
         id: perfil.id,
@@ -78,7 +78,7 @@ const Auth = {
   async register(nome, email, senha) {
 
     const data = await Http.post(
-      '/api/auth/register',
+      '/auth/register',
       {
         nome,
         email,
@@ -116,7 +116,7 @@ const Auth = {
   }) {
 
     const data = await Http.post(
-      '/api/auth/register-empresa',
+      '/auth/register-empresa',
       {
         cnpj,
         razaoSocial,
@@ -149,7 +149,7 @@ const Auth = {
   async login(identifier, senha) {
 
     const data = await Http.post(
-      '/api/auth/login',
+      '/auth/login',
       {
         login: identifier,
         senha

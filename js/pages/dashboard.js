@@ -120,13 +120,17 @@ function clearErrorOnFill(e) {
 }
  
 async function loadProfile() {
-  profile = await API.getProfile();
-  // Blindagem: se a API não respondeu nada utilizável (ex: API_URL ainda
-  // não configurada, Apps Script fora do ar, resposta não-JSON), evitamos
-  // quebrar a tela inteira e deixamos claro no console o que aconteceu.
+  // API.getProfile()/SHEETS eram do antigo backend Firebase + Apps Script.
+  // O client atual (js/services/aluno-service.js) fala com a API REST
+  // Spring Boot e expõe API.getCurriculo(), que já traz perfil + formações
+  // + projetos + certificações em uma única chamada.
+  profile = await API.getCurriculo();
+  // Blindagem: se a API não respondeu nada utilizável (ex: backend fora do
+  // ar, CONFIG.apiBaseUrl errado, resposta não-JSON), evitamos quebrar a
+  // tela inteira e deixamos claro no console o que aconteceu.
   if (!profile || typeof profile !== 'object') {
-    console.error('loadProfile: resposta inesperada do Firebase ->', profile);
-    profile = { error: 'Resposta inválida do Firebase Realtime Database.' };
+    console.error('loadProfile: resposta inesperada da API ->', profile);
+    profile = { error: 'Resposta inválida da API.' };
   }
   if (profile.error) { console.error(profile.error); return; }
   document.getElementById('userName').textContent = profile.nome || '';
@@ -242,7 +246,9 @@ async function savePersonal() {
   };
   const btn = document.getElementById('savePersonalBtn');
   btn.disabled = true; btn.textContent = 'Salvando...';
-  await API.updateProfile(data);
+  // salvarPerfil() cria o perfil se ainda não existir (404) ou atualiza se
+  // já existir — API.updateProfile() não existe mais no client REST.
+  await API.salvarPerfil(data);
   btn.disabled = false; btn.textContent = 'Salvar Dados Pessoais';
   profile = { ...profile, ...data };
   updateProgress();
@@ -253,15 +259,22 @@ async function savePersonal() {
 // ============================================
 function renderAllSections() {
   renderList('experiencias', 'experiencia');
-  renderList('formacao', 'formacao');
+  renderList('formacoes', 'formacao');
   renderList('habilidades', 'habilidade');
   renderList('projetos', 'projeto');
-  renderList('certificados', 'certificado');
+  renderList('certificacoes', 'certificado');
 }
  
+// "resource" aponta para o sub-objeto de js/services/aluno-service.js que
+// faz as chamadas REST (criar/atualizar/deletar) daquela seção.
+// "resource: null" marca seções que o backend Spring Boot ainda não expõe
+// (ver comentário no topo de aluno-service.js): não existe endpoint para
+// Experiências profissionais, nem para Habilidades com categoria/nível.
+// Nesses casos a aba fica visível mas a gravação é bloqueada com um aviso,
+// em vez de falhar silenciosamente ou derrubar o dashboard inteiro.
 const sectionConfig = {
   experiencia: {
-    sheet: SHEETS.experiences, label: 'Experiências Profissionais',
+    resource: null, label: 'Experiências Profissionais',
     emptyMsg: 'Nenhuma experiência cadastrada ainda.',
     render: (item) => `
       <div><strong>${item.cargo}</strong> — ${item.empresa}</div>
@@ -298,7 +311,7 @@ const sectionConfig = {
     ]
   },
   formacao: {
-    sheet: SHEETS.educations, label: 'Formação Acadêmica',
+    resource: API.formacoes, label: 'Formação Acadêmica',
     emptyMsg: 'Nenhuma formação cadastrada ainda.',
     render: (item) => `
       <div><strong>${item.grau} em ${item.area_estudo}</strong></div>
@@ -351,7 +364,7 @@ const sectionConfig = {
     ]
   },
 habilidade: {
-  sheet: SHEETS.skills, label: 'Habilidades',
+  resource: null, label: 'Habilidades',
   emptyMsg: 'Nenhuma habilidade cadastrada ainda.',
   render: (item) => `<span class="badge badge-blue">${item.categoria}</span> <strong>${item.nome}</strong> <span style="font-size:12px;color:var(--gray-500)">${item.nivel}</span>`,
   // ↑ "inline: true" foi removido daqui
@@ -370,7 +383,7 @@ habilidade: {
   ]
 },
   projeto: {
-    sheet: SHEETS.projects, label: 'Projetos',
+    resource: API.projetos, label: 'Projetos',
     emptyMsg: 'Nenhum projeto cadastrado ainda.',
     render: (item) => `
       <div><strong>${item.nome}</strong>${item.url ? ` <a href="${item.url}" target="_blank" style="font-size:12px">↗ Link</a>` : ''}</div>
@@ -391,7 +404,7 @@ habilidade: {
     ]
   },
     certificado: {
-    sheet: SHEETS.certificates, label: 'Certificações',
+    resource: API.certificacoes, label: 'Certificações',
     emptyMsg: 'Nenhum certificado cadastrado ainda.',
     render: (item) => `
       <div><strong>${item.nome}</strong>${item.emissor ? ` — ${item.emissor}` : ''}</div>
@@ -486,7 +499,18 @@ function renderList(section, type) {
   }
 }
  
+// Seções marcadas com "resource: null" em sectionConfig ainda não têm
+// endpoint no backend Spring Boot. Em vez de deixar o formulário abrir e
+// falhar (ou pior, perder o que a pessoa digitou), avisamos antes.
+function warnSectionUnavailable(type) {
+  const config = sectionConfig[type];
+  if (config.resource !== null) return false;
+  alert(`A seção "${config.label}" ainda não está disponível para salvar — o backend ainda não tem esse recurso pronto. Em breve isso será liberado.`);
+  return true;
+}
+
 function showEditForm(type, item = null) {
+  if (warnSectionUnavailable(type)) return;
   const config = sectionConfig[type];
   const editContainer = document.getElementById(`edit-${type}`);
   const header = item ? `Editar ${config.label}` : `Nova ${config.label}`;
@@ -511,6 +535,7 @@ function showEditForm(type, item = null) {
 function hideEditForm(type) { UI.hide(`edit-${type}`); }
  
 async function addItem(type) {
+  if (warnSectionUnavailable(type)) return;
   const config = sectionConfig[type];
   const btn = document.getElementById(`addBtn-${type}`);
  
@@ -529,7 +554,7 @@ async function addItem(type) {
     if (btn) btn.textContent = 'Salvando...';
  
     try {
-      await API.addItem(config.sheet, data);
+      await config.resource.criar(data);
       // Limpar campos após sucesso
       document.getElementById('inline-nome').value = '';
       document.getElementById('inline-categoria').value = CONFIG.skillCategories[0] || '';
@@ -551,12 +576,13 @@ async function addItem(type) {
     hideFormAlert(`alert-${type}`);
     const data = config.getData();
     if (!config.validate(data)) return;
-    await API.addItem(config.sheet, data);
+    await config.resource.criar(data);
     await loadProfile();
   }
 }
  
 async function saveItem(type, id) {
+  if (warnSectionUnavailable(type)) return;
   const config = sectionConfig[type];
   const missing = validateRequiredFields(config.requiredFields || []);
   if (missing.length > 0) {
@@ -566,22 +592,23 @@ async function saveItem(type, id) {
   hideFormAlert(`alert-${type}`);
   const data = config.getData();
   if (!config.validate(data)) return;
-  if (id) { await API.updateItem(config.sheet, id, data); }
-  else { await API.addItem(config.sheet, data); }
+  if (id) { await config.resource.atualizar(id, data); }
+  else { await config.resource.criar(data); }
   hideEditForm(type);
   await loadProfile();
 }
  
 async function deleteItem(type, id) {
+  if (warnSectionUnavailable(type)) return;
   if (!confirm('Tem certeza que deseja excluir?')) return;
   const config = sectionConfig[type];
-  await API.deleteItem(config.sheet, id);
+  await config.resource.deletar(id);
   await loadProfile();
 }
  
 function editItem(type, id) {
-  // Map type to profile key
-  const keyMap = { experiencia: 'experiencias', formacao: 'formacao', habilidade: 'habilidades', projeto: 'projetos', certificado: 'certificados' };
+  // Map type to profile key (chaves conforme o retorno de API.getCurriculo())
+  const keyMap = { experiencia: 'experiencias', formacao: 'formacoes', habilidade: 'habilidades', projeto: 'projetos', certificado: 'certificacoes' };
   const item = (profile[keyMap[type]] || []).find(i => i.id === id);
   if (item) showEditForm(type, item);
 }
@@ -596,7 +623,7 @@ function updateProgress() {
   if (profile.experiencias?.length) filled++;
   if (profile.habilidades?.length) filled++;
   if (profile.projetos?.length) filled++;
-  if (profile.certificados?.length) filled++;
+  if (profile.certificacoes?.length) filled++;
   const pct = Math.round((filled / total) * 100);
   document.getElementById('progressFill').style.width = pct + '%';
   document.getElementById('progressText').textContent = pct + '%';

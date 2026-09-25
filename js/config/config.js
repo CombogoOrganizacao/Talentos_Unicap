@@ -6,9 +6,17 @@
 const CONFIG = {
 
   // URL base da API REST (Spring Boot).
+  // Antes essa URL incluía "/api" apenas no ambiente local, enquanto em
+  // produção não incluía — e os serviços (aluno-service.js, empresa-
+  // -service.js) chamam paths sem "/api" (ex: '/aluno/perfil'), mas
+  // auth.js chamava paths com "/api" (ex: '/api/aluno/perfil'). Isso
+  // fazia local e produção quebrarem de formas opostas (um duplicava o
+  // "/api", o outro nunca o enviava). Agora "/api" sempre faz parte da
+  // base, e todos os paths chamados por Http.* devem vir SEM "/api".
   apiBaseUrl: (function () {
     const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-    return isLocal ? 'http://localhost:8080/api' : 'https://backendtalentos.onrender.com';
+    const host = isLocal ? 'http://localhost:8080' : 'https://backendtalentos.onrender.com';
+    return host + '/api';
   })(),
 
   // Estados brasileiros

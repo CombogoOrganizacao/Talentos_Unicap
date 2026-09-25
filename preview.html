@@ -67,7 +67,7 @@
 
     Auth.onAuthChange = async function (loggedIn) {
       if (!loggedIn) { window.location.href = 'login.html'; return; }
-      profile = await API.getProfile();
+      profile = await API.getCurriculo();
       if (!profile.error) {
         const showLogo = document.getElementById('toggleLogo').checked;
         document.getElementById('cvContent').innerHTML = renderCVPreview(profile, showLogo);
