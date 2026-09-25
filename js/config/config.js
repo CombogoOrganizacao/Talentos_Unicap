@@ -6,9 +6,10 @@
 const CONFIG = {
 
   // URL base da API REST (Spring Boot).
-  api: {
-    baseUrl: "https://backendtalentos.onrender.com"  // ← URL real do seu Web Service no Render
-  },
+  apiBaseUrl: (function () {
+    const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    return isLocal ? 'http://localhost:8080/api' : 'https://talentos-unicap.vercel.app/ ';
+  })(),
 
   // Estados brasileiros
   states: [
