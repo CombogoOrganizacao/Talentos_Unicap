@@ -8,7 +8,7 @@ const CONFIG = {
   // URL base da API REST (Spring Boot).
   apiBaseUrl: (function () {
     const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-    return isLocal ? 'http://localhost:8080/api' : 'https://talentos-unicap.vercel.app/ ';
+    return isLocal ? 'http://localhost:8080/api' : 'https://backendtalentos.onrender.com';
   })(),
 
   // Estados brasileiros
