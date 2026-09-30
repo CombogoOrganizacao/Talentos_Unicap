@@ -3,7 +3,7 @@
 // ============================================
 let profile = null;
 let currentTab = 'personal';
- 
+
 const UI = {
   show(el) { document.getElementById(el).classList.remove('hidden'); },
   hide(el) { document.getElementById(el).classList.add('hidden'); },
@@ -11,17 +11,17 @@ const UI = {
   val(id) { return document.getElementById(id)?.value || ''; },
   setVal(id, v) { const e = document.getElementById(id); if (e) e.value = v || ''; }
 };
- 
+
 // Interpreta corretamente valores booleanos vindos da planilha (que chegam
 // como string "true"/"false" e não como boolean real). Usar apenas
 // "if (item.atual)" é o bug que fazia a caixa ficar sempre marcada/ativa,
 // pois a string "false" também é um valor "truthy" em JavaScript.
 function isTrue(v) { return v === true || v === 'true'; }
- 
+
 // Mostra/esconde o campo "Data de término" de acordo com a caixa de seleção
 // (usada tanto em "Trabalho atual" quanto em "Em curso").
- 
- 
+
+
 // ============================================
 // VALIDAÇÃO DE CAMPOS OBRIGATÓRIOS
 // ============================================
@@ -44,7 +44,7 @@ function validateRequiredFields(fields) {
   });
   return missing;
 }
- 
+
 // Remove todas as marcações de erro dentro de um container (usado ao abrir
 // um formulário novo, para não herdar erro de uma tentativa anterior).
 function clearFieldErrors(containerId) {
@@ -52,7 +52,7 @@ function clearFieldErrors(containerId) {
   if (!container) return;
   container.querySelectorAll('.form-group.has-error').forEach(g => g.classList.remove('has-error'));
 }
- 
+
 // Mostra/esconde o banner de alerta com a lista de campos obrigatórios
 // que ainda faltam ser preenchidos.
 function showFormAlert(alertId, missingLabels) {
@@ -67,19 +67,19 @@ function showFormAlert(alertId, missingLabels) {
   alertEl.classList.remove('hidden');
   alertEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
- 
+
 function hideFormAlert(alertId) {
   const alertEl = document.getElementById(alertId);
   if (alertEl) alertEl.classList.add('hidden');
 }
- 
+
 function toggleFimVisibility(type) {
   const checkbox = document.getElementById(`${type}_f_atual`);
   const wrapper = document.getElementById(`${type}_f_data_fim_wrapper`);
   if (!checkbox || !wrapper) return;
   wrapper.classList.toggle('hidden', checkbox.checked);
 }
- 
+
 // Mesma lógica de toggleFimVisibility, mas para o checkbox "Sem validade"
 // dos certificados (estava sendo chamada no HTML sem nunca ter sido criada).
 function toggleValidadeVisibility(type) {
@@ -102,14 +102,14 @@ function initDashboard() {
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
- 
+
   // Remove o destaque de erro de um campo assim que o usuário o preenche,
   // mesmo em elementos criados dinamicamente (formulários de experiência,
   // formação, projetos, certificados e habilidades).
   document.addEventListener('input', clearErrorOnFill);
   document.addEventListener('change', clearErrorOnFill);
 }
- 
+
 function clearErrorOnFill(e) {
   const el = e.target;
   if (!el || !('value' in el)) return;
@@ -118,7 +118,7 @@ function clearErrorOnFill(e) {
     group.classList.remove('has-error');
   }
 }
- 
+
 async function loadProfile() {
   // API.getProfile()/SHEETS eram do antigo backend Firebase + Apps Script.
   // O client atual (js/services/aluno-service.js) fala com a API REST
@@ -144,7 +144,7 @@ async function loadProfile() {
     initMensagensPainelAluno();
   }
 }
- 
+
 // Alterna qual aba do dashboard fica visível (Dados Pessoais, Experiência,
 // Formação, Habilidades, Projetos, Certificados). Esta função estava
 // ausente do arquivo — os botões de aba chamavam switchTab() sem ela
@@ -154,7 +154,7 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
   document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + tab));
 }
- 
+
 // ============================================
 // DADOS PESSOAIS
 // ============================================
@@ -164,28 +164,28 @@ function fillPersonalForm() {
   UI.setVal('curso', profile.curso);
   UI.setVal('periodo', profile.periodo);
   UI.setVal('endereco', profile.endereco);
-  UI.setVal('bio', profile.bio);
+  UI.setVal('bio', profile.sobre);
   UI.setVal('linkedin', profile.linkedin);
   UI.setVal('github', profile.github);
   UI.setVal('portfolio', profile.portfolio);
 
   // Privacidade: autorização para aparecer na busca de talentos das empresas
   const visivel = document.getElementById('visivel_para_empresas');
-  if (visivel) visivel.checked = isTrue(profile.visivel_para_empresas);
+  if (visivel) visivel.checked = !!profile.visivelParaEmpresas;
 
   // Disponibilidade exibida às empresas (badge na busca de talentos)
   const disp = document.getElementById('disponibilidade_estagio');
-  if (disp) disp.value = profile.disponibilidade_estagio || 'Disponível para Estágio';
- 
+  if (disp) disp.checked = !!profile.disponivelEstagio;
+
   // Popula estados
   const stateSelect = document.getElementById('estado');
   if (!stateSelect || !Array.isArray(CONFIG.states)) return;
   stateSelect.innerHTML = '<option value="">Selecione</option>' +
     CONFIG.states.map(s => `<option value="${s}" ${profile.estado === s ? 'selected' : ''}>${s}</option>`).join('');
- 
+
   // Liga o listener que atualiza as cidades quando o estado muda
   stateSelect.onchange = () => atualizarCidadesPorEstado(stateSelect.value);
- 
+
   // Se já tem estado salvo, carrega as cidades e pré-seleciona a cidade salva
   if (profile.estado) {
     atualizarCidadesPorEstado(profile.estado, profile.cidade);
@@ -194,32 +194,32 @@ function fillPersonalForm() {
     if (citySelect) citySelect.innerHTML = '<option value="">Selecione o estado primeiro</option>';
   }
 }
- 
+
 async function atualizarCidadesPorEstado(uf, cidadeSelecionada = '') {
   const citySelect = document.getElementById('cidade');
   if (!citySelect) return;
- 
+
   if (!uf) {
     citySelect.innerHTML = '<option value="">Selecione o estado primeiro</option>';
     return;
   }
- 
+
   citySelect.innerHTML = '<option value="">Carregando cidades...</option>';
   citySelect.disabled = true;
- 
+
   const cidades = await buscarCidadesPorEstado(uf);
- 
+
   if (cidades.length === 0) {
     citySelect.innerHTML = '<option value="">Erro ao carregar. Tente novamente.</option>';
     citySelect.disabled = false;
     return;
   }
- 
+
   citySelect.innerHTML = '<option value="">Selecione a cidade</option>' +
     cidades.map(c => `<option value="${c}" ${c === cidadeSelecionada ? 'selected' : ''}>${c}</option>`).join('');
   citySelect.disabled = false;
 }
- 
+
 const personalRequiredFields = [
   { id: 'nome', label: 'Nome completo' },
   { id: 'telefone', label: 'Telefone' },
@@ -227,7 +227,7 @@ const personalRequiredFields = [
   { id: 'cidade', label: 'Cidade' },
   { id: 'estado', label: 'Estado' }
 ];
- 
+
 async function savePersonal() {
   const missing = validateRequiredFields(personalRequiredFields);
   if (missing.length > 0) {
@@ -235,9 +235,8 @@ async function savePersonal() {
     return;
   }
   hideFormAlert('alert-personal');
- 
+
   const data = {
-    nome: UI.val('nome'), telefone: UI.val('telefone'), curso: UI.val('curso'),
     periodo: UI.val('periodo'), cidade: UI.val('cidade'), estado: UI.val('estado'),
     endereco: UI.val('endereco'), bio: UI.val('bio'), linkedin: UI.val('linkedin'),
     github: UI.val('github'), portfolio: UI.val('portfolio'),
@@ -253,7 +252,7 @@ async function savePersonal() {
   profile = { ...profile, ...data };
   updateProgress();
 }
- 
+
 // ============================================
 // SEÇÕES GENÉRICAS (Experiência, Educação, etc.)
 // ============================================
@@ -264,7 +263,7 @@ function renderAllSections() {
   renderList('projetos', 'projeto');
   renderList('certificacoes', 'certificado');
 }
- 
+
 // "resource" aponta para o sub-objeto de js/services/aluno-service.js que
 // faz as chamadas REST (criar/atualizar/deletar) daquela seção.
 // "resource: null" marca seções que o backend Spring Boot ainda não expõe
@@ -277,10 +276,8 @@ const sectionConfig = {
     resource: null, label: 'Experiências Profissionais',
     emptyMsg: 'Nenhuma experiência cadastrada ainda.',
     render: (item) => `
-      <div><strong>${item.cargo}</strong> — ${item.empresa}</div>
-      <div style="font-size:13px;color:var(--gray-500)">${fmtDate(item.data_inicio)} — ${isTrue(item.atual) ? 'Presente' : (item.data_fim ? fmtDate(item.data_fim) : 'Presente')}${isTrue(item.atual) ? ' <span class="badge badge-green">Atual</span>' : ''}</div>
-      ${item.descricao ? `<div style="font-size:13px;color:var(--gray-600);margin-top:4px">${item.descricao}</div>` : ''}`,
-    form: (edit) => {
+  <div><strong>${item.nivel} em ${item.curso}</strong></div>
+  <div style="font-size:13px;color:var(--gray-500)">${item.instituicao} | ${item.anoInicio || ''} — ${item.anoConclusao || 'Em curso'}</div>`, form: (edit) => {
       const atual = isTrue(edit?.atual); return `
       <div class="form-row">
         <div class="form-group"><label>Empresa<span class="required-mark">*</span></label><input id="experiencia_f_empresa" value="${edit?.empresa || ''}" required></div>
@@ -316,7 +313,7 @@ const sectionConfig = {
     render: (item) => `
       <div><strong>${item.grau} em ${item.area_estudo}</strong></div>
       <div style="font-size:13px;color:var(--gray-500)">${item.instituicao} | ${fmtDate(item.data_inicio)} — ${isTrue(item.atual) ? 'Em curso' : (item.data_fim ? fmtDate(item.data_fim) : 'Presente')}${isTrue(item.atual) ? ' <span class="badge badge-green">Em curso</span>' : ''}</div>`,
-       form: (edit) => {
+    form: (edit) => {
       const emCurso = isTrue(edit?.atual);
       const grauSelecionado = edit?.grau || '';
       return `
@@ -353,7 +350,15 @@ const sectionConfig = {
     },
     getData: () => {
       const atual = document.getElementById('formacao_f_atual')?.checked || false;
-      return { instituicao: UI.val('formacao_f_instituicao'), grau: UI.val('formacao_f_grau'), area_estudo: UI.val('formacao_f_area_estudo'), data_inicio: UI.val('formacao_f_data_inicio'), data_fim: atual ? '' : UI.val('formacao_f_data_fim'), atual: atual ? 'true' : 'false' };
+      const dataInicio = UI.val('formacao_f_data_inicio');
+      const dataFim = atual ? '' : UI.val('formacao_f_data_fim');
+      return {
+        instituicao: UI.val('formacao_f_instituicao'),
+        nivel: UI.val('formacao_f_grau'),
+        curso: UI.val('formacao_f_area_estudo'),
+        anoInicio: dataInicio ? dataInicio.slice(0, 4) : '',
+        anoConclusao: dataFim ? dataFim.slice(0, 4) : ''
+      };
     },
     validate: (d) => d.instituicao && d.grau && d.area_estudo && d.data_inicio,
     requiredFields: [
@@ -363,12 +368,12 @@ const sectionConfig = {
       { id: 'formacao_f_data_inicio', label: 'Data de início' }
     ]
   },
-habilidade: {
-  resource: null, label: 'Habilidades',
-  emptyMsg: 'Nenhuma habilidade cadastrada ainda.',
-  render: (item) => `<span class="badge badge-blue">${item.categoria}</span> <strong>${item.nome}</strong> <span style="font-size:12px;color:var(--gray-500)">${item.nivel}</span>`,
-  // ↑ "inline: true" foi removido daqui
-  form: (edit) => `
+  habilidade: {
+    resource: null, label: 'Habilidades',
+    emptyMsg: 'Nenhuma habilidade cadastrada ainda.',
+    render: (item) => `<span class="badge badge-blue">${item.categoria}</span> <strong>${item.nome}</strong> <span style="font-size:12px;color:var(--gray-500)">${item.nivel}</span>`,
+    // ↑ "inline: true" foi removido daqui
+    form: (edit) => `
     <div class="form-group"><label>Nome<span class="required-mark">*</span></label><input id="habilidade_f_nome" value="${edit?.nome || ''}" required></div>
     <div class="form-group"><label>Categoria</label>
       <select id="habilidade_f_categoria">${CONFIG.skillCategories.map(c => `<option value="${c}" ${edit?.categoria === c ? 'selected' : ''}>${c}</option>`).join('')}</select>
@@ -376,38 +381,49 @@ habilidade: {
     <div class="form-group"><label>Nível</label>
       <select id="habilidade_f_nivel">${CONFIG.skillLevels.map(l => `<option value="${l}" ${edit?.nivel === l ? 'selected' : ''}>${l}</option>`).join('')}</select>
     </div>`,
-  getData: () => ({ nome: UI.val('habilidade_f_nome'), categoria: UI.val('habilidade_f_categoria'), nivel: UI.val('habilidade_f_nivel') }),
-  validate: (d) => d.nome,
-  requiredFields: [
-    { id: 'habilidade_f_nome', label: 'Nome' }
-  ]
-},
+    getData: () => ({ nome: UI.val('habilidade_f_nome'), categoria: UI.val('habilidade_f_categoria'), nivel: UI.val('habilidade_f_nivel') }),
+    validate: (d) => d.nome,
+    requiredFields: [
+      { id: 'habilidade_f_nome', label: 'Nome' }
+    ]
+  },
   projeto: {
     resource: API.projetos, label: 'Projetos',
     emptyMsg: 'Nenhum projeto cadastrado ainda.',
     render: (item) => `
-      <div><strong>${item.nome}</strong>${item.url ? ` <a href="${item.url}" target="_blank" style="font-size:12px">↗ Link</a>` : ''}</div>
+      <div><strong>${item.titulo}</strong>${item.linkGithub ? ` <a href="${item.linkGithub}" target="_blank" style="font-size:12px">↗ Link</a>` : ''}</div>
       ${item.descricao ? `<div style="font-size:13px;color:var(--gray-600)">${item.descricao}</div>` : ''}
       ${item.data_inicio ? `<div style="font-size:12px;color:var(--gray-500)">${fmtDate(item.data_inicio)} — ${item.data_fim ? fmtDate(item.data_fim) : ''}</div>` : ''}`,
     form: (edit) => `
-      <div class="form-group"><label>Nome do projeto<span class="required-mark">*</span></label><input id="projeto_f_nome" value="${edit?.nome || ''}" required></div>
+      <div class="form-group"><label>Nome do projeto<span class="required-mark">*</span></label><input id="projeto_f_nome" value="${edit?.titulo || ''}" required></div>
       <div class="form-group"><label>Descrição</label><textarea id="projeto_f_descricao" rows="3">${edit?.descricao || ''}</textarea></div>
-      <div class="form-group"><label>URL</label><input id="projeto_f_url" value="${edit?.url || ''}" placeholder="https://..."></div>
+      <div class="form-group"><label>URL</label><input id="projeto_f_url" value="${edit?.linkGithub || ''}" placeholder="https://..."></div>
+      <div class="form-group"><label>Status</label>
+  <select id="projeto_f_status">
+    <option value="EM_ANDAMENTO">Em andamento</option>
+    <option value="CONCLUIDO">Concluído</option>
+    <option value="PAUSADO">Pausado</option>
+  </select>
+</div>
       <div class="form-row">
         <div class="form-group"><label>Data de início</label><input type="date" id="projeto_f_data_inicio" value="${edit?.data_inicio || ''}"></div>
         <div class="form-group"><label>Data de término</label><input type="date" id="projeto_f_data_fim" value="${edit?.data_fim || ''}"></div>
       </div>`,
-    getData: () => ({ nome: UI.val('projeto_f_nome'), descricao: UI.val('projeto_f_descricao'), url: UI.val('projeto_f_url'), data_inicio: UI.val('projeto_f_data_inicio'), data_fim: UI.val('projeto_f_data_fim') }),
-    validate: (d) => d.nome,
+    getData: () => ({
+      titulo: UI.val('projeto_f_nome'),
+      descricao: UI.val('projeto_f_descricao'),
+      linkGithub: UI.val('projeto_f_url'),
+      status: UI.val('projeto_f_status') || 'EM_ANDAMENTO'
+    }), validate: (d) => d.titulo,
     requiredFields: [
       { id: 'projeto_f_nome', label: 'Nome do projeto' }
     ]
   },
-    certificado: {
+  certificado: {
     resource: API.certificacoes, label: 'Certificações',
     emptyMsg: 'Nenhum certificado cadastrado ainda.',
     render: (item) => `
-      <div><strong>${item.nome}</strong>${item.emissor ? ` — ${item.emissor}` : ''}</div>
+      <div><strong>${item.nome}</strong>${item.instituicao ? ` — ${item.instituicao}` : ''}</div>
       <div style="font-size:12px;color:var(--gray-500)">
         ${item.data_emissao ? fmtDate(item.data_emissao) : ''}
         ${isTrue(item.sem_validade) ? ' <span class="badge badge-green">Sem validade</span>' : (item.data_validade ? ` — Válido até ${fmtDate(item.data_validade)}` : '')}
@@ -417,7 +433,7 @@ habilidade: {
       const semValidade = isTrue(edit?.sem_validade); return `
       <div class="form-row">
         <div class="form-group"><label>Nome<span class="required-mark">*</span></label><input id="certificado_f_nome" value="${edit?.nome || ''}" required></div>
-        <div class="form-group"><label>Emissor</label><input id="certificado_f_emissor" value="${edit?.emissor || ''}"></div>
+        <div class="form-group"><label>Emissor</label><input id="certificado_f_emissor" value="${edit?.instituicao || ''}"></div>
       </div>
       <div class="form-row">
         <div class="form-group"><label>Data de emissão<span class="required-mark">*</span></label><input type="date" id="certificado_f_data_emissao" value="${edit?.data_emissao || ''}" required></div>
@@ -431,24 +447,21 @@ habilidade: {
         </span>
       </label>
       <div class="form-row">
-        <div class="form-group"><label>URL</label><input id="certificado_f_url" value="${edit?.url || ''}"></div>
+        <div class="form-group"><label>URL</label><input id="certificado_f_url" value="${edit?.linkCertificado || ''}"></div>
         <div class="form-group"><label>Carga Horária (horas)</label>
           <input type="number" min="1" step="1" inputmode="numeric" id="certificado_f_carga_horaria" value="${edit?.carga_horaria || ''}" placeholder="Ex: 40" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
         </div>
       </div>`;
     },
-    getData: () => {
-      const semValidade = document.getElementById('certificado_f_sem_validade')?.checked || false;
-      return {
-        nome: UI.val('certificado_f_nome'),
-        emissor: UI.val('certificado_f_emissor'),
-        data_emissao: UI.val('certificado_f_data_emissao'),
-        data_validade: semValidade ? '' : UI.val('certificado_f_data_validade'),
-        sem_validade: semValidade ? 'true' : 'false',
-        url: UI.val('certificado_f_url'),
-        carga_horaria: UI.val('certificado_f_carga_horaria')
-      };
-    },
+    getData: () => ({
+      nome: UI.val('certificado_f_nome'),
+      instituicao: UI.val('certificado_f_emissor'),
+      dataEmissao: UI.val('certificado_f_data_emissao') || null,
+      dataValidade: document.getElementById('certificado_f_sem_validade')?.checked
+        ? null
+        : (UI.val('certificado_f_data_validade') || null),
+      linkCertificado: UI.val('certificado_f_url')
+    }),
     validate: (d) => d.nome && d.data_emissao,
     requiredFields: [
       { id: 'certificado_f_nome', label: 'Nome' },
@@ -456,14 +469,14 @@ habilidade: {
     ]
   }
 };
- 
+
 function renderList(section, type) {
   const config = sectionConfig[type];
   const items = profile[section] || [];
   const container = document.getElementById(`list-${type}`);
   const editContainer = document.getElementById(`edit-${type}`);
   if (!container) return;
- 
+
   if (items.length === 0 && !config.inline) {
     container.innerHTML = `<div style="text-align:center;padding:24px;color:var(--gray-500)">${config.emptyMsg}</div>`;
   } else if (config.inline) {
@@ -485,7 +498,7 @@ function renderList(section, type) {
       </div>
       <div class="skill-tags" id="skillsContainer">${items.map(item => `
         <div class="skill-tag"><span class="badge badge-blue" style="margin-right:4px">${item.categoria}</span>${item.nome} <span style="color:var(--gray-400);font-size:11px">${item.nivel}</span><button class="btn btn-secondary btn-sm" onclick="editItem('${type}','${item.id}')" style="margin:0 4px;padding:2px 6px;font-size:10px;"><i class="ph-fill ph-pencil-line" style="font-size:12px; vertical-align:middle;"></i></button><span class="remove" onclick="deleteItem('${type}','${item.id}')">×</span></div>`).join('')}</div>`;
- 
+
   } else {
     container.innerHTML = items.map(item => `
       <div class="list-item">
@@ -498,7 +511,7 @@ function renderList(section, type) {
     `).join('');
   }
 }
- 
+
 // Seções marcadas com "resource: null" em sectionConfig ainda não têm
 // endpoint no backend Spring Boot. Em vez de deixar o formulário abrir e
 // falhar (ou pior, perder o que a pessoa digitou), avisamos antes.
@@ -531,14 +544,14 @@ function showEditForm(type, item = null) {
     </div>`;
   UI.show(`edit-${type}`);
 }
- 
+
 function hideEditForm(type) { UI.hide(`edit-${type}`); }
- 
+
 async function addItem(type) {
   if (warnSectionUnavailable(type)) return;
   const config = sectionConfig[type];
   const btn = document.getElementById(`addBtn-${type}`);
- 
+
   if (config.inline) {
     const missing = validateRequiredFields(config.inlineRequiredFields || []);
     if (missing.length > 0) {
@@ -546,13 +559,13 @@ async function addItem(type) {
       return;
     }
     hideFormAlert(`alert-${type}-inline`);
- 
+
     const data = { nome: UI.val('inline-nome'), categoria: UI.val('inline-categoria'), nivel: UI.val('inline-nivel') };
- 
+
     // Desabilitar botão enquanto salva
     if (btn) btn.disabled = true;
     if (btn) btn.textContent = 'Salvando...';
- 
+
     try {
       await config.resource.criar(data);
       // Limpar campos após sucesso
@@ -580,7 +593,7 @@ async function addItem(type) {
     await loadProfile();
   }
 }
- 
+
 async function saveItem(type, id) {
   if (warnSectionUnavailable(type)) return;
   const config = sectionConfig[type];
@@ -597,7 +610,7 @@ async function saveItem(type, id) {
   hideEditForm(type);
   await loadProfile();
 }
- 
+
 async function deleteItem(type, id) {
   if (warnSectionUnavailable(type)) return;
   if (!confirm('Tem certeza que deseja excluir?')) return;
@@ -605,18 +618,18 @@ async function deleteItem(type, id) {
   await config.resource.deletar(id);
   await loadProfile();
 }
- 
+
 function editItem(type, id) {
   // Map type to profile key (chaves conforme o retorno de API.getCurriculo())
   const keyMap = { experiencia: 'experiencias', formacao: 'formacoes', habilidade: 'habilidades', projeto: 'projetos', certificado: 'certificacoes' };
   const item = (profile[keyMap[type]] || []).find(i => i.id === id);
   if (item) showEditForm(type, item);
 }
- 
+
 function updateProgress() {
   if (!profile) return;
   let filled = 0, total = 8;
-  if (profile.bio) filled++;
+  if (profile.sobre) filled++;
   if (profile.curso) filled++;
   if (profile.telefone) filled++;
   if (profile.cidade) filled++;
@@ -636,12 +649,12 @@ function updateProgress() {
     UI.show('publicLinkCard');
   }
 }
- 
+
 function fmtDate(d) {
   if (!d) return '';
   const dt = new Date(d + 'T00:00:00');
   return dt.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
 }
- 
+
 // Export
 function goToPreview() { window.location.href = 'preview.html'; }

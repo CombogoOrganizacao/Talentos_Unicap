@@ -1,7 +1,6 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "talentosUnicap.vagas";
   const grid = document.getElementById("vagasGrid");
   const emptyState = document.getElementById("emptyState");
   const emptyTitle = document.getElementById("emptyTitle");
@@ -22,92 +21,14 @@
     Encerrada: "badge-red"
   };
 
-  // ---------- Dados de exemplo (usados apenas se não houver nada salvo) ----------
-  const SEED_VAGAS = [
-    {
-      id: "seed_1",
-      titulo: "Estágio em Desenvolvimento Frontend React",
-      empresa: "Departamento de TI - UNICAP",
-      area: "Sistemas para Internet / Ciência da Computação",
-      carga: "30h semanais",
-      remuneracao: "R$ 1.500,00 + Vale Transporte",
-      local: "Híbrido (Recife - PE)",
-      periodoInicio: "2026-09-10",
-      periodoFim: "2026-10-30",
-      status: "Ativa",
-      contato: "carreiras@unicap.br",
-      requisitos: "• Estar regularmente matriculado em curso de TI ou Design na UNICAP\n• Conhecimentos sólidos em ReactJS e versionamento Git",
-      descricao: "Atuar no desenvolvimento de novas interfaces responsivas em React.",
-      criadoEm: "2026-08-20T10:00:00.000Z"
-    },
-    {
-      id: "seed_2",
-      titulo: "Trainee em Marketing Digital",
-      empresa: "Núcleo de Comunicação - UNICAP",
-      area: "Marketing",
-      carga: "20h semanais",
-      remuneracao: "R$ 900,00",
-      local: "Presencial (Recife - PE)",
-      periodoInicio: "2026-09-01",
-      periodoFim: "2026-09-25",
-      status: "Rascunho",
-      contato: "comunicacao@unicap.br",
-      requisitos: "• Interesse em marketing de conteúdo e redes sociais",
-      descricao: "Apoio na criação de campanhas e conteúdo institucional.",
-      criadoEm: "2026-08-18T09:00:00.000Z"
-    },
-    {
-      id: "seed_3",
-      titulo: "Estágio em Direito Empresarial",
-      empresa: "Escritório Modelo - UNICAP",
-      area: "Direito",
-      carga: "20h semanais",
-      remuneracao: "R$ 800,00 + Vale Transporte",
-      local: "Presencial (Recife - PE)",
-      periodoInicio: "2026-08-01",
-      periodoFim: "2026-08-15",
-      status: "Encerrada",
-      contato: "juridico@unicap.br",
-      requisitos: "• Cursando a partir do 6º período de Direito",
-      descricao: "Apoio em rotinas contratuais e societárias.",
-      criadoEm: "2026-07-10T09:00:00.000Z"
-    },
-    {
-      id: "seed_4",
-      titulo: "Estágio em Design de Produto",
-      empresa: "Laboratório de Inovação - UNICAP",
-      area: "Design",
-      carga: "25h semanais",
-      remuneracao: "R$ 1.200,00",
-      local: "Híbrido (Recife - PE)",
-      periodoInicio: "2026-09-15",
-      periodoFim: "2026-10-05",
-      status: "Pausada",
-      contato: "inovacao@unicap.br",
-      requisitos: "• Conhecimento em Figma e prototipação",
-      descricao: "Desenvolvimento de protótipos e pesquisa com usuários.",
-      criadoEm: "2026-08-05T09:00:00.000Z"
-    }
-  ];
+  let vagas = [];
 
-  function loadVagas() {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length) return parsed;
-      }
-    } catch (err) { /* ignora e cai no seed */ }
-    // Primeira visita: popula com dados de exemplo para não mostrar tela vazia
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED_VAGAS));
-    return SEED_VAGAS.slice();
+  async function carregarVagas() {
+    const resultado = await APIEmpresa.vagas.minhas();
+    vagas = Array.isArray(resultado) ? resultado : [];
+    render();
   }
-
-  function saveVagas(list) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-  }
-
-  let vagas = loadVagas();
+  
 
   // ---------- Helpers ----------
   function formatDateBR(iso) {
@@ -212,7 +133,7 @@
   }
 
   // ---------- Ações do card (delegação de eventos) ----------
-  grid.addEventListener("click", (event) => {
+  grid.addEventListener("click", async (event) => {
     const card = event.target.closest(".vaga-card");
     if (!card) return;
     const id = card.dataset.id;
@@ -238,16 +159,16 @@
       saveVagas(vagas);
       closeAllDropdowns();
       render();
-    } else if (action === "encerrar") {
-      vaga.status = "Encerrada";
-      saveVagas(vagas);
+        } else if (action === "encerrar") {
+      const resultado = await APIEmpresa.vagas.encerrar(vaga.id);
+      if (resultado && resultado.error) { alert(resultado.error); return; }
       closeAllDropdowns();
-      render();
+      carregarVagas();
     } else if (action === "excluir") {
       if (confirm(`Excluir a vaga "${vaga.titulo}"? Essa ação não pode ser desfeita.`)) {
         vagas = vagas.filter((v) => v.id !== id);
         saveVagas(vagas);
-        render();
+        carregarVagas();
       }
     }
   });

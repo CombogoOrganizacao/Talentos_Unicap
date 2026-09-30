@@ -33,34 +33,36 @@ const Auth = {
 
   async _carregarUsuario() {
 
-    try {
+  try {
 
-      const perfil = await Http.get('/aluno/perfil');
+    const perfil = await Http.get('/aluno/perfil');
 
-      this.user = {
-        id: perfil.id,
-        nome: perfil.nome,
-        email: perfil.email,
-        tipoConta: 'aluno'
-      };
+    this.user = {
+      id: perfil.id,
+      nome: perfil.nome,
+      email: perfil.email,
+      tipoConta: 'aluno'
+    };
 
+    return this.user;
+
+  } catch (e) {
+
+    if (e.status === 403) {
+      // Não é aluno: tratamos como empresa.
+      this.user = { tipoConta: 'empresa' };
       return this.user;
-
-    } catch (e) {
-
-      if (e.status === 403) {
-
-        // Não é aluno: tratamos como empresa.
-        this.user = {
-          tipoConta: 'empresa'
-        };
-
-        return this.user;
-      }
-
-      throw e;
     }
-  },
+
+    if (e.status === 404) {
+      // É aluno, mas ainda não criou o perfil (usuário recém-cadastrado).
+      this.user = { tipoConta: 'aluno', semPerfil: true };
+      return this.user;
+    }
+
+    throw e;
+  }
+},
 
   async _detectarTipoConta() {
 

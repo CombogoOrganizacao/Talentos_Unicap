@@ -95,31 +95,37 @@
   });
 
   // ----- Publicar Vaga -----
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    if (!validate()) return;
+  form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!validate()) return;
 
-    const data = collectFormData();
-    data.id = "vaga_" + Date.now();
-    data.criadoEm = new Date().toISOString();
+  const data = collectFormData();
 
-    // Limpa o rascunho, já que a vaga foi publicada
-    try { localStorage.removeItem(DRAFT_KEY); } catch (err) {}
+  const dto = {
+    titulo: data.titulo,
+    descricao: data.descricao,
+    habilidadesRequisitadas: (data.requisitos || "")
+      .split(/[,\n]/).map(s => s.trim()).filter(Boolean),
+    modalidade: data.modalidade,                 // PRESENCIAL | REMOTO | HIBRIDO
+    cargaHoraria: parseInt(data.cargaHoraria, 10) || null,
+    local: data.local,
+    remuneracao: data.remuneracao,
+    periodoInicio: data.periodoInicio || null,
+    periodoFim: data.periodoFim || null,
+    contato: data.contato
+  };
 
-    // Guarda como última vaga publicada (usado pela página de exportação)
-    try {
-      localStorage.setItem("talentosUnicap.ultimaVagaPublicada", JSON.stringify(data));
-    } catch (err) {}
+  showStatus("Publicando vaga...", null);
+  const resultado = await APIEmpresa.vagas.criar(dto);
 
-    // Adiciona à lista completa de vagas (usada pela página de listagem)
-    try {
-      const listaAtual = JSON.parse(localStorage.getItem("talentosUnicap.vagas") || "[]");
-      listaAtual.unshift(data);
-      localStorage.setItem("talentosUnicap.vagas", JSON.stringify(listaAtual));
-    } catch (err) {}
+  if (resultado && resultado.error) {
+    showStatus(resultado.error, "is-error");
+    return;
+  }
 
-    // Envia os dados via querystring (base64) para a página de exportação
-    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-    window.location.href = "exportacao-instagram.html?vaga=" + encoded;
-  });
+  try { localStorage.removeItem(DRAFT_KEY); } catch (err) {}
+
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(resultado))));
+  window.location.href = "exportacao-instagram.html?vaga=" + encoded;
+});
 })();
