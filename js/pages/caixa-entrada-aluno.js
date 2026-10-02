@@ -26,7 +26,7 @@
 
   Auth.onAuthChange = async function (loggedIn) {
     if (!loggedIn) { window.location.href = 'login.html'; return; }
-    const perfil = await API.getProfile();
+    const perfil = await API.getPerfil();
     if (!perfil || perfil.error) {
       alert('Não foi possível carregar seu perfil de aluno.');
       window.location.href = 'index.html';

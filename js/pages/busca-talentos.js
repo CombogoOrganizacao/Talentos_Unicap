@@ -134,30 +134,23 @@
   // quem desmarcar o toggle no dashboard grava false e sai da busca.
   async function carregarTalentos() {
     try {
-      const snap = await firebaseDB.ref('publicProfiles').once('value');
-      allProfiles = [];
-      if (snap.exists()) {
-        snap.forEach((child) => {
-          const p = child.val() || {};
-          if (p.visivel_para_empresas === false || p.visivel_para_empresas === 'false') return; // consentimento
-
-          allProfiles.push({
-            uid: child.key,
-            ...p,
-            experiencias: normalizarColecao(p.experiencias),
-            formacao: normalizarColecao(p.formacao),
-            habilidades: normalizarColecao(p.habilidades),
-            projetos: normalizarColecao(p.projetos),
-            certificados: normalizarColecao(p.certificados)
-          });
-        });
-      }
+      allProfiles = await APIEmpresa.buscarAlunos();
+      allProfiles = (allProfiles || []).map(p => ({
+        ...p,
+        experiencias: normalizarColecao(p.experiencias),
+        formacao: normalizarColecao(p.formacao),
+        habilidades: normalizarColecao(p.habilidades),
+        projetos: normalizarColecao(p.projetos),
+        certificados: normalizarColecao(p.certificados)
+      }));
+      filtered = [...allProfiles];
+      renderGrid();
     } catch (e) {
-      console.error('Erro ao carregar talentos:', e);
+      console.error("Erro ao carregar talentos:", e);
       allProfiles = [];
+      filtered = [];
+      renderGrid();
     }
-    popularFiltros();
-    aplicarFiltros();
   }
 
   function popularFiltros() {

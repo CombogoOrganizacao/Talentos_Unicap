@@ -95,3 +95,8 @@ por fim o seu `js/pages/*.js`.
 ## 📝 Licença
 
 MIT
+
+
+## Supabase
+
+O frontend usa Supabase Auth, PostgreSQL/RLS e Storage. As credenciais públicas ficam em `js/config/config.js`; a chave `service_role` nunca deve ser colocada no frontend.

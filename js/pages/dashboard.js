@@ -120,7 +120,7 @@ function clearErrorOnFill(e) {
 }
 
 async function loadProfile() {
-  // API.getProfile()/SHEETS eram do antigo backend Firebase + Apps Script.
+  // API.getPerfil()/SHEETS eram do antigo backend Firebase + Apps Script.
   // O client atual (js/services/aluno-service.js) fala com a API REST
   // Spring Boot e expõe API.getCurriculo(), que já traz perfil + formações
   // + projetos + certificações em uma única chamada.

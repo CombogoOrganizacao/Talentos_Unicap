@@ -1,110 +1,126 @@
 // ============================================
-// Mensagens - empresa <-> aluno
-// Nó: mensagens/{msgId}
+// Mensagens - empresa <-> aluno (Supabase)
 // ============================================
-
 const Mensagens = {
-  async enviar({ destinatarioId, destinatarioNome, assunto, mensagem, vagaRelacionada }) {
-    if (!Auth.uid) return { error: 'Usuário não autenticado' };
-    try {
-      const ref = firebaseDB.ref('mensagens').push();
-      const remetenteNome = (Auth.user && (Auth.user.displayName || Auth.user.nome)) || 'Empresa';
-      await ref.set({
-        remetenteId: Auth.uid,
-        remetenteNome,
-        destinatarioId,
-        destinatarioNome: destinatarioNome || '',
-        assunto: assunto || '',
-        mensagem: mensagem || '',
-        vagaRelacionada: vagaRelacionada || '',
-        status: 'Enviada',
-        criadoEm: Date.now()
-      });
-      return { success: true, id: ref.key };
-    } catch (error) {
-      console.error('Erro ao enviar mensagem:', error);
-      return { error: error.message || 'Erro ao enviar mensagem' };
-    }
+  async _session() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    return session;
   },
 
-  // Lista as mensagens enviadas pela empresa logada
-  async listarEnviadasPelaEmpresa() {
-    if (!Auth.uid) return [];
-    try {
-      const snapshot = await firebaseDB
-        .ref('mensagens')
-        .orderByChild('remetenteId')
-        .equalTo(Auth.uid)
-        .once('value');
-      if (!snapshot.exists()) return [];
-      const out = [];
-      snapshot.forEach((child) => {
-        out.push({ id: child.key, ...child.val() });
-      });
-      return out.sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
-    } catch (error) {
+  async _listar(filtroCampo) {
+    const session = await this._session();
+    if (!session) return [];
+
+    const { data, error } = await supabaseClient
+      .from('mensagens')
+      .select(`
+        *,
+        remetente:usuarios!mensagens_remetente_id_fkey(id,nome),
+        destinatario:usuarios!mensagens_destinatario_id_fkey(id,nome)
+      `)
+      .eq(filtroCampo, session.user.id)
+      .order('data_envio', { ascending: false });
+
+    if (error) {
       console.error('Erro ao listar mensagens:', error);
       return [];
     }
+
+    const rows = data || [];
+    const ids = rows.map(m => m.id);
+    let respostas = [];
+    if (ids.length) {
+      const { data: r } = await supabaseClient
+        .from('mensagens')
+        .select('id,resposta_de_id,conteudo,data_envio')
+        .in('resposta_de_id', ids);
+      respostas = r || [];
+    }
+
+    const respostaMap = new Map(respostas.map(r => [r.resposta_de_id, r]));
+    return rows.map(m => this._paraFormatoAntigo(m, respostaMap.get(m.id)));
+  },
+
+  async enviar({ destinatarioId, destinatarioNome, assunto, mensagem, vagaRelacionada, vagaId }) {
+    const session = await this._session();
+    if (!session) return { error: 'Usuário não autenticado' };
+
+    let realVagaId = vagaId || null;
+    if (!realVagaId && vagaRelacionada) {
+      const { data } = await supabaseClient.from('vagas').select('id').eq('titulo', vagaRelacionada).limit(1).maybeSingle();
+      realVagaId = data?.id || null;
+    }
+
+    const { data, error } = await supabaseClient.from('mensagens').insert({
+      remetente_id: session.user.id,
+      destinatario_id: destinatarioId,
+      assunto: assunto || '',
+      conteudo: mensagem || '',
+      vaga_id: realVagaId
+    }).select().single();
+
+    if (error) return { error: error.message || 'Erro ao enviar mensagem' };
+    return { success: true, id: data.id };
+  },
+
+  async listarEnviadasPelaEmpresa() {
+    return this._listar('remetente_id');
+  },
+
+  async listarRecebidasPeloAluno() {
+    return this._listar('destinatario_id');
   },
 
   async marcarComoLida(msgId) {
-    try {
-      await firebaseDB.ref(`mensagens/${msgId}`).update({ status: 'Lida' });
-      return { success: true };
-    } catch (error) {
-      return { error: error.message };
-    }
+    const { error } = await supabaseClient.from('mensagens')
+      .update({ lida: true }).eq('id', msgId);
+    if (error) return { error: error.message };
+    return { success: true };
   },
 
-  // ============================================
-  // LADO DO ALUNO
-  // ============================================
-
-  // Lista as mensagens recebidas pelo aluno logado
-  async listarRecebidasPeloAluno() {
-    if (!Auth.uid) return [];
-    try {
-      const snapshot = await firebaseDB
-        .ref('mensagens')
-        .orderByChild('destinatarioId')
-        .equalTo(Auth.uid)
-        .once('value');
-      if (!snapshot.exists()) return [];
-      const out = [];
-      snapshot.forEach((child) => {
-        out.push({ id: child.key, ...child.val() });
-      });
-      return out.sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
-    } catch (error) {
-      console.error('Erro ao listar mensagens recebidas:', error);
-      return [];
-    }
-  },
-
-  // Marca como lida quando o aluno abre a mensagem (volta nada se já lida)
   async marcarComoLidaSeNecessario(msg) {
     if (!msg || msg.status !== 'Enviada') return;
     const result = await this.marcarComoLida(msg.id);
     if (!result.error) msg.status = 'Lida';
   },
 
-  // Aluno responde uma mensagem da empresa -> status "Respondida"
   async responder(msgId, texto) {
-    if (!Auth.uid) return { error: 'Usuário não autenticado' };
+    const session = await this._session();
+    if (!session) return { error: 'Usuário não autenticado' };
     if (!texto || !texto.trim()) return { error: 'Escreva uma resposta antes de enviar.' };
-    try {
-      await firebaseDB.ref(`mensagens/${msgId}`).update({
-        status: 'Respondida',
-        resposta: {
-          texto: texto.trim(),
-          criadoEm: Date.now()
-        }
-      });
-      return { success: true };
-    } catch (error) {
-      console.error('Erro ao responder mensagem:', error);
-      return { error: error.message || 'Erro ao responder mensagem' };
-    }
+
+    const { data: original, error: originalError } = await supabaseClient
+      .from('mensagens').select('remetente_id,vaga_id').eq('id', msgId).single();
+    if (originalError || !original) return { error: 'Mensagem original não encontrada' };
+
+    const { error } = await supabaseClient.from('mensagens').insert({
+      remetente_id: session.user.id,
+      destinatario_id: original.remetente_id,
+      conteudo: texto.trim(),
+      vaga_id: original.vaga_id,
+      resposta_de_id: msgId
+    });
+    if (error) return { error: error.message || 'Erro ao responder mensagem' };
+    return { success: true };
+  },
+
+  _paraFormatoAntigo(msg, resposta) {
+    return {
+      id: msg.id,
+      remetenteId: msg.remetente_id,
+      destinatarioId: msg.destinatario_id,
+      remetenteNome: msg.remetente?.nome || 'Usuário',
+      destinatarioNome: msg.destinatario?.nome || 'Usuário',
+      assunto: msg.assunto || '',
+      mensagem: msg.conteudo,
+      vagaRelacionada: msg.vaga?.titulo || '',
+      vagaId: msg.vaga_id,
+      criadoEm: new Date(msg.data_envio).getTime(),
+      status: resposta ? 'Respondida' : (msg.lida ? 'Lida' : 'Enviada'),
+      resposta: resposta ? {
+        texto: resposta.conteudo,
+        criadoEm: new Date(resposta.data_envio).getTime()
+      } : null
+    };
   }
 };

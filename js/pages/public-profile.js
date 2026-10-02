@@ -1,5 +1,5 @@
 // ============================================
-// Perfil público - Firebase Realtime Database
+// Perfil público - Supabase
 // ============================================
 
 (function () {

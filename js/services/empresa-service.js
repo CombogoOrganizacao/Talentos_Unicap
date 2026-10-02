@@ -1,112 +1,130 @@
 const APIEmpresa = {
-
   _erro(error, fallback) {
     console.error(fallback, error);
     return { error: error?.message || fallback, campos: null };
   },
 
-  // ============================================
-  // FOTO DE PERFIL DA EMPRESA
-  // ============================================
+  async getPerfil() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return { error: 'Usuário não autenticado' };
+
+    const { data, error } = await supabaseClient
+      .from('perfis_empresa')
+      .select('*, usuarios(id,nome,tipo_conta)')
+      .eq('usuario_id', session.user.id)
+      .single();
+
+    if (error) return this._erro(error, 'Erro ao carregar perfil da empresa');
+
+    return {
+      ...data,
+      nome_empresa: data.nome_fantasia || data.razao_social || data.usuarios?.nome || 'Empresa',
+      nome: data.nome_fantasia || data.razao_social || data.usuarios?.nome || 'Empresa'
+    };
+  },
 
   async uploadFotoPerfil(file) {
     const { data: { session } } = await supabaseClient.auth.getSession();
-    const caminho = `${session.user.id}/foto-perfil-${Date.now()}`;
+    if (!session) return { error: 'Usuário não autenticado' };
+    if (!file) return { error: 'Nenhum arquivo selecionado' };
 
+    const caminho = `${session.user.id}/foto-perfil-${Date.now()}-${file.name}`;
     const { error: erroUpload } = await supabaseClient.storage
-      .from('fotos-empresa').upload(caminho, file, { upsert: true });
+      .from('fotos-empresa')
+      .upload(caminho, file, { upsert: true });
+
     if (erroUpload) return this._erro(erroUpload, 'Erro ao enviar foto de perfil');
 
-    const { data: urlData } = supabaseClient.storage.from('fotos-empresa').getPublicUrl(caminho);
+    const { data: urlData } = supabaseClient.storage
+      .from('fotos-empresa')
+      .getPublicUrl(caminho);
 
     const { data, error } = await supabaseClient
       .from('perfis_empresa')
       .update({ foto_perfil_url: urlData.publicUrl, foto_perfil_key: caminho })
       .eq('usuario_id', session.user.id)
-      .select().single();
+      .select()
+      .single();
 
     if (error) return this._erro(error, 'Erro ao salvar foto de perfil');
     return data;
   },
 
-  // ============================================
-  // BUSCA DE TALENTOS
-  // ============================================
-
   async buscarAlunos() {
-    const { data, error } = await supabaseClient
-      .from('perfis_aluno')
-      .select('*, usuarios(id, nome)')
-      .eq('disponivel_para_empresas', true);
-
+    const { data, error } = await supabaseClient.rpc('obter_perfis_alunos_para_empresas');
     if (error) return this._erro(error, 'Erro ao buscar alunos');
-    return data;
+    return Array.isArray(data) ? data : [];
   },
-
-  // ============================================
-  // VAGAS
-  // ============================================
 
   vagas: {
     async criar(dto) {
       const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) return { error: 'Usuário não autenticado' };
+
+      const habilidades = dto.habilidadesRequisitadas || [];
+      const payload = {
+        empresa_id: session.user.id,
+        titulo: dto.titulo,
+        descricao: dto.descricao || null,
+        modalidade: dto.modalidade || null,
+        carga_horaria: dto.cargaHoraria ?? null,
+        status: 'ABERTA'
+      };
+
       const { data, error } = await supabaseClient
-        .from('vagas').insert({ ...dto, empresa_id: session.user.id }).select().single();
+        .from('vagas').insert(payload).select().single();
+
       if (error) return APIEmpresa._erro(error, 'Erro ao publicar vaga');
-      return data;
+
+      if (habilidades.length) {
+        const { error: hError } = await supabaseClient
+          .from('vaga_habilidades')
+          .insert(habilidades.map(h => ({ vaga_id: data.id, habilidade: h })));
+        if (hError) return APIEmpresa._erro(hError, 'Vaga criada, mas não foi possível salvar os requisitos');
+      }
+
+      return { ...data, habilidadesRequisitadas: habilidades };
     },
+
     async minhas() {
-      const { data, error } = await supabaseClient.from('vagas').select('*');
+      const { data, error } = await supabaseClient
+        .from('vagas')
+        .select('*, vaga_habilidades(habilidade)')
+        .order('data_criacao', { ascending: false });
+
       if (error) return APIEmpresa._erro(error, 'Erro ao listar vagas');
-      return data;
+
+      return (data || []).map(v => ({
+        ...v,
+        criadoEm: v.data_criacao,
+        carga: v.carga_horaria ? `${v.carga_horaria}h` : '',
+        local: v.local || '',
+        empresa: v.empresa || '',
+        periodoFim: v.periodo_fim || null,
+        habilidadesRequisitadas: (v.vaga_habilidades || []).map(x => x.habilidade)
+      }));
     },
+
     async alunosCompativeis(vagaId) {
-      // Equivalente ao endpoint customizado do backend — vira uma function SQL.
-      // Ver nota abaixo, essa precisa ser criada no banco ainda.
-      const { data, error } = await supabaseClient.rpc('alunos_compativeis_com_vaga', { vaga_id: vagaId });
+      const { data, error } = await supabaseClient
+        .rpc('alunos_compativeis_com_vaga', { vaga_id: vagaId });
       if (error) return APIEmpresa._erro(error, 'Erro ao buscar alunos compatíveis');
-      return data;
+      return data || [];
     },
+
     async encerrar(vagaId) {
       const { data, error } = await supabaseClient
-        .from('vagas').update({ status: 'FECHADA' }).eq('id', vagaId).select().single();
+        .from('vagas').update({ status: 'FECHADA' })
+        .eq('id', vagaId).select().single();
       if (error) return APIEmpresa._erro(error, 'Erro ao encerrar vaga');
       return data;
     },
+
     async buscarPorId(vagaId) {
-      const { data, error } = await supabaseClient.from('vagas').select('*').eq('id', vagaId).single();
+      const { data, error } = await supabaseClient
+        .from('vagas').select('*, vaga_habilidades(habilidade)')
+        .eq('id', vagaId).single();
       if (error) return APIEmpresa._erro(error, 'Erro ao carregar vaga');
-      return data;
-    }
-  },
-
-  // ============================================
-  // MENSAGENS
-  // ============================================
-
-  mensagens: {
-    async enviar({ destinatarioId, conteudo, vagaId }) {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      const { data, error } = await supabaseClient
-        .from('mensagens')
-        .insert({ remetente_id: session.user.id, destinatario_id: destinatarioId, conteudo, vaga_id: vagaId })
-        .select().single();
-      if (error) return APIEmpresa._erro(error, 'Erro ao enviar mensagem');
-      return data;
-    },
-    async conversa(outroUsuarioId) {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      const { data, error } = await supabaseClient
-        .from('mensagens')
-        .select('*')
-        .or(`and(remetente_id.eq.${session.user.id},destinatario_id.eq.${outroUsuarioId}),and(remetente_id.eq.${outroUsuarioId},destinatario_id.eq.${session.user.id})`)
-        .order('data_envio');
-      if (error) return APIEmpresa._erro(error, 'Erro ao carregar conversa');
-      return data;
-    },
-    async todas() {
-      const { data, error } = await supabaseClient.from('mensagens').select('*').order('data_envio', { ascending: false });
-      if (error) return APIEmpresa._erro(error, 'Erro ao carregar mensagens');
       return data;
     }
   }

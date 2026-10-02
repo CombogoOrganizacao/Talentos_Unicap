@@ -114,6 +114,7 @@
     const nome_empresa = document.getElementById("nome_empresa").value.trim();
     const cnpj = document.getElementById("cnpj").value.trim();
     const senha = document.getElementById("senha").value;
+    const email = document.getElementById("email").value.trim();
     const setor = document.getElementById("setor").value;
 
     // Observação: o backend (AuthController.registrarEmpresa) hoje não tem
@@ -124,6 +125,7 @@
     let missing = [];
     if (!nome_empresa) { markError("nome_empresa"); missing.push("nome_empresa"); }
     if (!cnpj) { markError("cnpj"); missing.push("cnpj"); }
+    if (!email) { markError("email"); missing.push("email"); }
     if (!senha || senha.length < 6) { markError("senha"); missing.push("senha"); }
     if (!setor) { markError("setor"); missing.push("setor"); }
 
@@ -142,7 +144,8 @@
         razaoSocial: nome_empresa,
         nomeFantasia: nome_empresa,
         setor,
-        senha
+        senha,
+        email
       });
 
       // 2. Se houver logo, envia para o backend (Cloudflare R2)

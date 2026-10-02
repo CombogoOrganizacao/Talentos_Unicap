@@ -3,35 +3,35 @@
 // ============================================
 
 const Auth = {
+  user: null,
+  uid: null,
 
-  user: null, // { id, nome, email, tipoConta: 'aluno' | 'empresa' }
-
-  init() {
-    supabaseClient.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        this.user = null;
-        setTimeout(() => this.onAuthChange(false), 0);
-        return;
+  async init() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+      try {
+        await this._carregarUsuario(session.user.id);
+        this.onAuthChange(true, this.user?.tipoConta);
+      } catch (e) {
+        console.error('Sessão inválida:', e);
+        await this.logout(false);
+        this.onAuthChange(false);
       }
-      this._carregarUsuario(session.user.id)
-        .then(() => this.onAuthChange(true, this.user && this.user.tipoConta))
-        .catch((e) => {
-          console.error('Sessão inválida:', e);
-          this.logout(false);
-          this.onAuthChange(false);
-        });
-    });
+    } else {
+      this.user = null;
+      this.uid = null;
+      setTimeout(() => this.onAuthChange(false), 0);
+    }
 
-    // Mantém o front sincronizado se o token expirar/renovar em outra aba, etc.
     supabaseClient.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') {
         this.user = null;
+        this.uid = null;
         this.onAuthChange(false);
       }
     });
   },
 
-  // Sobrescrito pelas páginas.
   onAuthChange(loggedIn, tipoConta) {},
 
   async _carregarUsuario(userId) {
@@ -43,12 +43,14 @@ const Auth = {
 
     if (error) throw error;
 
+    const { data: authData } = await supabaseClient.auth.getUser();
     this.user = {
       id: usuario.id,
       nome: usuario.nome,
+      email: authData?.user?.email || '',
       tipoConta: usuario.tipo_conta === 'EMPRESA' ? 'empresa' : 'aluno'
     };
-
+    this.uid = usuario.id;
     return this.user;
   },
 
@@ -57,94 +59,76 @@ const Auth = {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (session) await this._carregarUsuario(session.user.id);
     }
-    return this.user ? this.user.tipoConta : null;
+    return this.user?.tipoConta || null;
   },
-
-  // ============================================
-  // CADASTRO DE ALUNO
-  // ============================================
 
   async register(nome, email, senha) {
     const { data, error } = await supabaseClient.auth.signUp({
       email,
       password: senha,
-      options: { data: { nome, tipoConta: 'ALUNO' } }  // o trigger do banco usa isso pra criar usuarios + perfis_aluno
+      options: { data: { nome, tipoConta: 'ALUNO' } }
     });
-
     if (error) throw error;
 
-    this.user = { nome, email, tipoConta: 'aluno' };
+    if (data.user) {
+      this.user = { id: data.user.id, nome, email, tipoConta: 'aluno' };
+      this.uid = data.user.id;
+    }
     return this.user;
   },
 
-  // ============================================
-  // CADASTRO DE EMPRESA
-  // ============================================
-
   async registerEmpresa({ cnpj, razaoSocial, nomeFantasia, setor, senha, email }) {
-    // Supabase Auth exige email único pra login — usa o e-mail real cadastrado,
-    // não o CNPJ. O CNPJ fica só na tabela perfis_empresa.
     const { data, error } = await supabaseClient.auth.signUp({
       email,
       password: senha,
-      options: { data: { nome: razaoSocial, tipoConta: 'EMPRESA' } }
+      options: {
+        data: {
+          nome: razaoSocial,
+          tipoConta: 'EMPRESA',
+          cnpj: String(cnpj || '').replace(/\D/g, ''),
+          razaoSocial,
+          nomeFantasia,
+          setor
+        }
+      }
     });
-
     if (error) throw error;
 
-    // Completa os dados específicos de empresa (o trigger só cria usuarios;
-    // perfis_empresa não é criado automaticamente, diferente de perfis_aluno)
-    const { error: erroPerfil } = await supabaseClient
+    if (!data.user) throw new Error('O Supabase não retornou o usuário criado.');
+
+    this.user = {
+      id: data.user.id,
+      nome: razaoSocial,
+      email,
+      tipoConta: 'empresa'
+    };
+    this.uid = data.user.id;
+
+    // O trigger atual do banco cria usuarios; garantimos o perfil da empresa aqui.
+    const { error: perfilError } = await supabaseClient
       .from('perfis_empresa')
-      .insert({
+      .upsert({
         usuario_id: data.user.id,
-        cnpj,
+        cnpj: String(cnpj || '').replace(/\D/g, ''),
         razao_social: razaoSocial,
-        nome_fantasia: nomeFantasia,
-        setor
-      });
+        nome_fantasia: nomeFantasia || razaoSocial,
+        setor: setor || null
+      }, { onConflict: 'usuario_id' });
 
-    if (erroPerfil) throw erroPerfil;
-
-    this.user = { nome: razaoSocial, tipoConta: 'empresa' };
+    if (perfilError) throw perfilError;
     return this.user;
   },
 
-  // ============================================
-  // LOGIN
-  // ============================================
-
   async login(identifier, senha) {
-    // Supabase Auth loga só por e-mail. Se "identifier" for CNPJ (login de
-    // empresa), precisa resolver pro e-mail correspondente antes.
-    let email = identifier;
-
-    const pareceCnpj = /^\d+$/.test(identifier.replace(/\D/g, '')) && identifier.replace(/\D/g, '').length === 14;
-    if (pareceCnpj) {
-      const { data: empresa, error } = await supabaseClient
-        .from('perfis_empresa')
-        .select('usuario_id')
-        .eq('cnpj', identifier.replace(/\D/g, ''))
-        .single();
-
-      if (error || !empresa) throw new Error('CNPJ não encontrado');
-
-      const { data: usuario } = await supabaseClient
-        .from('usuarios')
-        .select('id')
-        .eq('id', empresa.usuario_id)
-        .single();
-
-      // Supabase não tem "login por id" direto — por isso é mais simples
-      // pedir login por e-mail real da empresa também. Ver nota abaixo.
-      throw new Error('Login por CNPJ precisa de ajuste — ver nota no guia');
+    const email = String(identifier || '').trim();
+    if (!email || !email.includes('@')) {
+      throw new Error('O login da empresa/aluno deve ser feito com e-mail.');
     }
 
     const { data, error } = await supabaseClient.auth.signInWithPassword({
       email,
       password: senha
     });
-
     if (error) throw error;
 
     await this._carregarUsuario(data.user.id);
@@ -155,22 +139,12 @@ const Auth = {
     return this.login(identifier, senha);
   },
 
-  // ============================================
-  // LOGOUT
-  // ============================================
-
   async logout(redirect = true) {
     await supabaseClient.auth.signOut();
     this.user = null;
-
-    if (redirect) {
-      window.location.href = 'index.html';
-    }
+    this.uid = null;
+    if (redirect) window.location.href = 'index.html';
   },
-
-  // ============================================
-  // VERIFICAR LOGIN
-  // ============================================
 
   async isLoggedIn() {
     const { data: { session } } = await supabaseClient.auth.getSession();
