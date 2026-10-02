@@ -117,3 +117,9 @@ Antes de publicar a aplicação em produção:
 8. O cadastro de empresa não tenta gravar `perfis_empresa` pelo frontend antes da confirmação. O trigger do banco continua responsável por criar `usuarios` e `perfis_empresa`.
 
 > Substitua `SEU-DOMINIO` pelo domínio final usado no deploy. O JavaScript usa `window.location.origin`, então funciona tanto na URL da Vercel quanto depois da troca para um domínio próprio, desde que as URLs correspondentes estejam liberadas no Supabase.
+## Login de empresa por CNPJ
+
+O login aceita **e-mail ou CNPJ**. O e-mail continua sendo o identificador interno do Supabase Auth; quando a empresa informa o CNPJ, o frontend chama a Edge Function `login-empresa-cnpj`, que localiza a conta pelo CNPJ sem expor o e-mail no navegador e realiza a autenticação.
+
+Antes de publicar, faça o deploy da Edge Function no projeto Supabase e mantenha as credenciais administrativas somente nos secrets do Supabase.
+

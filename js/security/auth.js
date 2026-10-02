@@ -143,20 +143,67 @@ const Auth = {
   },
 
   async login(identifier, senha) {
-    const email = String(identifier || '').trim();
+    const value = String(identifier || '').trim();
 
-    if (!email || !email.includes('@')) {
-      throw new Error('Informe o e-mail cadastrado. O login por CNPJ ainda precisa de uma etapa própria de consulta.');
+    if (!value) throw new Error('Informe o e-mail ou CNPJ.');
+    if (!senha) throw new Error('Informe a senha.');
+
+    // Alunos continuam usando e-mail diretamente no Supabase Auth.
+    // Empresas podem usar e-mail OU CNPJ. Para CNPJ, a consulta acontece
+    // em uma Edge Function para que o e-mail interno nunca seja exposto.
+    if (value.includes('@')) {
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: value,
+        password: senha
+      });
+
+      if (error) throw error;
+      await this._carregarUsuario(data.user.id);
+      return this.user;
     }
 
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email,
-      password: senha
+    return this.loginEmpresaPorCnpj(value, senha);
+  },
+
+  async loginEmpresaPorCnpj(cnpj, senha) {
+    const cnpjNormalizado = String(cnpj || '').replace(/\D/g, '');
+
+    if (!/^\d{14}$/.test(cnpjNormalizado)) {
+      throw new Error('Informe um CNPJ válido com 14 dígitos.');
+    }
+
+    const { data, error } = await supabaseClient.functions.invoke('login-empresa-cnpj', {
+      body: { cnpj: cnpjNormalizado, senha }
     });
 
-    if (error) throw error;
+    if (error) {
+      let message = error.message || 'Não foi possível entrar.';
+      // functions.invoke pode devolver o corpo JSON como contexto do erro.
+      try {
+        const context = error.context;
+        if (context && typeof context.json === 'function') {
+          const body = await context.json();
+          if (body?.error) message = body.error;
+        }
+      } catch (_) {}
+      throw new Error(message);
+    }
 
-    await this._carregarUsuario(data.user.id);
+    if (!data?.session?.access_token || !data?.session?.refresh_token) {
+      throw new Error('A autenticação por CNPJ não retornou uma sessão válida.');
+    }
+
+    const { data: sessionData, error: sessionError } = await supabaseClient.auth.setSession({
+      access_token: data.session.access_token,
+      refresh_token: data.session.refresh_token
+    });
+
+    if (sessionError) throw sessionError;
+
+    const userId = sessionData?.user?.id || data?.user?.id;
+    if (!userId) throw new Error('A sessão foi criada, mas o usuário não foi identificado.');
+
+    await this._carregarUsuario(userId);
     return this.user;
   },
 

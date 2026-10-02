@@ -29,8 +29,8 @@
         <div id="errorMsg" class="error-msg hidden"></div>
         <form id="loginForm">
           <div class="form-group">
-            <label>E-mail</label>
-            <input type="text" id="email" inputmode="email" placeholder="seu@email.com">
+            <label>E-mail ou CNPJ</label>
+            <input type="text" id="email" inputmode="email" autocomplete="username" placeholder="seu@email.com ou 00.000.000/0000-00">
           </div>
           <div class="form-group">
             <label>Senha</label>
@@ -67,7 +67,7 @@
 
     Auth.init();
 
-    // Em produção, o Supabase Auth autentica a conta pelo e-mail cadastrado.
+    // Alunos: e-mail. Empresas: e-mail ou CNPJ (via Edge Function).
 
     document.getElementById('loginForm').addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -78,7 +78,7 @@
       const errDiv = document.getElementById('errorMsg');
 
       if (!identifier) {
-        errDiv.textContent = 'Digite seu e-mail.';
+        errDiv.textContent = 'Digite seu e-mail ou CNPJ.';
         errDiv.classList.remove('hidden');
         return;
       }
@@ -107,7 +107,7 @@
               Reenviar e-mail de confirmação
             </a>`;
         } else if (message.toLowerCase().includes('invalid login credentials')) {
-          errDiv.textContent = 'E-mail ou senha incorretos.';
+          errDiv.textContent = 'E-mail/CNPJ ou senha incorretos.';
         } else {
           errDiv.textContent = message || 'Não foi possível entrar. Tente novamente.';
         }

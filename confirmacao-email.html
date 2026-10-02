@@ -1,94 +1,507 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Confirme seu e-mail - TalentoUNICAP</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-  <nav class="navbar"><div class="container">
-    <a href="index.html" class="navbar-brand">
-      <img src="img/asabranca_Unicap.png" width="40px" alt="">
-      Talento<span>UNICAP</span>
-    </a>
-  </div></nav>
+
+  <nav class="navbar">
+    <div class="container">
+
+```
+  <a href="index.html" class="navbar-brand">
+    <img
+      src="img/asabranca_Unicap.png"
+      width="40"
+      alt="UNICAP"
+    >
+
+    Talento<span>UNICAP</span>
+  </a>
+
+</div>
+```
+
+  </nav>
 
   <div class="auth-page">
-    <div class="card auth-card"><div class="card-body" style="text-align:center;">
-      <div id="statusIcon" style="font-size:48px;margin-bottom:12px;">✉️</div>
-      <h2 id="title">Confirme seu e-mail</h2>
-      <p id="message" class="subtitle">Enviamos um link de confirmação para o seu e-mail.</p>
 
-      <div id="emailBox" style="background:var(--gray-50);border-radius:8px;padding:12px;margin:20px 0;font-size:14px;word-break:break-word;"></div>
+```
+<div class="card auth-card">
 
-      <div id="resendArea">
-        <p style="font-size:13px;color:var(--gray-600);margin-bottom:10px;">Não recebeu? Verifique o spam ou solicite um novo e-mail.</p>
-        <button id="resendBtn" class="btn btn-primary" style="width:100%;">Reenviar confirmação</button>
-        <div id="feedback" class="error-msg hidden" style="margin-top:12px;"></div>
+  <div class="card-body" style="text-align:center;">
+
+    <!-- ÍCONE -->
+    <div
+      id="statusIcon"
+      style="font-size:48px;margin-bottom:12px;"
+    >
+      ✉️
+    </div>
+
+    <!-- TÍTULO -->
+    <h2 id="title">
+      Confirme seu e-mail
+    </h2>
+
+    <!-- MENSAGEM -->
+    <p
+      id="message"
+      class="subtitle"
+    >
+      Enviamos um link de confirmação para o seu e-mail.
+    </p>
+
+    <!-- E-MAIL -->
+    <div
+      id="emailBox"
+      style="
+        background:var(--gray-50);
+        border-radius:8px;
+        padding:12px;
+        margin:20px 0;
+        font-size:14px;
+        word-break:break-word;
+      "
+    >
+    </div>
+
+    <!-- REENVIO -->
+    <div id="resendArea">
+
+      <p
+        style="
+          font-size:13px;
+          color:var(--gray-600);
+          margin-bottom:10px;
+        "
+      >
+        Não recebeu? Verifique o spam ou solicite um novo e-mail.
+      </p>
+
+      <button
+        id="resendBtn"
+        class="btn btn-primary"
+        style="width:100%;"
+      >
+        Reenviar confirmação
+      </button>
+
+      <div
+        id="feedback"
+        class="error-msg hidden"
+        style="margin-top:12px;"
+      >
       </div>
 
-      <a id="loginLink" href="login.html" class="btn btn-secondary" style="display:block;width:100%;margin-top:12px;">Voltar para o login</a>
-    </div></div>
+    </div>
+
+    <!-- LOGIN -->
+    <a
+      id="loginLink"
+      href="login.html"
+      class="btn btn-secondary"
+      style="
+        display:block;
+        width:100%;
+        margin-top:12px;
+      "
+    >
+      Voltar para o login
+    </a>
+
   </div>
 
+</div>
+```
+
+  </div>
+
+  <!-- SUPABASE -->
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- CONFIG -->
+
   <script src="js/config/config.js"></script>
+
+  <!-- CLIENT -->
+
   <script src="js/config/supabase-client.js"></script>
+
+  <!-- AUTH -->
+
   <script src="js/security/auth.js"></script>
+
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const email = params.get('email') || '';
-    const tipo = params.get('tipo') || 'aluno';
+
+    // =========================================================
+    // ELEMENTOS
+    // =========================================================
+
+    const statusIcon = document.getElementById('statusIcon');
+    const title = document.getElementById('title');
+    const message = document.getElementById('message');
     const emailBox = document.getElementById('emailBox');
+    const resendArea = document.getElementById('resendArea');
     const resendBtn = document.getElementById('resendBtn');
     const feedback = document.getElementById('feedback');
+    const loginLink = document.getElementById('loginLink');
 
-    emailBox.textContent = email || 'Informe seu e-mail abaixo para reenviar a confirmação.';
+
+    // =========================================================
+    // PARÂMETROS DA URL
+    // =========================================================
+
+    const params = new URLSearchParams(window.location.search);
+
+    const email = params.get('email') || '';
+    const tipo = params.get('tipo') || 'aluno';
+
+    const code = params.get('code');
+
+    const errorParam = params.get('error');
+    const errorDescription = params.get('error_description');
+
+
+    // =========================================================
+    // EMAIL INICIAL
+    // =========================================================
+
+    emailBox.textContent =
+      email ||
+      'Confira a caixa de entrada do e-mail utilizado no cadastro.';
+
+
+    // =========================================================
+    // FUNÇÃO — MOSTRAR CONFIRMAÇÃO
+    // =========================================================
+
+    function mostrarConfirmacao(user) {
+
+      statusIcon.textContent = '✅';
+
+      title.textContent = 'E-mail confirmado!';
+
+      message.textContent =
+        'Sua conta foi ativada com sucesso. Você já pode acessar a plataforma.';
+
+      emailBox.textContent =
+        user?.email ||
+        email ||
+        'E-mail confirmado com sucesso.';
+
+      resendArea.style.display = 'none';
+
+      loginLink.textContent = 'Ir para o login';
+
+      loginLink.href = 'login.html';
+
+    }
+
+
+    // =========================================================
+    // FUNÇÃO — MOSTRAR ERRO
+    // =========================================================
+
+    function mostrarErro(mensagemErro) {
+
+      statusIcon.textContent = '❌';
+
+      title.textContent = 'Não foi possível confirmar o e-mail';
+
+      message.textContent =
+        mensagemErro ||
+        'O link de confirmação é inválido ou expirou.';
+
+      emailBox.textContent = '';
+
+      resendArea.style.display = 'none';
+
+      loginLink.textContent = 'Voltar para o login';
+
+      loginLink.href = 'login.html';
+
+    }
+
+
+    // =========================================================
+    // REENVIO DE CONFIRMAÇÃO
+    // =========================================================
 
     resendBtn.addEventListener('click', async () => {
-      const address = email || prompt('Digite o e-mail cadastrado:');
-      if (!address) return;
+
+      const address =
+        email ||
+        prompt('Digite o e-mail cadastrado:');
+
+      if (!address) {
+        return;
+      }
 
       resendBtn.disabled = true;
       resendBtn.textContent = 'Enviando...';
+
       feedback.classList.add('hidden');
 
       try {
+
         await Auth.resendConfirmation(address);
+
         feedback.className = '';
-        feedback.style.cssText = 'margin-top:12px;padding:12px;border-radius:8px;background:#ecfdf5;color:#166534;font-size:13px;';
-        feedback.textContent = 'E-mail de confirmação reenviado. Confira sua caixa de entrada e o spam.';
+
+        feedback.style.cssText = `
+          margin-top:12px;
+          padding:12px;
+          border-radius:8px;
+          background:#ecfdf5;
+          color:#166534;
+          font-size:13px;
+        `;
+
+        feedback.textContent =
+          'E-mail de confirmação reenviado. Confira sua caixa de entrada e o spam.';
+
       } catch (error) {
+
         feedback.classList.remove('hidden');
-        feedback.textContent = error.message || 'Não foi possível reenviar o e-mail.';
+
+        feedback.textContent =
+          error?.message ||
+          'Não foi possível reenviar o e-mail.';
+
       } finally {
+
         resendBtn.disabled = false;
-        resendBtn.textContent = 'Reenviar confirmação';
+
+        resendBtn.textContent =
+          'Reenviar confirmação';
+
       }
+
     });
 
-    // O Supabase pode devolver a sessão pela URL depois que o usuário clica
-    // no link de confirmação. Se houver sessão, direcionamos ao painel.
+
+    // =========================================================
+    // PROCESSAR CONFIRMAÇÃO
+    // =========================================================
+
     (async () => {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) return;
 
       try {
-        await Auth._carregarUsuario(session.user.id);
-        document.getElementById('statusIcon').textContent = '✅';
-        document.getElementById('title').textContent = 'E-mail confirmado!';
-        document.getElementById('message').textContent = 'Sua conta foi ativada com sucesso. Você já pode acessar a plataforma.';
-        document.getElementById('emailBox').textContent = session.user.email || email;
-        document.getElementById('resendArea').style.display = 'none';
 
-        const destino = Auth.user?.tipoConta === 'empresa' ? 'busca-talentos.html' : 'dashboard.html';
-        setTimeout(() => { window.location.href = destino; }, 1200);
+        // -------------------------------------------------------
+        // 1. SE O SUPABASE RETORNOU UM ERRO
+        // -------------------------------------------------------
+
+        if (errorParam) {
+
+          console.error(
+            'Erro retornado pelo Supabase:',
+            errorParam,
+            errorDescription
+          );
+
+          mostrarErro(
+            errorDescription
+              ? decodeURIComponent(errorDescription.replace(/\+/g, ' '))
+              : 'O link de confirmação é inválido ou expirou.'
+          );
+
+          return;
+        }
+
+
+        // -------------------------------------------------------
+        // 2. FLUXO PKCE / CODE
+        // -------------------------------------------------------
+
+        if (code) {
+
+          console.log(
+            'Código de confirmação encontrado. Trocando por sessão...'
+          );
+
+          const {
+            data,
+            error
+          } = await supabaseClient.auth.exchangeCodeForSession(code);
+
+          if (error) {
+
+            console.error(
+              'Erro ao trocar código por sessão:',
+              error
+            );
+
+            mostrarErro(
+              'O link de confirmação é inválido, expirou ou já foi utilizado.'
+            );
+
+            return;
+          }
+
+          if (data?.session?.user) {
+
+            console.log(
+              'Sessão criada após confirmação:',
+              data.session.user.id
+            );
+
+            mostrarConfirmacao(data.session.user);
+
+            return;
+          }
+
+        }
+
+
+        // -------------------------------------------------------
+        // 3. DAR TEMPO PARA O SUPABASE PROCESSAR O HASH
+        // -------------------------------------------------------
+
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+
+        // -------------------------------------------------------
+        // 4. VERIFICAR SESSÃO
+        // -------------------------------------------------------
+
+        let {
+          data: {
+            session
+          }
+        } = await supabaseClient.auth.getSession();
+
+
+        // -------------------------------------------------------
+        // 5. SE NÃO HOUVER SESSÃO, ESPERAR SIGNED_IN
+        // -------------------------------------------------------
+
+        if (!session) {
+
+          console.log(
+            'Nenhuma sessão encontrada imediatamente. Aguardando autenticação...'
+          );
+
+          const sessionResult = await new Promise(resolve => {
+
+            let finalizado = false;
+
+            const timeout = setTimeout(() => {
+
+              if (finalizado) {
+                return;
+              }
+
+              finalizado = true;
+
+              resolve(null);
+
+            }, 5000);
+
+
+            const {
+              data: listener
+            } = supabaseClient.auth.onAuthStateChange(
+              (event, currentSession) => {
+
+                console.log(
+                  'Evento Auth:',
+                  event
+                );
+
+                if (
+                  event === 'SIGNED_IN' ||
+                  event === 'INITIAL_SESSION'
+                ) {
+
+                  if (currentSession) {
+
+                    clearTimeout(timeout);
+
+                    if (!finalizado) {
+
+                      finalizado = true;
+
+                      resolve(currentSession);
+
+                    }
+
+                    listener.subscription.unsubscribe();
+
+                  }
+
+                }
+
+              }
+            );
+
+          });
+
+          session = sessionResult;
+        }
+
+
+        // -------------------------------------------------------
+        // 6. CONFIRMADO
+        // -------------------------------------------------------
+
+        if (session?.user) {
+
+          console.log(
+            'E-mail confirmado:',
+            session.user.email
+          );
+
+          mostrarConfirmacao(session.user);
+
+          return;
+        }
+
+
+        // -------------------------------------------------------
+        // 7. NENHUMA SESSÃO
+        // -------------------------------------------------------
+
+        console.log(
+          'Nenhuma sessão encontrada.'
+        );
+
+        // Não mostramos erro aqui.
+        // O usuário pode simplesmente ter chegado
+        // nesta página diretamente após o cadastro.
+
       } catch (error) {
-        console.error('Sessão confirmada, mas não foi possível carregar o perfil:', error);
+
+        console.error(
+          'Erro ao processar confirmação:',
+          error
+        );
+
+        mostrarErro(
+          'Ocorreu um erro ao confirmar seu e-mail. Tente solicitar um novo link.'
+        );
+
       }
+
     })();
+
   </script>
+
 </body>
+
 </html>
