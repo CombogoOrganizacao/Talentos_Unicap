@@ -100,3 +100,20 @@ MIT
 ## Supabase
 
 O frontend usa Supabase Auth, PostgreSQL/RLS e Storage. As credenciais públicas ficam em `js/config/config.js`; a chave `service_role` nunca deve ser colocada no frontend.
+
+## Configuração de autenticação para produção (Supabase)
+
+Antes de publicar a aplicação em produção:
+
+1. No Supabase, mantenha **Authentication → Providers → Email → Confirm Email** ativado.
+2. Configure um SMTP próprio para envio dos e-mails de confirmação e recuperação de senha.
+3. Em **Authentication → URL Configuration**, configure o domínio oficial do TalentoUNICAP como **Site URL** e adicione as URLs de confirmação/recuperação usadas pelo site, por exemplo:
+   - `https://SEU-DOMINIO/confirmacao-email.html`
+   - `https://SEU-DOMINIO/redefinir-senha.html`
+4. Nunca coloque uma chave `service_role`/secret no JavaScript do frontend. O frontend deve usar apenas a chave pública/publishable do Supabase.
+5. O fluxo de cadastro agora envia o usuário para `confirmacao-email.html` quando a confirmação de e-mail estiver ativa.
+6. O login trata `Email not confirmed` com uma mensagem amigável e oferece o reenvio da confirmação.
+7. A recuperação de senha usa `recuperar-senha.html` e `redefinir-senha.html`.
+8. O cadastro de empresa não tenta gravar `perfis_empresa` pelo frontend antes da confirmação. O trigger do banco continua responsável por criar `usuarios` e `perfis_empresa`.
+
+> Substitua `SEU-DOMINIO` pelo domínio final usado no deploy. O JavaScript usa `window.location.origin`, então funciona tanto na URL da Vercel quanto depois da troca para um domínio próprio, desde que as URLs correspondentes estejam liberadas no Supabase.

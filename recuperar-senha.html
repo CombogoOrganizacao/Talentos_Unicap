@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuperar senha - TalentoUNICAP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar"><div class="container">
+    <a href="index.html" class="navbar-brand"><img src="img/asabranca_Unicap.png" width="40px" alt=""> Talento<span>UNICAP</span></a>
+  </div></nav>
+  <div class="auth-page">
+    <div class="card auth-card"><div class="card-body">
+      <h2>Recuperar senha</h2>
+      <p class="subtitle">Informe o e-mail cadastrado e enviaremos um link para criar uma nova senha.</p>
+      <div id="feedback" class="error-msg hidden"></div>
+      <form id="form">
+        <div class="form-group">
+          <label>E-mail</label>
+          <input type="email" id="email" placeholder="seu@email.com" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;" id="btn">Enviar link</button>
+      </form>
+      <p style="text-align:center;margin-top:20px;font-size:14px;"><a href="login.html">Voltar para o login</a></p>
+    </div></div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config/config.js"></script>
+  <script src="js/config/supabase-client.js"></script>
+  <script src="js/security/auth.js"></script>
+  <script>
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const btn = document.getElementById('btn');
+      const feedback = document.getElementById('feedback');
+
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      feedback.classList.add('hidden');
+
+      try {
+        await Auth.sendPasswordReset(email);
+        feedback.className = '';
+        feedback.style.cssText = 'padding:12px;border-radius:8px;background:#ecfdf5;color:#166534;font-size:13px;margin-bottom:16px;';
+        feedback.textContent = 'Se existir uma conta com esse e-mail, enviaremos as instruções para redefinir a senha.';
+        document.getElementById('form').style.display = 'none';
+      } catch (error) {
+        feedback.classList.remove('hidden');
+        feedback.textContent = error.message || 'Não foi possível enviar o link.';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Enviar link';
+      }
+    });
+  </script>
+</body>
+</html>

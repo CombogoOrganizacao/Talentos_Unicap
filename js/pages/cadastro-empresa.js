@@ -138,8 +138,7 @@
     submitBtn.textContent = "Criando...";
 
     try {
-      // 1. Cria o Usuario + PerfilEmpresa no backend e já recebe o JWT
-      await Auth.registerEmpresa({
+      const result = await Auth.registerEmpresa({
         cnpj,
         razaoSocial: nome_empresa,
         nomeFantasia: nome_empresa,
@@ -148,19 +147,27 @@
         email
       });
 
-      // 2. Se houver logo, envia para o backend (Cloudflare R2)
-      if (logoFile) {
+      // Com confirmação de e-mail ativa, não existe sessão autenticada ainda.
+      // Por isso o upload da logo não é feito neste momento; ele poderá ser
+      // realizado depois que a empresa confirmar o e-mail e entrar na conta.
+      if (result.requiresEmailConfirmation) {
+        window.location.href = `confirmacao-email.html?email=${encodeURIComponent(email)}&tipo=empresa`;
+        return;
+      }
+
+      // Em projetos com confirmação desativada (ex.: desenvolvimento),
+      // mantemos o fluxo normal. O upload poderá ser feito já autenticado.
+      if (logoFile && typeof APIEmpresa !== 'undefined' && typeof APIEmpresa.uploadFotoPerfil === 'function') {
         try {
-          const result = await APIEmpresa.uploadFotoPerfil(logoFile);
-          if (result && result.error) {
-            console.warn("Conta criada, mas o upload da logo falhou:", result.error);
+          const uploadResult = await APIEmpresa.uploadFotoPerfil(logoFile);
+          if (uploadResult && uploadResult.error) {
+            console.warn("Conta criada, mas o upload da logo falhou:", uploadResult.error);
           }
         } catch (logoErr) {
           console.warn("Conta criada, mas o upload da logo falhou:", logoErr);
         }
       }
 
-      // 3. Sucesso: mostra confirmação e redireciona para o painel da empresa
       form.innerHTML = `
         <div style="text-align:center;padding:20px 0;">
           <div style="font-size:40px;color:var(--green-500);margin-bottom:12px;"><i class="ph-fill ph-check-circle"></i></div>

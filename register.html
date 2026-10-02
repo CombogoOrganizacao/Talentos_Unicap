@@ -97,9 +97,12 @@
       btn.textContent = 'Criando...';
 
       try {
-        // Um único request no backend já cria o Usuario (ALUNO) e devolve
-        // o token JWT - não existe mais um segundo passo de "criar perfil".
-        await Auth.register(name, email, password);
+        const result = await Auth.register(name, email, password);
+
+        if (result.requiresEmailConfirmation) {
+          window.location.href = `confirmacao-email.html?email=${encodeURIComponent(email)}&tipo=aluno`;
+          return;
+        }
 
         window.location.href = 'dashboard.html';
 

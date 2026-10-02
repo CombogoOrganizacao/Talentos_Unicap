@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirme seu e-mail - TalentoUNICAP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar"><div class="container">
+    <a href="index.html" class="navbar-brand">
+      <img src="img/asabranca_Unicap.png" width="40px" alt="">
+      Talento<span>UNICAP</span>
+    </a>
+  </div></nav>
+
+  <div class="auth-page">
+    <div class="card auth-card"><div class="card-body" style="text-align:center;">
+      <div id="statusIcon" style="font-size:48px;margin-bottom:12px;">✉️</div>
+      <h2 id="title">Confirme seu e-mail</h2>
+      <p id="message" class="subtitle">Enviamos um link de confirmação para o seu e-mail.</p>
+
+      <div id="emailBox" style="background:var(--gray-50);border-radius:8px;padding:12px;margin:20px 0;font-size:14px;word-break:break-word;"></div>
+
+      <div id="resendArea">
+        <p style="font-size:13px;color:var(--gray-600);margin-bottom:10px;">Não recebeu? Verifique o spam ou solicite um novo e-mail.</p>
+        <button id="resendBtn" class="btn btn-primary" style="width:100%;">Reenviar confirmação</button>
+        <div id="feedback" class="error-msg hidden" style="margin-top:12px;"></div>
+      </div>
+
+      <a id="loginLink" href="login.html" class="btn btn-secondary" style="display:block;width:100%;margin-top:12px;">Voltar para o login</a>
+    </div></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config/config.js"></script>
+  <script src="js/config/supabase-client.js"></script>
+  <script src="js/security/auth.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get('email') || '';
+    const tipo = params.get('tipo') || 'aluno';
+    const emailBox = document.getElementById('emailBox');
+    const resendBtn = document.getElementById('resendBtn');
+    const feedback = document.getElementById('feedback');
+
+    emailBox.textContent = email || 'Informe seu e-mail abaixo para reenviar a confirmação.';
+
+    resendBtn.addEventListener('click', async () => {
+      const address = email || prompt('Digite o e-mail cadastrado:');
+      if (!address) return;
+
+      resendBtn.disabled = true;
+      resendBtn.textContent = 'Enviando...';
+      feedback.classList.add('hidden');
+
+      try {
+        await Auth.resendConfirmation(address);
+        feedback.className = '';
+        feedback.style.cssText = 'margin-top:12px;padding:12px;border-radius:8px;background:#ecfdf5;color:#166534;font-size:13px;';
+        feedback.textContent = 'E-mail de confirmação reenviado. Confira sua caixa de entrada e o spam.';
+      } catch (error) {
+        feedback.classList.remove('hidden');
+        feedback.textContent = error.message || 'Não foi possível reenviar o e-mail.';
+      } finally {
+        resendBtn.disabled = false;
+        resendBtn.textContent = 'Reenviar confirmação';
+      }
+    });
+
+    // O Supabase pode devolver a sessão pela URL depois que o usuário clica
+    // no link de confirmação. Se houver sessão, direcionamos ao painel.
+    (async () => {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) return;
+
+      try {
+        await Auth._carregarUsuario(session.user.id);
+        document.getElementById('statusIcon').textContent = '✅';
+        document.getElementById('title').textContent = 'E-mail confirmado!';
+        document.getElementById('message').textContent = 'Sua conta foi ativada com sucesso. Você já pode acessar a plataforma.';
+        document.getElementById('emailBox').textContent = session.user.email || email;
+        document.getElementById('resendArea').style.display = 'none';
+
+        const destino = Auth.user?.tipoConta === 'empresa' ? 'busca-talentos.html' : 'dashboard.html';
+        setTimeout(() => { window.location.href = destino; }, 1200);
+      } catch (error) {
+        console.error('Sessão confirmada, mas não foi possível carregar o perfil:', error);
+      }
+    })();
+  </script>
+</body>
+</html>

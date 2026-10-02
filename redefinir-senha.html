@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova senha - TalentoUNICAP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar"><div class="container">
+    <a href="index.html" class="navbar-brand"><img src="img/asabranca_Unicap.png" width="40px" alt=""> Talento<span>UNICAP</span></a>
+  </div></nav>
+  <div class="auth-page">
+    <div class="card auth-card"><div class="card-body">
+      <h2>Crie uma nova senha</h2>
+      <p class="subtitle">Escolha uma senha nova para acessar sua conta.</p>
+      <div id="feedback" class="error-msg hidden"></div>
+      <form id="form">
+        <div class="form-group">
+          <label>Nova senha</label>
+          <input type="password" id="password" minlength="6" placeholder="Mínimo 6 caracteres" required>
+        </div>
+        <div class="form-group">
+          <label>Confirmar nova senha</label>
+          <input type="password" id="confirm" minlength="6" placeholder="Repita a nova senha" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;" id="btn">Salvar nova senha</button>
+      </form>
+      <p id="loginLink" style="text-align:center;margin-top:20px;font-size:14px;display:none;"><a href="login.html">Ir para o login</a></p>
+    </div></div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config/config.js"></script>
+  <script src="js/config/supabase-client.js"></script>
+  <script src="js/security/auth.js"></script>
+  <script>
+    let recoveryReady = false;
+
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY' && session) recoveryReady = true;
+    });
+
+    (async () => {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) recoveryReady = true;
+    })();
+
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm').value;
+      const btn = document.getElementById('btn');
+      const feedback = document.getElementById('feedback');
+
+      feedback.classList.add('hidden');
+      if (password.length < 6) {
+        feedback.textContent = 'A senha deve ter pelo menos 6 caracteres.';
+        feedback.classList.remove('hidden');
+        return;
+      }
+      if (password !== confirm) {
+        feedback.textContent = 'As senhas não coincidem.';
+        feedback.classList.remove('hidden');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Salvando...';
+
+      try {
+        await Auth.updatePassword(password);
+        document.getElementById('form').style.display = 'none';
+        feedback.className = '';
+        feedback.style.cssText = 'padding:12px;border-radius:8px;background:#ecfdf5;color:#166534;font-size:13px;';
+        feedback.textContent = 'Senha alterada com sucesso. Agora você pode entrar normalmente.';
+        document.getElementById('loginLink').style.display = 'block';
+      } catch (error) {
+        feedback.classList.remove('hidden');
+        feedback.textContent = error.message || 'Não foi possível alterar a senha. Solicite um novo link.';
+        btn.disabled = false;
+        btn.textContent = 'Salvar nova senha';
+      }
+    });
+  </script>
+</body>
+</html>
