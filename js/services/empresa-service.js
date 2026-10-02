@@ -1,30 +1,8 @@
-// ============================================
-// API Client - Empresa (API REST Spring Boot)
-// Substitui o antigo cliente Firebase para empresas.
-//
-// Endpoints usados:
-//   POST /api/auth/register-empresa  (cadastro - feito via Auth.registerEmpresa)
-//   POST /api/empresa/perfil/foto (multipart, apenas ROLE_EMPRESA)
-//   GET  /api/empresa/alunos                          (busca de talentos)
-//   POST /api/empresa/vagas                           (criar vaga)
-//   GET  /api/empresa/vagas                            (minhas vagas)
-//   GET  /api/empresa/vagas/{id}/alunos-compativeis
-//   PUT  /api/empresa/vagas/{id}/encerrar
-//   GET  /api/vagas/{id}                               (pública, sem login)
-//
-// ATENÇÃO - sem equivalente no backend hoje (ver relatório de análise):
-//   - Não existe GET/PUT de "meu perfil de empresa" (razão social, setor,
-//     descrição, telefone, site, responsável) - só o upload de foto.
-//     Os campos telefone/site/responsavel/email digitados no cadastro de
-//     empresa não são persistidos por não existir campo correspondente
-//     no backend (Model/PerfilEmpresa.java).
-// ============================================
-
 const APIEmpresa = {
 
   _erro(error, fallback) {
     console.error(fallback, error);
-    return { error: error?.message || fallback, campos: error?.campos || null };
+    return { error: error?.message || fallback, campos: null };
   },
 
   // ============================================
@@ -32,25 +10,37 @@ const APIEmpresa = {
   // ============================================
 
   async uploadFotoPerfil(file) {
-    try {
-      const form = new FormData();
-      form.append('arquivo', file);
-      return await Http.postForm('/empresa/perfil/foto', form);
-    } catch (error) {
-      return this._erro(error, 'Erro ao enviar foto de perfil');
-    }
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    const caminho = `${session.user.id}/foto-perfil-${Date.now()}`;
+
+    const { error: erroUpload } = await supabaseClient.storage
+      .from('fotos-empresa').upload(caminho, file, { upsert: true });
+    if (erroUpload) return this._erro(erroUpload, 'Erro ao enviar foto de perfil');
+
+    const { data: urlData } = supabaseClient.storage.from('fotos-empresa').getPublicUrl(caminho);
+
+    const { data, error } = await supabaseClient
+      .from('perfis_empresa')
+      .update({ foto_perfil_url: urlData.publicUrl, foto_perfil_key: caminho })
+      .eq('usuario_id', session.user.id)
+      .select().single();
+
+    if (error) return this._erro(error, 'Erro ao salvar foto de perfil');
+    return data;
   },
 
   // ============================================
-  // BUSCA DE TALENTOS (alunos disponíveis)
+  // BUSCA DE TALENTOS
   // ============================================
 
   async buscarAlunos() {
-    try {
-      return await Http.get('/empresa/alunos');
-    } catch (error) {
-      return this._erro(error, 'Erro ao buscar alunos');
-    }
+    const { data, error } = await supabaseClient
+      .from('perfis_aluno')
+      .select('*, usuarios(id, nome)')
+      .eq('disponivel_para_empresas', true);
+
+    if (error) return this._erro(error, 'Erro ao buscar alunos');
+    return data;
   },
 
   // ============================================
@@ -59,44 +49,65 @@ const APIEmpresa = {
 
   vagas: {
     async criar(dto) {
-      try { return await Http.post('/empresa/vagas', dto); }
-      catch (error) { return APIEmpresa._erro(error, 'Erro ao publicar vaga'); }
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const { data, error } = await supabaseClient
+        .from('vagas').insert({ ...dto, empresa_id: session.user.id }).select().single();
+      if (error) return APIEmpresa._erro(error, 'Erro ao publicar vaga');
+      return data;
     },
     async minhas() {
-      try { return await Http.get('/empresa/vagas'); }
-      catch (error) { return APIEmpresa._erro(error, 'Erro ao listar vagas'); }
+      const { data, error } = await supabaseClient.from('vagas').select('*');
+      if (error) return APIEmpresa._erro(error, 'Erro ao listar vagas');
+      return data;
     },
     async alunosCompativeis(vagaId) {
-      try { return await Http.get(`/empresa/vagas/${vagaId}/alunos-compativeis`); }
-      catch (error) { return APIEmpresa._erro(error, 'Erro ao buscar alunos compatíveis'); }
+      // Equivalente ao endpoint customizado do backend — vira uma function SQL.
+      // Ver nota abaixo, essa precisa ser criada no banco ainda.
+      const { data, error } = await supabaseClient.rpc('alunos_compativeis_com_vaga', { vaga_id: vagaId });
+      if (error) return APIEmpresa._erro(error, 'Erro ao buscar alunos compatíveis');
+      return data;
     },
     async encerrar(vagaId) {
-      try { return await Http.put(`/empresa/vagas/${vagaId}/encerrar`); }
-      catch (error) { return APIEmpresa._erro(error, 'Erro ao encerrar vaga'); }
+      const { data, error } = await supabaseClient
+        .from('vagas').update({ status: 'FECHADA' }).eq('id', vagaId).select().single();
+      if (error) return APIEmpresa._erro(error, 'Erro ao encerrar vaga');
+      return data;
     },
-    // Rota pública - qualquer visitante pode ver os detalhes de uma vaga
     async buscarPorId(vagaId) {
-      try { return await Http.get(`/vagas/${vagaId}`, { auth: false }); }
-      catch (error) { return APIEmpresa._erro(error, 'Erro ao carregar vaga'); }
+      const { data, error } = await supabaseClient.from('vagas').select('*').eq('id', vagaId).single();
+      if (error) return APIEmpresa._erro(error, 'Erro ao carregar vaga');
+      return data;
     }
   },
 
   // ============================================
-  // MENSAGENS (aluno <-> empresa, usa Usuario.id nos dois lados)
+  // MENSAGENS
   // ============================================
 
   mensagens: {
     async enviar({ destinatarioId, conteudo, vagaId }) {
-      try { return await Http.post('/mensagens', { destinatarioId, conteudo, vagaId }); }
-      catch (error) { return APIEmpresa._erro(error, 'Erro ao enviar mensagem'); }
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const { data, error } = await supabaseClient
+        .from('mensagens')
+        .insert({ remetente_id: session.user.id, destinatario_id: destinatarioId, conteudo, vaga_id: vagaId })
+        .select().single();
+      if (error) return APIEmpresa._erro(error, 'Erro ao enviar mensagem');
+      return data;
     },
     async conversa(outroUsuarioId) {
-      try { return await Http.get(`/mensagens/conversa/${outroUsuarioId}`); }
-      catch (error) { return APIEmpresa._erro(error, 'Erro ao carregar conversa'); }
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const { data, error } = await supabaseClient
+        .from('mensagens')
+        .select('*')
+        .or(`and(remetente_id.eq.${session.user.id},destinatario_id.eq.${outroUsuarioId}),and(remetente_id.eq.${outroUsuarioId},destinatario_id.eq.${session.user.id})`)
+        .order('data_envio');
+      if (error) return APIEmpresa._erro(error, 'Erro ao carregar conversa');
+      return data;
     },
     async todas() {
-      try { return await Http.get('/mensagens'); }
-      catch (error) { return APIEmpresa._erro(error, 'Erro ao carregar mensagens'); }
+      const { data, error } = await supabaseClient.from('mensagens').select('*').order('data_envio', { ascending: false });
+      if (error) return APIEmpresa._erro(error, 'Erro ao carregar mensagens');
+      return data;
     }
   }
 };

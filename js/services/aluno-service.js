@@ -1,32 +1,8 @@
-// ============================================
-// API Client - Aluno (API REST Spring Boot)
-// Substitui o antigo cliente Firebase Realtime Database.
-//
-// Endpoints usados (todos exigem JWT de um usuário ROLE_ALUNO, exceto
-// onde indicado):
-//   GET    /api/aluno/perfil
-//   POST   /api/aluno/perfil
-//   PUT    /api/aluno/perfil
-//   GET    /api/aluno/formacoes            POST/PUT/DELETE .../{id}
-//   GET    /api/aluno/projetos             POST/PUT/DELETE .../{id}
-//   GET    /api/aluno/certificacoes        POST/PUT/DELETE .../{id}
-//   GET    /api/aluno/curriculo
-//   GET    /api/comprovantes
-//   POST   /api/comprovantes/link
-//   POST   /api/comprovantes/arquivo (multipart)
-//
-// ATENÇÃO - sem equivalente no backend hoje (ver relatório de análise):
-//   - "Experiências profissionais" (não existe entidade Experiencia)
-//   - Habilidades com categoria/nível (backend só guarda um Set<String>
-//     simples em PerfilAlunoRequest.habilidades)
-//   - Perfil público por slug (não existe rota pública de perfil de aluno)
-// ============================================
-
 const API = {
 
   _erro(error, fallback) {
     console.error(fallback, error);
-    return { error: error?.message || fallback, campos: error?.campos || null };
+    return { error: error?.message || fallback, campos: null };
   },
 
   // ============================================
@@ -34,48 +10,44 @@ const API = {
   // ============================================
 
   async getPerfil() {
-    try {
-      return await Http.get('/aluno/perfil');
-    } catch (error) {
-      return this._erro(error, 'Erro ao carregar perfil');
-    }
-  },
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    const { data, error } = await supabaseClient
+      .from('perfis_aluno')
+      .select('*, aluno_habilidades(habilidade)')
+      .eq('usuario_id', session.user.id)
+      .single();
 
-  async criarPerfil(dto) {
-    try {
-      return await Http.post('/aluno/perfil', dto);
-    } catch (error) {
-      return this._erro(error, 'Erro ao criar perfil');
-    }
+    if (error) return this._erro(error, 'Erro ao carregar perfil');
+    return data;
   },
 
   async atualizarPerfil(dto) {
-    try {
-      return await Http.put('/aluno/perfil', dto);
-    } catch (error) {
-      return this._erro(error, 'Erro ao atualizar perfil');
-    }
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    const { data, error } = await supabaseClient
+      .from('perfis_aluno')
+      .update(dto)
+      .eq('usuario_id', session.user.id)
+      .select()
+      .single();
+
+    if (error) return this._erro(error, 'Erro ao atualizar perfil');
+    return data;
   },
 
-  // Cria o perfil se ainda não existir (404), ou atualiza se já existir.
-  async salvarPerfil(dto) {
-    const atual = await this.getPerfil();
-    if (atual && atual.error) {
-      return this.criarPerfil(dto);
-    }
-    return this.atualizarPerfil(dto);
-  },
+  // Como o trigger do banco já cria o perfis_aluno vazio no cadastro,
+  // "criar" e "salvar" viram sempre um update — não precisa mais do
+  // fallback 404 → criar que o front tinha antes.
+  async criarPerfil(dto) { return this.atualizarPerfil(dto); },
+  async salvarPerfil(dto) { return this.atualizarPerfil(dto); },
 
   // ============================================
-  // CURRÍCULO COMPLETO (dados pessoais + perfil + formações + projetos + certificações)
+  // CURRÍCULO COMPLETO
   // ============================================
 
   async getCurriculo() {
-    try {
-      return await Http.get('/aluno/curriculo');
-    } catch (error) {
-      return this._erro(error, 'Erro ao carregar currículo');
-    }
+    const { data, error } = await supabaseClient.rpc('obter_curriculo');
+    if (error) return this._erro(error, 'Erro ao carregar currículo');
+    return data;
   },
 
   // ============================================
@@ -84,20 +56,27 @@ const API = {
 
   formacoes: {
     async listar() {
-      try { return await Http.get('/aluno/formacoes'); }
-      catch (error) { return API._erro(error, 'Erro ao listar formações'); }
+      const { data, error } = await supabaseClient.from('formacoes').select('*');
+      if (error) return API._erro(error, 'Erro ao listar formações');
+      return data;
     },
     async criar(dto) {
-      try { return await Http.post('/aluno/formacoes', dto); }
-      catch (error) { return API._erro(error, 'Erro ao criar formação'); }
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const { data, error } = await supabaseClient
+        .from('formacoes').insert({ ...dto, usuario_id: session.user.id }).select().single();
+      if (error) return API._erro(error, 'Erro ao criar formação');
+      return data;
     },
     async atualizar(id, dto) {
-      try { return await Http.put(`/aluno/formacoes/${id}`, dto); }
-      catch (error) { return API._erro(error, 'Erro ao atualizar formação'); }
+      const { data, error } = await supabaseClient
+        .from('formacoes').update(dto).eq('id', id).select().single();
+      if (error) return API._erro(error, 'Erro ao atualizar formação');
+      return data;
     },
     async deletar(id) {
-      try { await Http.del(`/aluno/formacoes/${id}`); return { success: true }; }
-      catch (error) { return API._erro(error, 'Erro ao excluir formação'); }
+      const { error } = await supabaseClient.from('formacoes').delete().eq('id', id);
+      if (error) return API._erro(error, 'Erro ao excluir formação');
+      return { success: true };
     }
   },
 
@@ -107,20 +86,27 @@ const API = {
 
   projetos: {
     async listar() {
-      try { return await Http.get('/aluno/projetos'); }
-      catch (error) { return API._erro(error, 'Erro ao listar projetos'); }
+      const { data, error } = await supabaseClient.from('projetos').select('*');
+      if (error) return API._erro(error, 'Erro ao listar projetos');
+      return data;
     },
     async criar(dto) {
-      try { return await Http.post('/aluno/projetos', dto); }
-      catch (error) { return API._erro(error, 'Erro ao criar projeto'); }
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const { data, error } = await supabaseClient
+        .from('projetos').insert({ ...dto, usuario_id: session.user.id }).select().single();
+      if (error) return API._erro(error, 'Erro ao criar projeto');
+      return data;
     },
     async atualizar(id, dto) {
-      try { return await Http.put(`/aluno/projetos/${id}`, dto); }
-      catch (error) { return API._erro(error, 'Erro ao atualizar projeto'); }
+      const { data, error } = await supabaseClient
+        .from('projetos').update(dto).eq('id', id).select().single();
+      if (error) return API._erro(error, 'Erro ao atualizar projeto');
+      return data;
     },
     async deletar(id) {
-      try { await Http.del(`/aluno/projetos/${id}`); return { success: true }; }
-      catch (error) { return API._erro(error, 'Erro ao excluir projeto'); }
+      const { error } = await supabaseClient.from('projetos').delete().eq('id', id);
+      if (error) return API._erro(error, 'Erro ao excluir projeto');
+      return { success: true };
     }
   },
 
@@ -130,42 +116,65 @@ const API = {
 
   certificacoes: {
     async listar() {
-      try { return await Http.get('/aluno/certificacoes'); }
-      catch (error) { return API._erro(error, 'Erro ao listar certificações'); }
+      const { data, error } = await supabaseClient.from('certificacoes').select('*');
+      if (error) return API._erro(error, 'Erro ao listar certificações');
+      return data;
     },
     async criar(dto) {
-      try { return await Http.post('/aluno/certificacoes', dto); }
-      catch (error) { return API._erro(error, 'Erro ao criar certificação'); }
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const { data, error } = await supabaseClient
+        .from('certificacoes').insert({ ...dto, usuario_id: session.user.id }).select().single();
+      if (error) return API._erro(error, 'Erro ao criar certificação');
+      return data;
     },
     async atualizar(id, dto) {
-      try { return await Http.put(`/aluno/certificacoes/${id}`, dto); }
-      catch (error) { return API._erro(error, 'Erro ao atualizar certificação'); }
+      const { data, error } = await supabaseClient
+        .from('certificacoes').update(dto).eq('id', id).select().single();
+      if (error) return API._erro(error, 'Erro ao atualizar certificação');
+      return data;
     },
     async deletar(id) {
-      try { await Http.del(`/aluno/certificacoes/${id}`); return { success: true }; }
-      catch (error) { return API._erro(error, 'Erro ao excluir certificação'); }
+      const { error } = await supabaseClient.from('certificacoes').delete().eq('id', id);
+      if (error) return API._erro(error, 'Erro ao excluir certificação');
+      return { success: true };
     }
   },
 
   // ============================================
-  // COMPROVANTES
+  // COMPROVANTES (usa Supabase Storage em vez do R2)
   // ============================================
 
   comprovantes: {
     async listar() {
-      try { return await Http.get('/comprovantes'); }
-      catch (error) { return API._erro(error, 'Erro ao listar comprovantes'); }
+      const { data, error } = await supabaseClient.from('comprovantes').select('*');
+      if (error) return API._erro(error, 'Erro ao listar comprovantes');
+      return data;
     },
     async salvarLink(url) {
-      try { return await Http.post('/comprovantes/link', { url }); }
-      catch (error) { return API._erro(error, 'Erro ao salvar link do comprovante'); }
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const { data, error } = await supabaseClient
+        .from('comprovantes')
+        .insert({ usuario_id: session.user.id, tipo: 'LINK', url })
+        .select().single();
+      if (error) return API._erro(error, 'Erro ao salvar link do comprovante');
+      return data;
     },
     async salvarArquivo(file) {
-      try {
-        const form = new FormData();
-        form.append('arquivo', file);
-        return await Http.postForm('/comprovantes/arquivo', form);
-      } catch (error) { return API._erro(error, 'Erro ao enviar comprovante'); }
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const caminho = `${session.user.id}/${Date.now()}-${file.name}`;
+
+      const { error: erroUpload } = await supabaseClient.storage
+        .from('comprovantes').upload(caminho, file);
+      if (erroUpload) return API._erro(erroUpload, 'Erro ao enviar comprovante');
+
+      const { data: urlData } = supabaseClient.storage.from('comprovantes').getPublicUrl(caminho);
+
+      const { data, error } = await supabaseClient
+        .from('comprovantes')
+        .insert({ usuario_id: session.user.id, tipo: 'ARQUIVO', url: urlData.publicUrl, storage_key: caminho })
+        .select().single();
+      if (error) return API._erro(error, 'Erro ao salvar comprovante');
+      return data;
     }
   }
 };

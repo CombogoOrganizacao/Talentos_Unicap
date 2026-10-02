@@ -5,19 +5,10 @@
 // ============================================
 const CONFIG = {
 
-  // URL base da API REST (Spring Boot).
-  // Antes essa URL incluía "/api" apenas no ambiente local, enquanto em
-  // produção não incluía — e os serviços (aluno-service.js, empresa-
-  // -service.js) chamam paths sem "/api" (ex: '/aluno/perfil'), mas
-  // auth.js chamava paths com "/api" (ex: '/api/aluno/perfil'). Isso
-  // fazia local e produção quebrarem de formas opostas (um duplicava o
-  // "/api", o outro nunca o enviava). Agora "/api" sempre faz parte da
-  // base, e todos os paths chamados por Http.* devem vir SEM "/api".
-  apiBaseUrl: (function () {
-    const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-    const host = isLocal ? 'http://localhost:8080' : 'https://backendtalentos.onrender.com';
-    return host + '/api';
-  })(),
+  
+   supabaseUrl: 'https://rzxlojrznxamobumxlrq.supabase.co',
+  supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ6eGxvanJ6bnhhbW9idW14bHJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4NzI1MzYsImV4cCI6MjEwNjQ0ODUzNn0.OWRiYomrkuhnuF8YG9GKaP5_cm1IyoOjUNNkzwjpQrU',  // a "anon public key"
+
 
   // Estados brasileiros
   states: [
