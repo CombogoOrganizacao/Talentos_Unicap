@@ -67,11 +67,39 @@
     }
 
     Auth.onAuthChange = async function (loggedIn) {
-      if (!loggedIn) { window.location.href = 'login.html'; return; }
-      profile = await API.getCurriculo();
-      if (!profile.error) {
-        const showLogo = document.getElementById('toggleLogo').checked;
-        document.getElementById('cvContent').innerHTML = renderCVPreview(profile, showLogo);
+      if (!loggedIn) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        profile = await API.getCurriculo();
+
+        console.log('Perfil recebido pelo Preview:', profile);
+
+        if (!profile || profile.error) {
+          throw new Error(
+            profile?.error || 'Não foi possível carregar o currículo.'
+          );
+        }
+
+        const showLogo =
+          document.getElementById('toggleLogo').checked;
+
+        document.getElementById('cvContent').innerHTML =
+          renderCVPreview(profile, showLogo);
+
+      } catch (error) {
+        console.error('Erro ao carregar Preview:', error);
+
+        document.getElementById('cvContent').innerHTML = `
+      <div style="text-align:center;padding:60px;">
+        <h3>Não foi possível carregar o currículo</h3>
+        <p style="color:var(--gray-500);margin-top:8px;">
+          ${error.message || 'Erro desconhecido.'}
+        </p>
+      </div>
+    `;
       }
     };
     Auth.init();
