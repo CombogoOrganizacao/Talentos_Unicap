@@ -89,6 +89,20 @@
 
   <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
 
+  <!-- Confirmação de sessão ativa -->
+  <div id="confirmaSessao" hidden
+    style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px;">
+    <div class="card" style="max-width:380px;width:100%;" role="dialog" aria-modal="true" aria-labelledby="confirmaTitulo">
+      <div class="card-body" style="text-align:center;">
+        <h2 id="confirmaTitulo" style="margin-bottom:6px;">Você já está conectado</h2>
+        <p class="subtitle" id="confirmaMsg" style="margin-bottom:20px;"></p>
+        <button type="button" class="btn btn-primary" style="width:100%;" id="btnConfirmaContinuar">Continuar</button>
+        <button type="button" class="btn btn-secondary" style="width:100%;margin-top:10px;" id="btnConfirmaOutra">Entrar com outra conta</button>
+        <button type="button" class="btn btn-outline" style="width:100%;margin-top:10px;" id="btnConfirmaFechar">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config/config.js"></script>
   <script src="js/config/supabase-client.js"></script>
@@ -141,16 +155,46 @@
       });
     })();
 
-    Auth.onAuthChange = function (loggedIn) {
+    // Quando há sessão ativa, não leva direto ao painel: pergunta antes,
+    // para evitar entrar sem querer na conta de outra pessoa.
+    Auth.onAuthChange = function (loggedIn, tipoConta) {
       const nav = document.getElementById('navLinks');
       const heroBtn = document.getElementById('heroBtn');
-      if (loggedIn) {
-        nav.innerHTML = '<a href="dashboard.html" class="btn btn-primary btn-sm">Meu Currículo</a>';
-        heroBtn.href = 'dashboard.html';
-        heroBtn.textContent = 'Acessar Meu Currículo →';
-      } else {
+
+      if (!loggedIn) {
         nav.innerHTML = '<a href="login.html" class="btn btn-secondary btn-sm">Entrar</a><a href="register.html" class="btn btn-primary btn-sm">Criar Conta</a>';
+        return;
       }
+
+      const ehEmpresa = tipoConta === 'empresa';
+      const destino = ehEmpresa ? 'busca-talentos.html' : 'dashboard.html';
+      const rotulo = ehEmpresa ? 'Buscar Talentos' : 'Meu Currículo';
+
+      nav.innerHTML = '<a href="#" id="navMeuPainel" class="btn btn-primary btn-sm">' + rotulo + '</a>';
+      heroBtn.href = '#';
+      heroBtn.textContent = ehEmpresa ? 'Acessar Busca de Talentos →' : 'Acessar Meu Currículo →';
+
+      function abrirConfirmacao(e) {
+        e.preventDefault();
+        document.getElementById('confirmaMsg').textContent =
+          'Conectado como ' + (Auth.user?.nome || Auth.user?.email || 'usuário') + '.';
+        document.getElementById('confirmaSessao').hidden = false;
+        document.getElementById('btnConfirmaContinuar').focus();
+      }
+
+      document.getElementById('navMeuPainel').addEventListener('click', abrirConfirmacao);
+      heroBtn.addEventListener('click', abrirConfirmacao);
+
+      document.getElementById('btnConfirmaContinuar').onclick = function () {
+        window.location.href = destino;
+      };
+      document.getElementById('btnConfirmaOutra').onclick = async function () {
+        await Auth.logout(false);
+        window.location.href = 'login.html';
+      };
+      document.getElementById('btnConfirmaFechar').onclick = function () {
+        document.getElementById('confirmaSessao').hidden = true;
+      };
     };
     Auth.init();
   </script>
