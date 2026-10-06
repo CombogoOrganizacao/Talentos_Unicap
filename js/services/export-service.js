@@ -134,7 +134,15 @@ async function exportPDF() {
     const jsPDF = jsPDFMod.jsPDF || jsPDFMod.default?.jsPDF || jsPDFMod.default;
 
     const el = document.getElementById('cvContent');
-    const canvas = await html2canvas(el, { scale: 2, useCORS: true, logging: false });
+    // Em celulares/tablets o currículo fica estreito na tela; para o PDF sair
+    // sempre igual ao do desktop, fixamos a largura (A4 ≈ 794px) só durante a captura.
+    el.classList.add('is-exporting');
+    let canvas;
+    try {
+      canvas = await html2canvas(el, { scale: 2, useCORS: true, logging: false, windowWidth: 1024 });
+    } finally {
+      el.classList.remove('is-exporting');
+    }
     const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF('p', 'mm', 'a4');
     const w = pdf.internal.pageSize.getWidth();
