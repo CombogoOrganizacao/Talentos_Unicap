@@ -143,6 +143,95 @@ const API = {
     return data;
   },
 
+  // ------------------------------------------------------------------
+  // Experiências profissionais
+  // ------------------------------------------------------------------
+  experiencias: {
+    // Colunas do tipo date não aceitam '' -> converte para null
+    _dto(dto) {
+      const atual = dto.atual === true || dto.atual === 'true';
+      return {
+        empresa: (dto.empresa || '').trim(),
+        cargo: (dto.cargo || '').trim(),
+        descricao: (dto.descricao || '').trim() || null,
+        data_inicio: dto.data_inicio || null,
+        data_fim: atual ? null : (dto.data_fim || null),
+        atual
+      };
+    },
+    _msg(error, fallback) {
+      const m = error?.message || '';
+      if (m.includes('experiencias_ordem_datas')) return 'A data de término não pode ser anterior à data de início.';
+      if (m.includes('experiencias_fim_obrigatorio')) return 'Informe a data de término ou marque "trabalho atual".';
+      return fallback;
+    },
+    async listar() {
+      const { data, error } = await supabaseClient.from('experiencias').select('*')
+        .order('atual', { ascending: false }).order('data_inicio', { ascending: false });
+      if (error) return API._erro(error, 'Erro ao listar experiências');
+      return data || [];
+    },
+    async criar(dto) {
+      const session = await API._session();
+      const { data, error } = await supabaseClient.from('experiencias')
+        .insert({ ...this._dto(dto), usuario_id: session.user.id }).select().single();
+      if (error) return API._erro(error, this._msg(error, 'Erro ao criar experiência'));
+      return data;
+    },
+    async atualizar(id, dto) {
+      const { data, error } = await supabaseClient.from('experiencias')
+        .update(this._dto(dto)).eq('id', id).select().single();
+      if (error) return API._erro(error, this._msg(error, 'Erro ao atualizar experiência'));
+      return data;
+    },
+    async deletar(id) {
+      const { error } = await supabaseClient.from('experiencias').delete().eq('id', id);
+      if (error) return API._erro(error, 'Erro ao excluir experiência');
+      return { success: true };
+    }
+  },
+
+  // ------------------------------------------------------------------
+  // Habilidades (nome + categoria + nível)
+  // ------------------------------------------------------------------
+  habilidades: {
+    _dto(dto) {
+      return {
+        nome: (dto.nome || '').trim(),
+        categoria: dto.categoria || 'Técnica',
+        nivel: dto.nivel || 'Básico'
+      };
+    },
+    _msg(error, fallback) {
+      if (error?.code === '23505') return 'Você já cadastrou essa habilidade nessa categoria.';
+      return fallback;
+    },
+    async listar() {
+      const { data, error } = await supabaseClient.from('habilidades').select('*')
+        .order('categoria').order('nome');
+      if (error) return API._erro(error, 'Erro ao listar habilidades');
+      return data || [];
+    },
+    async criar(dto) {
+      const session = await API._session();
+      const { data, error } = await supabaseClient.from('habilidades')
+        .insert({ ...this._dto(dto), usuario_id: session.user.id }).select().single();
+      if (error) return API._erro(error, this._msg(error, 'Erro ao criar habilidade'));
+      return data;
+    },
+    async atualizar(id, dto) {
+      const { data, error } = await supabaseClient.from('habilidades')
+        .update(this._dto(dto)).eq('id', id).select().single();
+      if (error) return API._erro(error, this._msg(error, 'Erro ao atualizar habilidade'));
+      return data;
+    },
+    async deletar(id) {
+      const { error } = await supabaseClient.from('habilidades').delete().eq('id', id);
+      if (error) return API._erro(error, 'Erro ao excluir habilidade');
+      return { success: true };
+    }
+  },
+
   formacoes: {
     async listar() {
       const { data, error } = await supabaseClient.from('formacoes').select('*').order('id');

@@ -526,7 +526,7 @@ const sectionConfig = {
   // ==========================================
 
   experiencia: {
-    resource: null,
+    resource: API.experiencias,
 
     label: 'Experiências Profissionais',
 
@@ -1035,7 +1035,7 @@ const sectionConfig = {
   // ==========================================
 
   habilidade: {
-    resource: null,
+    resource: API.habilidades,
 
     label: 'Habilidades',
 
