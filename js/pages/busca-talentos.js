@@ -135,15 +135,30 @@
   async function carregarTalentos() {
     try {
       allProfiles = await APIEmpresa.buscarAlunos();
+      // Adapta o formato do banco (formacoes, certificacoes, projetos.titulo...)
+      // para os nomes que a tela usa (formacao.grau, certificados.emissor...).
       allProfiles = (allProfiles || []).map(p => ({
         ...p,
         experiencias: normalizarColecao(p.experiencias),
-        formacao: normalizarColecao(p.formacao),
+        formacao: normalizarColecao(p.formacoes ?? p.formacao).map((f) => ({
+          ...f,
+          grau: f.nivel || f.grau || '',
+          area_estudo: f.curso || f.area_estudo || ''
+        })),
         habilidades: normalizarColecao(p.habilidades),
-        projetos: normalizarColecao(p.projetos),
-        certificados: normalizarColecao(p.certificados)
+        projetos: normalizarColecao(p.projetos).map((pr) => ({
+          ...pr,
+          nome: pr.titulo || pr.nome || '',
+          url: pr.link_demo || pr.link_github || pr.url || ''
+        })),
+        certificados: normalizarColecao(p.certificacoes ?? p.certificados).map((c) => ({
+          ...c,
+          emissor: c.instituicao || c.emissor || '',
+          sem_validade: !c.data_validade
+        }))
       }));
       filtered = [...allProfiles];
+      popularFiltros();
       renderGrid();
     } catch (e) {
       console.error("Erro ao carregar talentos:", e);
@@ -392,7 +407,7 @@
         <div class="cv-tab-item">
           <h4>${f.grau || ''} em ${f.area_estudo || ''}</h4>
           <div class="subtitle">${f.instituicao || ''}</div>
-          <div class="date">${fmtDate(f.data_inicio)} — ${isTrue(f.atual) ? 'Em curso' : (f.data_fim ? fmtDate(f.data_fim) : 'Presente')}</div>
+          <div class="date">${f.ano_inicio || ''}${f.ano_inicio ? ' — ' : ''}${f.ano_conclusao || 'Em curso'}</div>
         </div>`).join('') : `<div class="cv-empty-tab">Nenhuma formação cadastrada.</div>`;
       return;
     }
