@@ -259,66 +259,38 @@ function switchTab(tab) {
 function fillPersonalForm() {
   UI.setVal('nome', profile.nome);
   UI.setVal('telefone', profile.telefone);
-
-  UI.setVal('curso', profile.curso);
-  UI.setVal('periodo', profile.periodo);
-
-  UI.setVal('endereco', profile.endereco);
-
-  // Banco: sobre
-  UI.setVal(
-    'bio',
-    profile.sobre ?? profile.bio ?? ''
-  );
-
+  UI.setVal('curso', profile.curso || '');
+  UI.setVal('periodo', profile.periodo || '');
+  UI.setVal('endereco', profile.endereco || '');
+  UI.setVal('bio', profile.sobre || profile.bio || '');
   UI.setVal('linkedin', profile.linkedin);
   UI.setVal('github', profile.github);
   UI.setVal('portfolio', profile.portfolio);
 
-  // ==========================================
-  // VISIBILIDADE PARA EMPRESAS
-  // Banco: disponivel_para_empresas
-  // ==========================================
-
-  const visivel = document.getElementById(
-    'visivel_para_empresas'
-  );
+  // Privacidade
+  const visivel = document.getElementById('visivel_para_empresas');
 
   if (visivel) {
-    visivel.checked = isTrue(
-      profile.disponivel_para_empresas ??
-      profile.visivelParaEmpresas
+    visivel.checked = !!(
+      profile.visivelParaEmpresas ??
+      profile.disponivel_para_empresas
     );
   }
 
-  // ==========================================
-  // DISPONIBILIDADE PARA ESTÁGIO
-  // Banco: disponivel_estagio
-  // ==========================================
-
-  const disp = document.getElementById(
-    'disponibilidade_estagio'
-  );
+  // Disponibilidade para estágio
+  const disp = document.getElementById('disponibilidade_estagio');
 
   if (disp) {
-    disp.checked = isTrue(
-      profile.disponivel_estagio ??
-      profile.disponivelEstagio
+    disp.checked = !!(
+      profile.disponivelEstagio ??
+      profile.disponivel_estagio
     );
   }
 
-  // ==========================================
-  // ESTADOS
-  // ==========================================
-
+  // Popula estados
   const stateSelect = document.getElementById('estado');
 
-  if (
-    !stateSelect ||
-    !Array.isArray(CONFIG.states)
-  ) {
-    return;
-  }
+  if (!stateSelect || !Array.isArray(CONFIG.states)) return;
 
   stateSelect.innerHTML =
     '<option value="">Selecione</option>' +
@@ -330,24 +302,17 @@ function fillPersonalForm() {
       )
       .join('');
 
-  stateSelect.onchange = () => {
-    atualizarCidadesPorEstado(
-      stateSelect.value
-    );
-  };
+  stateSelect.onchange = () =>
+    atualizarCidadesPorEstado(stateSelect.value);
 
-  // ==========================================
-  // CIDADES
-  // ==========================================
-
+  // Carrega cidades
   if (profile.estado) {
     atualizarCidadesPorEstado(
       profile.estado,
       profile.cidade
     );
   } else {
-    const citySelect =
-      document.getElementById('cidade');
+    const citySelect = document.getElementById('cidade');
 
     if (citySelect) {
       citySelect.innerHTML =
@@ -448,76 +413,31 @@ const personalRequiredFields = [
 // ============================================
 
 async function savePersonal() {
-  const missing =
-    validateRequiredFields(
-      personalRequiredFields
-    );
+  const missing = validateRequiredFields(personalRequiredFields);
 
   if (missing.length > 0) {
-    showFormAlert(
-      'alert-personal',
-      missing
-    );
-
+    showFormAlert('alert-personal', missing);
     return;
   }
 
   hideFormAlert('alert-personal');
 
-  // ==========================================
-  // IMPORTANTE:
-  //
-  // Estes são os nomes EXATOS das colunas
-  // existentes atualmente em public.perfis_aluno.
-  //
-  // telefone
-  // cidade
-  // estado
-  // sobre
-  // linkedin
-  // github
-  // portfolio
-  // disponivel_estagio
-  // disponivel_para_empresas
-  //
-  // NÃO enviar:
-  // bio
-  // visivel_para_empresas
-  // disponibilidade_estagio
-  // periodo
-  // endereco
-  // ==========================================
-
   const data = {
-    telefone: UI.val('telefone'),
-
     cidade: UI.val('cidade'),
-
     estado: UI.val('estado'),
-
     sobre: UI.val('bio'),
-
     linkedin: UI.val('linkedin'),
-
     github: UI.val('github'),
-
     portfolio: UI.val('portfolio'),
 
     disponivel_para_empresas:
-      document.getElementById(
-        'visivel_para_empresas'
-      )?.checked || false,
+      document.getElementById('visivel_para_empresas')?.checked || false,
 
     disponivel_estagio:
-      document.getElementById(
-        'disponibilidade_estagio'
-      )?.checked || false
+      document.getElementById('disponibilidade_estagio')?.checked || false
   };
 
-  const btn =
-    document.getElementById(
-      'savePersonalBtn'
-    );
+  const btn = document.getElementById('savePersonalBtn');
 
   if (btn) {
     btn.disabled = true;
@@ -525,63 +445,41 @@ async function savePersonal() {
   }
 
   try {
-    const result =
-      await API.salvarPerfil(data);
+    const result = await API.salvarPerfil(data);
 
-    // O aluno-service retorna { error: ... }
-    // quando o Supabase apresenta erro.
-    if (
-      !result ||
-      result.error
-    ) {
-      throw new Error(
-        result?.error ||
-        'Não foi possível salvar os dados pessoais.'
-      );
+    if (result?.error) {
+      console.error('Erro ao salvar dados pessoais:', result);
+      alert('Não foi possível salvar os dados pessoais.');
+      return;
     }
 
-    // Atualiza o perfil localmente
+    /*
+     * Atualiza o profile local com os nomes utilizados
+     * pelo dashboard e pelo preview.
+     */
     profile = {
       ...profile,
-      ...result
+      ...data,
+
+      bio: data.sobre,
+      sobre: data.sobre,
+
+      disponivelEstagio: data.disponivel_estagio,
+      visivelParaEmpresas: data.disponivel_para_empresas
     };
 
-    // Mantém alguns valores locais que não
-    // pertencem à tabela perfis_aluno.
-    profile.periodo =
-      UI.val('periodo');
-
-    profile.endereco =
-      UI.val('endereco');
-
-    // Atualiza a tela
-    fillPersonalForm();
     updateProgress();
 
-    hideFormAlert('alert-personal');
+    alert('Dados pessoais salvos com sucesso!');
 
-    // Mensagem simples de sucesso
-    alert(
-      'Dados pessoais salvos com sucesso!'
-    );
   } catch (error) {
-    console.error(
-      'Erro ao salvar dados pessoais:',
-      error
-    );
+    console.error('Erro ao salvar dados pessoais:', error);
+    alert('Ocorreu um erro ao salvar os dados pessoais.');
 
-    showFormAlert(
-      'alert-personal',
-      [
-        error?.message ||
-        'Não foi possível salvar os dados.'
-      ]
-    );
   } finally {
     if (btn) {
       btn.disabled = false;
-      btn.textContent =
-        'Salvar Dados Pessoais';
+      btn.textContent = 'Salvar Dados Pessoais';
     }
   }
 }

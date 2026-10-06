@@ -41,9 +41,100 @@ const API = {
   async salvarPerfil(dto) { return this.atualizarPerfil(dto); },
 
   async getCurriculo() {
-    const { data, error } = await supabaseClient.rpc('obter_curriculo');
-    if (error) return this._erro(error, 'Erro ao carregar currículo');
-    return data;
+    try {
+      const { data, error } = await supabaseClient.rpc('obter_curriculo');
+
+      if (error) {
+        return this._erro(error, 'Erro ao carregar currículo');
+      }
+
+      if (!data || typeof data !== 'object') {
+        return {
+          error: 'Currículo não encontrado.'
+        };
+      }
+
+      /*
+       * A RPC obter_curriculo() retorna:
+       *
+       * {
+       *   dadosPessoais: {...},
+       *   perfil: {...},
+       *   formacoes: [...],
+       *   projetos: [...],
+       *   certificacoes: [...]
+       * }
+       *
+       * O dashboard/export-service trabalham com os campos
+       * diretamente em profile. Por isso normalizamos aqui.
+       */
+
+      const dadosPessoais = data.dadosPessoais || {};
+      const perfil = data.perfil || {};
+
+      return {
+        // ==========================
+        // DADOS PESSOAIS
+        // ==========================
+        id: dadosPessoais.id || perfil.usuario_id || '',
+        nome: dadosPessoais.nome || '',
+
+        // ==========================
+        // PERFIL DO ALUNO
+        // ==========================
+        telefone: perfil.telefone || '',
+        cidade: perfil.cidade || '',
+        estado: perfil.estado || '',
+        sobre: perfil.sobre || '',
+        bio: perfil.sobre || '',
+
+        linkedin: perfil.linkedin || '',
+        github: perfil.github || '',
+        portfolio: perfil.portfolio || '',
+
+        // ==========================
+        // DISPONIBILIDADE
+        // ==========================
+        disponivelEstagio: !!perfil.disponivel_estagio,
+        visivelParaEmpresas: !!perfil.disponivel_para_empresas,
+
+        // Mantém também os nomes originais do banco
+        disponivel_estagio: !!perfil.disponivel_estagio,
+        disponivel_para_empresas: !!perfil.disponivel_para_empresas,
+
+        // ==========================
+        // SEÇÕES DO CURRÍCULO
+        // ==========================
+        formacoes: Array.isArray(data.formacoes)
+          ? data.formacoes
+          : [],
+
+        projetos: Array.isArray(data.projetos)
+          ? data.projetos
+          : [],
+
+        certificacoes: Array.isArray(data.certificacoes)
+          ? data.certificacoes
+          : [],
+
+        // A RPC atual não possui essas seções
+        // no retorno, então garantimos arrays vazios.
+        experiencias: Array.isArray(data.experiencias)
+          ? data.experiencias
+          : [],
+
+        habilidades: Array.isArray(data.habilidades)
+          ? data.habilidades
+          : [],
+
+        // Guarda o retorno original caso alguma parte
+        // precise ser utilizada posteriormente.
+        _raw: data
+      };
+
+    } catch (e) {
+      return this._erro(e, 'Erro ao carregar currículo');
+    }
   },
 
   async getPublicProfile(id) {
