@@ -23,10 +23,39 @@
 
   let vagas = [];
 
+  // "empresa" gerencia as próprias vagas; "aluno" só visualiza as abertas.
+  let modo = "empresa";
+
   async function carregarVagas() {
-    const resultado = await APIEmpresa.vagas.minhas();
+    const resultado = modo === "aluno"
+      ? await APIEmpresa.vagas.abertas()
+      : await APIEmpresa.vagas.minhas();
     vagas = Array.isArray(resultado) ? resultado : [];
     render();
+  }
+
+  // Aluno: remove tudo que cria/edita vagas e ajusta os textos
+  function aplicarModoAluno() {
+    document.getElementById("pageTitle").textContent = "Portal de Vagas";
+    document.getElementById("pageDesc").textContent =
+      "Confira as oportunidades abertas por empresas parceiras para estudantes e egressos da UNICAP.";
+    ["btnNovaVaga", "emptyCta", "statusTabs", "filtroStatus"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.hidden = true;
+    });
+    const prazoOpt = ordenacaoSelect.querySelector('option[value="prazo"]');
+    if (prazoOpt) prazoOpt.remove();
+  }
+
+  async function iniciar() {
+    const tipo = await Auth._detectarTipoConta();
+    if (!tipo) {
+      window.location.href = "login.html";
+      return;
+    }
+    modo = tipo === "empresa" ? "empresa" : "aluno";
+    if (modo === "aluno") aplicarModoAluno();
+    await carregarVagas();
   }
   
 
@@ -87,8 +116,12 @@
 
     if (!vagas.length) {
       emptyState.hidden = false;
-      emptyTitle.textContent = "Nenhuma vaga cadastrada ainda";
-      emptyDesc.textContent = "Publique a primeira oportunidade para estudantes e egressos da UNICAP.";
+      emptyTitle.textContent = modo === "aluno"
+        ? "Nenhuma vaga aberta no momento"
+        : "Nenhuma vaga cadastrada ainda";
+      emptyDesc.textContent = modo === "aluno"
+        ? "Volte em breve: as empresas parceiras publicam novas oportunidades com frequência."
+        : "Publique a primeira oportunidade para estudantes e egressos da UNICAP.";
       grid.hidden = true;
       return;
     }
@@ -120,13 +153,32 @@
       node.querySelector('[data-role="local"]').textContent = "📍 " + (vaga.local || "—");
       node.querySelector('[data-role="salario"]').textContent = "$ " + (vaga.remuneracao || "—");
 
+      const descEl = node.querySelector('[data-role="descricao"]');
+      descEl.textContent = vaga.descricao || "";
+      descEl.hidden = !vaga.descricao;
+
+      const reqs = vaga.habilidadesRequisitadas || [];
+      const reqEl = node.querySelector('[data-role="requisitos"]');
+      reqEl.textContent = reqs.length ? "Requisitos: " + reqs.join(", ") : "";
+      reqEl.hidden = !reqs.length;
+
       const prazoFim = formatDateBR(vaga.periodoFim);
       node.querySelector('[data-role="prazo"]').textContent = prazoFim
         ? `Seleção até ${prazoFim}`
         : "Sem prazo definido";
 
+      // Aluno só visualiza: sem menu de ações, sem "Divulgar" e sem
+      // campos que a vaga não possui (salário e prazo).
+      if (modo === "aluno") {
+        node.querySelector(".vaga-menu").remove();
+        node.querySelector(".vaga-card-footer").remove();
+        node.querySelector('[data-role="salario"]').remove();
+        node.querySelector('[data-role="prazo"]').remove();
+        node.querySelector('[data-role="status"]').remove();
+      }
+
       const pausarBtn = node.querySelector('[data-role="pausar-btn"]');
-      pausarBtn.textContent = status === "Pausada" ? "Reativar vaga" : "Pausar vaga";
+      if (pausarBtn) pausarBtn.textContent = status === "Pausada" ? "Reativar vaga" : "Pausar vaga";
 
       grid.appendChild(node);
     });
@@ -134,6 +186,7 @@
 
   // ---------- Ações do card (delegação de eventos) ----------
   grid.addEventListener("click", async (event) => {
+    if (modo === "aluno") return;
     const card = event.target.closest(".vaga-card");
     if (!card) return;
     const id = card.dataset.id;
@@ -206,5 +259,5 @@
     render();
   });
 
-  render();
+  iniciar();
 })();

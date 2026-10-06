@@ -37,11 +37,11 @@
       <p class="eyebrow"><i class="ph-fill ph-briefcase"></i> Portal de Vagas</p>
       <div class="page-intro-row">
         <div>
-          <h1 style="font-size:28px;margin-bottom:8px;">Minhas Vagas</h1>
-          <p class="page-desc">Acompanhe, edite e gerencie todas as oportunidades cadastradas para estudantes e
+          <h1 id="pageTitle" style="font-size:28px;margin-bottom:8px;">Minhas Vagas</h1>
+          <p class="page-desc" id="pageDesc">Acompanhe, edite e gerencie todas as oportunidades cadastradas para estudantes e
             egressos da UNICAP.</p>
         </div>
-        <a class="btn btn-primary" href="cadastro-vaga.html">
+        <a class="btn btn-primary" id="btnNovaVaga" href="cadastro-vaga.html">
           <i class="ph-fill ph-plus"></i> Nova Vaga
         </a>
       </div>
@@ -83,7 +83,7 @@
       <div class="icon"><i class="ph-fill ph-briefcase"></i></div>
       <h2 id="emptyTitle">Nenhuma vaga cadastrada ainda</h2>
       <p id="emptyDesc">Publique a primeira oportunidade para estudantes e egressos da UNICAP.</p>
-      <a class="btn btn-primary" href="cadastro-vaga.html">Cadastrar Nova Vaga</a>
+      <a class="btn btn-primary" id="emptyCta" href="cadastro-vaga.html">Cadastrar Nova Vaga</a>
     </div>
   </div>
 
@@ -116,6 +116,9 @@
         <span data-role="local"></span>
         <span data-role="salario"></span>
       </div>
+
+      <p class="vaga-descricao" data-role="descricao"></p>
+      <p class="vaga-requisitos" data-role="requisitos"></p>
 
       <p class="prazo" data-role="prazo"></p>
 

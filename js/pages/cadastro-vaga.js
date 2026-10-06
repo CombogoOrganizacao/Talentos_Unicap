@@ -5,6 +5,20 @@
   const statusEl = document.getElementById("formStatus");
   const btnRascunho = document.getElementById("btnRascunho");
 
+  // Somente empresas podem cadastrar vagas (o banco também bloqueia).
+  (async function protegerPagina() {
+    try {
+      const tipo = await Auth._detectarTipoConta();
+      if (!tipo) {
+        window.location.href = "login.html";
+      } else if (tipo !== "empresa") {
+        window.location.href = "lista-vagas.html";
+      }
+    } catch (err) {
+      window.location.href = "login.html";
+    }
+  })();
+
   const DRAFT_KEY = "talentosUnicap.vagaRascunho";
   const REQUIRED_IDS = [
     "titulo", "empresa", "area", "carga",

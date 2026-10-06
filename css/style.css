@@ -1657,3 +1657,25 @@ a:hover {
 .progress-missing-chip:hover {
   background: var(--unicap-50);
 }
+
+/* Portal de vagas: descrição e requisitos no card */
+.vaga-card .vaga-descricao {
+  font-size: 13px;
+  color: var(--gray-600);
+  margin: 8px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.vaga-card .vaga-requisitos {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-bottom: 8px;
+}
+
+.vaga-card .vaga-descricao[hidden],
+.vaga-card .vaga-requisitos[hidden] {
+  display: none;
+}

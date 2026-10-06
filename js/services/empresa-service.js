@@ -86,22 +86,51 @@ const APIEmpresa = {
       return { ...data, habilidadesRequisitadas: habilidades };
     },
 
+    _modalidade(m) {
+      return { PRESENCIAL: 'Presencial', REMOTO: 'Remoto', HIBRIDO: 'Híbrido' }[m] || '';
+    },
+
+    // Vagas da empresa logada (todas: abertas e encerradas)
     async minhas() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) return APIEmpresa._erro(null, 'Usuário não autenticado');
+
       const { data, error } = await supabaseClient
         .from('vagas')
         .select('*, vaga_habilidades(habilidade)')
+        .eq('empresa_id', session.user.id)
         .order('data_criacao', { ascending: false });
 
       if (error) return APIEmpresa._erro(error, 'Erro ao listar vagas');
 
       return (data || []).map(v => ({
         ...v,
+        status: v.status === 'ABERTA' ? 'Ativa' : 'Encerrada',
         criadoEm: v.data_criacao,
         carga: v.carga_horaria ? `${v.carga_horaria}h` : '',
-        local: v.local || '',
+        local: v.local || this._modalidade(v.modalidade),
         empresa: v.empresa || '',
         periodoFim: v.periodo_fim || null,
         habilidadesRequisitadas: (v.vaga_habilidades || []).map(x => x.habilidade)
+      }));
+    },
+
+    // Vagas abertas de todas as empresas (somente leitura, para o aluno)
+    async abertas() {
+      const { data, error } = await supabaseClient.rpc('listar_vagas_abertas');
+      if (error) return APIEmpresa._erro(error, 'Erro ao carregar vagas');
+
+      return (Array.isArray(data) ? data : []).map(v => ({
+        id: v.id,
+        titulo: v.titulo,
+        descricao: v.descricao || '',
+        empresa: v.empresa || '',
+        status: 'Ativa',
+        criadoEm: v.data_criacao,
+        carga: v.carga_horaria ? `${v.carga_horaria}h` : '',
+        local: this._modalidade(v.modalidade),
+        periodoFim: null,
+        habilidadesRequisitadas: v.habilidades || []
       }));
     },
 
