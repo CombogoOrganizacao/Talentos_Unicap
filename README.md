@@ -1,125 +1,693 @@
 # 🎓 TalentoUNICAP
 
-Plataforma para alunos da **Universidade Católica de Pernambuco** criarem,
-gerenciarem e exportarem currículos profissionais, e para empresas
-buscarem talentos e publicarem vagas.
+Plataforma de empregabilidade desenvolvida para a **Universidade Católica de Pernambuco (UNICAP)**, com o objetivo de conectar estudantes e empresas em um único ambiente digital.
 
-## Stack
+O **TalentoUNICAP** permite que alunos criem e gerenciem seus currículos profissionais, apresentem suas experiências, habilidades, projetos e certificações, além de visualizarem oportunidades e receberem mensagens de empresas.
 
-| Camada | Tecnologia |
-|---|---|
-| Front-end | HTML/CSS/JS puro (sem build step) |
-| Back-end | Spring Boot (Java) + JWT + JPA/PostgreSQL — repositório `BackendTalentos` |
-| Armazenamento de arquivos | Cloudflare R2 (fotos de perfil, comprovantes) |
-| Exportação de currículo | jsPDF + html2canvas (PDF), docx + file-saver (DOCX) |
+Para as empresas, a plataforma oferece recursos para criação de perfil, busca de talentos, publicação de vagas e comunicação direta com estudantes.
 
-O front consome a API REST do backend em `CONFIG.apiBaseUrl`
-(`js/config/config.js`) usando JWT — não depende mais de Firebase.
+---
 
-## 🚀 Como rodar localmente
+## ✨ Funcionalidades
 
-1. Suba o backend (`./mvnw spring-boot:run`, com o `.env` configurado) —
-   por padrão em `http://localhost:8080`.
-2. Confira em `SecurityConfig.corsConfigurationSource()` (no backend) se a
-   origem do seu servidor de front (ex. porta do Live Server) está
-   liberada no CORS.
-3. Se o backend não estiver em `localhost:8080`, ajuste
-   `CONFIG.apiBaseUrl` em `js/config/config.js`.
-4. Abra `index.html` num servidor estático (Live Server, `npx serve`, etc.
-   — não abra o arquivo direto com `file://`, senão o `fetch` para a API
-   é bloqueado pelo navegador).
+### 👨‍🎓 Para alunos
 
-Conta de teste (criada automaticamente pelo `DataLoader` do backend
-quando o banco está vazio): `kaualucasds21@gmail.com` / `1234567890`
-(aluno).
+* Cadastro e autenticação por e-mail.
+* Confirmação de e-mail.
+* Reenvio de confirmação de cadastro.
+* Recuperação e redefinição de senha.
+* Criação e edição de perfil profissional.
+* Cadastro de formação acadêmica.
+* Cadastro de experiências profissionais.
+* Cadastro de habilidades.
+* Cadastro de projetos.
+* Cadastro de certificações.
+* Upload de comprovantes.
+* Controle de disponibilidade para estágio.
+* Controle de visibilidade do perfil.
+* Visualização do currículo.
+* Exportação do currículo em **PDF**.
+* Exportação do currículo em **DOCX**.
+* Perfil público.
+* Visualização de vagas.
+* Recebimento de mensagens de empresas.
+* Visualização das mensagens recebidas.
 
-> **Status da integração:** nem toda tela já fala com o backend real —
-> veja `RELATORIO_INTEGRACAO.md` para o mapeamento completo do que está
-> pronto e do que ainda depende de trabalho no front e/ou no back.
+### 🏢 Para empresas
 
-## 📁 Estrutura
+* Cadastro de empresa.
+* Autenticação por e-mail.
+* Autenticação por **CNPJ**.
+* Perfil empresarial.
+* Upload de foto de perfil.
+* Busca de alunos e talentos.
+* Visualização de currículos.
+* Publicação de vagas.
+* Cadastro de requisitos e habilidades para vagas.
+* Listagem das próprias vagas.
+* Gerenciamento de vagas.
+* Encerramento de vagas.
+* Busca de candidatos compatíveis.
+* Envio de mensagens para alunos.
+* Caixa de saída para acompanhamento das mensagens enviadas.
 
-O front-end é organizado em camadas, no mesmo espírito dos pacotes do
-backend (`Config`, `Security`, `Service`, `Util`):
+---
 
+# 🛠️ Tecnologias utilizadas
+
+| Camada             | Tecnologia               |
+| ------------------ | ------------------------ |
+| Front-end          | HTML5, CSS3 e JavaScript |
+| Autenticação       | Supabase Auth            |
+| Banco de dados     | Supabase PostgreSQL      |
+| Controle de acesso | Row Level Security (RLS) |
+| Armazenamento      | Supabase Storage         |
+| Backend serverless | Supabase Edge Functions  |
+| Exportação PDF     | jsPDF + html2canvas      |
+| Exportação DOCX    | docx + FileSaver         |
+| API externa        | IBGE                     |
+| Deploy             | Vercel                   |
+
+### Arquitetura atual
+
+A arquitetura atual do projeto utiliza o **Supabase como plataforma de backend**, sendo responsável pelos principais serviços de:
+
+* Autenticação;
+* Banco de dados PostgreSQL;
+* Controle de acesso com RLS;
+* Armazenamento de arquivos;
+* Edge Functions.
+
+O front-end é uma aplicação web estática desenvolvida com **HTML, CSS e JavaScript**, consumindo diretamente os serviços do Supabase.
+
+> **Importante:** versões anteriores do projeto utilizaram uma API REST em Spring Boot. Porém, a implementação atual deste repositório utiliza Supabase como backend principal.
+
+---
+
+# 🔐 Autenticação
+
+A autenticação da aplicação é realizada através do **Supabase Auth**.
+
+## Alunos
+
+Os alunos realizam login utilizando:
+
+* E-mail;
+* Senha.
+
+O cadastro utiliza confirmação de e-mail quando essa opção está habilitada no projeto Supabase.
+
+## Empresas
+
+As empresas podem realizar login utilizando:
+
+* E-mail + senha;
+* CNPJ + senha.
+
+No login utilizando CNPJ, o front-end chama a Edge Function:
+
+```text
+login-empresa-cnpj
 ```
-├── index.html                    # Landing page (alunos)
-├── login.html                     # Login (aluno ou empresa)
-├── register.html                   # Cadastro de aluno
-├── cadastro-empresa.html            # Cadastro de empresa
-├── busca-talentos.html              # Painel da empresa — busca de talentos
-├── caixa-saida-empresa.html         # Painel da empresa — mensagens enviadas
-├── caixa-entrada-aluno.html          # Painel do aluno — mensagens recebidas
-├── dashboard.html                     # Editor de currículo (aluno)
-├── preview.html                        # Preview + exportação PDF/DOCX
-├── curriculo-empresa.html               # Visualização do currículo por uma empresa
-├── public.html                           # Perfil público
-├── lista-vagas.html                       # Portal de Vagas — listagem
-├── cadastro-vaga.html                      # Portal de Vagas — cadastro
-├── exportacao-instagram.html                # Portal de Vagas — card p/ Instagram
-├── css/style.css                             # Estilos (todo o projeto)
+
+Essa função realiza a validação necessária e retorna uma sessão válida do Supabase.
+
+Dessa forma, o e-mail interno da empresa não precisa ser exposto ao navegador durante o login por CNPJ.
+
+---
+
+# 📧 Confirmação de e-mail
+
+Quando a confirmação de e-mail está habilitada no Supabase, o fluxo funciona da seguinte maneira:
+
+```text
+Cadastro
+   ↓
+Supabase Auth
+   ↓
+E-mail de confirmação
+   ↓
+confirmacao-email.html
+   ↓
+Conta confirmada
+   ↓
+Login
+```
+
+O projeto possui páginas específicas para os fluxos de autenticação:
+
+```text
+confirmacao-email.html
+recuperar-senha.html
+redefinir-senha.html
+```
+
+As URLs de redirecionamento são construídas utilizando:
+
+```javascript
+window.location.origin
+```
+
+Isso permite que o mesmo código funcione em ambiente local, Vercel ou domínio próprio, desde que as URLs estejam configuradas corretamente no Supabase.
+
+---
+
+# 🗄️ Banco de dados
+
+O projeto utiliza **PostgreSQL através do Supabase**.
+
+Entre as principais entidades utilizadas pela aplicação estão:
+
+* `usuarios`
+* `perfis_aluno`
+* `perfis_empresa`
+* `experiencias`
+* `habilidades`
+* `formacoes`
+* `projetos`
+* `certificacoes`
+* `comprovantes`
+* `vagas`
+* `vaga_habilidades`
+* `mensagens`
+
+O projeto também possui migrations SQL versionadas em:
+
+```text
+supabase/migrations/
+```
+
+Essas migrations permitem versionar alterações estruturais e regras importantes do banco de dados.
+
+---
+
+# 🔒 Segurança
+
+A aplicação utiliza os mecanismos de segurança fornecidos pelo Supabase.
+
+Entre eles:
+
+* **Supabase Auth** para autenticação;
+* **Row Level Security (RLS)** para controle de acesso aos dados;
+* Sessões autenticadas;
+* Políticas de acesso no PostgreSQL;
+* Edge Functions para operações que não devem ser executadas diretamente pelo navegador.
+
+## Chaves e credenciais
+
+O front-end utiliza somente a chave pública do Supabase.
+
+**Nunca devem ser colocadas no código do front-end:**
+
+```text
+service_role
+```
+
+ou qualquer outra chave secreta/administrativa.
+
+Credenciais administrativas utilizadas por Edge Functions devem permanecer nos **Secrets do Supabase**.
+
+---
+
+# 📦 Supabase Storage
+
+O Supabase Storage é utilizado para armazenamento de arquivos relacionados aos usuários.
+
+Entre os arquivos utilizados pela plataforma estão:
+
+* Fotos de perfil;
+* Comprovantes enviados pelos alunos.
+
+O acesso aos arquivos deve respeitar as políticas configuradas no Supabase.
+
+---
+
+# ⚡ Edge Functions
+
+O projeto utiliza Edge Functions do Supabase para operações que precisam ser executadas no ambiente server-side.
+
+Atualmente existe a função:
+
+```text
+supabase/functions/login-empresa-cnpj/
+```
+
+## `login-empresa-cnpj`
+
+Responsável pelo fluxo de autenticação de empresas utilizando CNPJ.
+
+Fluxo:
+
+```text
+Empresa
+   ↓
+CNPJ + senha
+   ↓
+Front-end
+   ↓
+Edge Function
+   ↓
+Validação da empresa
+   ↓
+Sessão Supabase
+   ↓
+Front-end autenticado
+```
+
+As credenciais administrativas necessárias para essa operação devem permanecer nos **Secrets do Supabase**.
+
+---
+
+# 📁 Estrutura do projeto
+
+```text
+Talentos_Unicap/
+│
+├── index.html
+├── login.html
+├── register.html
+├── cadastro-empresa.html
+│
+├── dashboard.html
+├── preview.html
+├── public.html
+├── curriculo-empresa.html
+│
+├── busca-talentos.html
+├── cadastro-vaga.html
+├── lista-vagas.html
+│
+├── caixa-entrada-aluno.html
+├── caixa-saida-empresa.html
+│
+├── confirmacao-email.html
+├── recuperar-senha.html
+├── redefinir-senha.html
+│
+├── exportacao-instagram.html
+│
+├── css/
+│   └── style.css
+│
 ├── js/
+│   │
 │   ├── config/
-│   │   └── config.js                # Dados estáticos (URL da API, estados, cursos por grau...)
-│   ├── security/                     # equivalente ao pacote Security/ do backend
-│   │   ├── http.js                    # Cliente fetch central: anexa o JWT, trata erros da API
-│   │   └── auth.js                     # Login/cadastro/logout, sessão do usuário
-│   ├── services/                      # clientes da API REST (o que cada Controller do backend expõe)
-│   │   ├── aluno-service.js            # Perfil, formações, projetos, certificações, currículo
-│   │   ├── empresa-service.js           # Perfil da empresa, vagas, busca de alunos
-│   │   ├── mensagem-service.js           # Mensagens empresa <-> aluno
-│   │   └── export-service.js              # Renderização e exportação do currículo (PDF/DOCX)
-│   ├── utils/                          # helpers puros, sem dependência de tela ou de API
-│   │   ├── mascaras.js                  # Máscaras de telefone e CNPJ
-│   │   ├── cursos.js                     # Dropdown de curso por grau acadêmico
-│   │   └── cidades.js                     # Busca de cidades por estado (API do IBGE)
-│   └── pages/                          # lógica específica de cada tela (equivalente a "controllers" de UI)
-│       ├── dashboard.js
-│       ├── busca-talentos.js
-│       ├── cadastro-empresa.js
-│       ├── cadastro-vaga.js
-│       ├── lista-vagas.js
-│       ├── caixa-entrada-aluno.js
-│       ├── caixa-saida-empresa.js
-│       ├── curriculo-empresa.js
-│       ├── mensagens-painel-aluno.js
-│       ├── public-profile.js
-│       └── exportacao-instagram.js
+│   │   ├── config.js
+│   │   └── supabase-client.js
+│   │
+│   ├── security/
+│   │   ├── auth.js
+│   │   └── http.js
+│   │
+│   ├── services/
+│   │   ├── aluno-service.js
+│   │   ├── empresa-service.js
+│   │   ├── mensagem-service.js
+│   │   └── export-service.js
+│   │
+│   ├── pages/
+│   │   ├── dashboard.js
+│   │   ├── busca-talentos.js
+│   │   ├── cadastro-empresa.js
+│   │   ├── cadastro-vaga.js
+│   │   ├── lista-vagas.js
+│   │   ├── caixa-entrada-aluno.js
+│   │   ├── caixa-saida-empresa.js
+│   │   ├── mensagens-painel-aluno.js
+│   │   ├── curriculo-empresa.js
+│   │   ├── public-profile.js
+│   │   └── exportacao-instagram.js
+│   │
+│   └── utils/
+│       ├── mascaras.js
+│       ├── cursos.js
+│       ├── cidades.js
+│       └── mobile-nav.js
+│
+├── supabase/
+│   │
+│   ├── functions/
+│   │   └── login-empresa-cnpj/
+│   │       ├── index.ts
+│   │       └── deno.json
+│   │
+│   └── migrations/
+│       ├── 001_experiencias_habilidades.sql
+│       ├── 002_perfis_aluno_curso_periodo_endereco.sql
+│       └── 003_vagas_somente_empresas_criam.sql
+│
+├── apps-script/
+│   └── Code.gs
+│
+├── img/
+│
+├── vercel.json
+└── README.md
 ```
 
-Regra geral de dependência (de baixo para cima, sem ciclos):
-`config` → `security`/`utils` → `services` → `pages`. Cada página HTML só
-carrega, na ordem, o `config`, depois `security`, os `services` que usa, e
-por fim o seu `js/pages/*.js`.
+---
 
-## 📝 Licença
+# 🧩 Organização do JavaScript
 
-MIT
+O JavaScript do projeto é dividido por responsabilidade.
 
+## `config/`
 
-## Supabase
+Responsável pelas configurações gerais da aplicação.
 
-O frontend usa Supabase Auth, PostgreSQL/RLS e Storage. As credenciais públicas ficam em `js/config/config.js`; a chave `service_role` nunca deve ser colocada no frontend.
+Exemplos:
 
-## Configuração de autenticação para produção (Supabase)
+* URL do Supabase;
+* Chave pública do Supabase;
+* Estados brasileiros;
+* Cursos;
+* Especializações;
+* Mestrados;
+* Doutorados;
+* Categorias de habilidades.
 
-Antes de publicar a aplicação em produção:
+---
 
-1. No Supabase, mantenha **Authentication → Providers → Email → Confirm Email** ativado.
-2. Configure um SMTP próprio para envio dos e-mails de confirmação e recuperação de senha.
-3. Em **Authentication → URL Configuration**, configure o domínio oficial do TalentoUNICAP como **Site URL** e adicione as URLs de confirmação/recuperação usadas pelo site, por exemplo:
-   - `https://SEU-DOMINIO/confirmacao-email.html`
-   - `https://SEU-DOMINIO/redefinir-senha.html`
-4. Nunca coloque uma chave `service_role`/secret no JavaScript do frontend. O frontend deve usar apenas a chave pública/publishable do Supabase.
-5. O fluxo de cadastro agora envia o usuário para `confirmacao-email.html` quando a confirmação de e-mail estiver ativa.
-6. O login trata `Email not confirmed` com uma mensagem amigável e oferece o reenvio da confirmação.
-7. A recuperação de senha usa `recuperar-senha.html` e `redefinir-senha.html`.
-8. O cadastro de empresa não tenta gravar `perfis_empresa` pelo frontend antes da confirmação. O trigger do banco continua responsável por criar `usuarios` e `perfis_empresa`.
+## `security/`
 
-> Substitua `SEU-DOMINIO` pelo domínio final usado no deploy. O JavaScript usa `window.location.origin`, então funciona tanto na URL da Vercel quanto depois da troca para um domínio próprio, desde que as URLs correspondentes estejam liberadas no Supabase.
-## Login de empresa por CNPJ
+Responsável principalmente pela autenticação e gerenciamento de sessão.
 
-O login aceita **e-mail ou CNPJ**. O e-mail continua sendo o identificador interno do Supabase Auth; quando a empresa informa o CNPJ, o frontend chama a Edge Function `login-empresa-cnpj`, que localiza a conta pelo CNPJ sem expor o e-mail no navegador e realiza a autenticação.
+O arquivo:
 
-Antes de publicar, faça o deploy da Edge Function no projeto Supabase e mantenha as credenciais administrativas somente nos secrets do Supabase.
+```text
+js/security/auth.js
+```
 
+concentra funcionalidades como:
+
+* Cadastro de alunos;
+* Cadastro de empresas;
+* Login;
+* Login por CNPJ;
+* Logout;
+* Confirmação de e-mail;
+* Reenvio de confirmação;
+* Recuperação de senha;
+* Redefinição de senha;
+* Identificação do tipo de conta;
+* Gerenciamento da sessão.
+
+---
+
+## `services/`
+
+Contém os serviços responsáveis pelas operações de dados e funcionalidades específicas.
+
+Principais serviços:
+
+```text
+aluno-service.js
+empresa-service.js
+mensagem-service.js
+export-service.js
+```
+
+---
+
+## `pages/`
+
+Contém a lógica específica de cada página da aplicação.
+
+Exemplos:
+
+```text
+dashboard.js
+busca-talentos.js
+cadastro-vaga.js
+lista-vagas.js
+caixa-entrada-aluno.js
+caixa-saida-empresa.js
+```
+
+---
+
+## `utils/`
+
+Contém funções auxiliares reutilizáveis.
+
+Exemplos:
+
+* Máscaras de telefone e CNPJ;
+* Lista de cursos;
+* Busca de cidades;
+* Navegação mobile.
+
+---
+
+# 📄 Exportação de currículo
+
+O TalentoUNICAP permite que o aluno exporte seu currículo diretamente pela plataforma.
+
+## PDF
+
+A geração do PDF utiliza:
+
+* **html2canvas**
+* **jsPDF**
+
+O currículo é renderizado no navegador e convertido em PDF.
+
+## DOCX
+
+A geração do documento utiliza:
+
+* **docx**
+* **FileSaver**
+
+O currículo pode incluir:
+
+* Informações pessoais;
+* Formação acadêmica;
+* Experiência profissional;
+* Habilidades;
+* Projetos;
+* Certificações;
+* Links profissionais.
+
+---
+
+# 🌎 API do IBGE
+
+A aplicação utiliza dados do **IBGE** para auxiliar na seleção de cidades e estados brasileiros.
+
+Essa funcionalidade está relacionada ao arquivo:
+
+```text
+js/utils/cidades.js
+```
+
+---
+
+# 🚀 Como executar localmente
+
+## 1. Clonar o repositório
+
+```bash
+git clone https://github.com/CombogoOrganizacao/Talentos_Unicap.git
+cd Talentos_Unicap
+```
+
+## 2. Executar um servidor HTTP local
+
+Como o projeto é composto por HTML, CSS e JavaScript, não existe uma etapa tradicional de build.
+
+Pode ser utilizado, por exemplo:
+
+* Live Server;
+* `npx serve`;
+* outro servidor HTTP estático.
+
+Com `npx`:
+
+```bash
+npx serve .
+```
+
+Também é possível utilizar o Live Server do VS Code.
+
+> Recomenda-se não abrir os arquivos diretamente utilizando `file://`, pois determinados recursos do navegador podem bloquear requisições e módulos utilizados pela aplicação.
+
+---
+
+# ☁️ Configuração do Supabase
+
+O projeto utiliza as configurações presentes em:
+
+```text
+js/config/config.js
+```
+
+e inicializa o cliente através de:
+
+```text
+js/config/supabase-client.js
+```
+
+O projeto precisa estar configurado com:
+
+* Supabase Auth;
+* PostgreSQL;
+* RLS;
+* Storage;
+* Migrations;
+* Edge Function `login-empresa-cnpj`.
+
+---
+
+# 🌐 Deploy
+
+O projeto possui configuração para deploy na **Vercel** através do arquivo:
+
+```text
+vercel.json
+```
+
+Depois de realizar o deploy, é necessário configurar no Supabase as URLs utilizadas pela aplicação.
+
+Em:
+
+```text
+Authentication
+    ↓
+URL Configuration
+```
+
+configure:
+
+* Site URL;
+* URLs de redirecionamento;
+* URL de confirmação de e-mail;
+* URL de recuperação de senha.
+
+Por exemplo:
+
+```text
+https://SEU-DOMINIO/confirmacao-email.html
+https://SEU-DOMINIO/redefinir-senha.html
+```
+
+Substitua `SEU-DOMINIO` pelo domínio utilizado pela aplicação.
+
+---
+
+# 🔄 Fluxo geral da aplicação
+
+```text
+                         ┌─────────────────────┐
+                         │       Usuário       │
+                         └──────────┬──────────┘
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │     Front-end       │
+                         │ HTML / CSS / JS     │
+                         └──────────┬──────────┘
+                                    │
+              ┌─────────────────────┼─────────────────────┐
+              │                     │                     │
+              ▼                     ▼                     ▼
+     ┌────────────────┐    ┌────────────────┐    ┌────────────────┐
+     │ Supabase Auth  │    │   PostgreSQL   │    │    Storage     │
+     │                │    │                │    │                │
+     │ Login          │    │ Perfis         │    │ Fotos          │
+     │ Cadastro       │    │ Currículos     │    │ Comprovantes   │
+     │ Sessões        │    │ Vagas          │    │                │
+     └────────────────┘    │ Mensagens      │    └────────────────┘
+                           └────────────────┘
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │   Edge Functions    │
+                         │                     │
+                         │ Login por CNPJ      │
+                         └─────────────────────┘
+```
+
+---
+
+# 📌 Estado atual do projeto
+
+O projeto atualmente possui integração com o **Supabase** nos principais fluxos da aplicação.
+
+Entre eles:
+
+* Autenticação;
+* Cadastro de usuários;
+* Cadastro de empresas;
+* Login por e-mail;
+* Login empresarial por CNPJ;
+* Perfis de alunos;
+* Perfis de empresas;
+* Currículos;
+* Formação acadêmica;
+* Experiências;
+* Habilidades;
+* Projetos;
+* Certificações;
+* Vagas;
+* Mensagens;
+* Storage;
+* Exportação de currículo.
+
+A arquitetura atual deste repositório está baseada em:
+
+```text
+HTML + CSS + JavaScript
+            │
+            ▼
+         Supabase
+       ┌────┼────┐
+       │    │    │
+      Auth  DB  Storage
+             │
+             ▼
+            RLS
+             │
+             ▼
+       Edge Functions
+```
+
+---
+
+# 🎯 Objetivo do projeto
+
+O TalentoUNICAP tem como objetivo aproximar estudantes e empresas, facilitando a entrada dos alunos no mercado de trabalho e tornando o processo de descoberta de talentos mais eficiente para as empresas.
+
+A plataforma busca centralizar:
+
+* Currículos;
+* Formação acadêmica;
+* Experiências;
+* Habilidades;
+* Projetos;
+* Certificações;
+* Vagas;
+* Comunicação entre alunos e empresas.
+
+Dessa forma, o sistema funciona como uma ponte entre a **formação acadêmica da UNICAP** e o **mercado de trabalho**.
+
+---
+
+# 👨‍💻 Projeto
+
+**TalentoUNICAP**
+
+**Universidade Católica de Pernambuco — UNICAP**
+
+Desenvolvido pela **Combogó** como projeto acadêmico voltado à integração entre estudantes e empresas.
+
+### Desenvolvedores
+
+* **Marcelo Rocha**
+* **Kauã Lucas**
+
+---
+
+# 📄 Licença
+
+Este projeto está disponível sob a licença **MIT**.
