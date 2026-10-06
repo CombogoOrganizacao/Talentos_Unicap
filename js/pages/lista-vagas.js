@@ -54,7 +54,15 @@
       return;
     }
     modo = tipo === "empresa" ? "empresa" : "aluno";
-    if (modo === "aluno") aplicarModoAluno();
+    if (modo === "aluno") {
+      aplicarModoAluno();
+    } else {
+      // Botões de criar vaga só aparecem para empresas
+      ["btnNovaVaga", "emptyCta"].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.hidden = false;
+      });
+    }
     await carregarVagas();
   }
   

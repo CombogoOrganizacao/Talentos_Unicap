@@ -1679,3 +1679,8 @@ a:hover {
 .vaga-card .vaga-requisitos[hidden] {
   display: none;
 }
+
+/* O atributo hidden sempre deve esconder (evita conflito com .btn etc.) */
+[hidden] {
+  display: none !important;
+}
