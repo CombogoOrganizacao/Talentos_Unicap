@@ -26,7 +26,13 @@
         <h2>Bem-vindo de volta</h2>
         <p class="subtitle">Entre na sua conta para acessar seu currículo</p>
 
-        <div id="errorMsg" class="error-msg hidden"></div>
+<div id="jaLogado" class="hidden" style="text-align:center;">
+          <h2>Você já está conectado</h2>
+          <p class="subtitle" id="jaLogadoMsg"></p>
+          <button type="button" class="btn btn-primary" style="width:100%;" id="btnContinuar">Continuar</button>
+          <button type="button" class="btn btn-secondary" style="width:100%;margin-top:10px;" id="btnOutraConta">Entrar com outra conta</button>
+        </div>
+                <div id="errorMsg" class="error-msg hidden"></div>
         <form id="loginForm">
           <div class="form-group">
             <label>E-mail ou CNPJ</label>
@@ -61,8 +67,34 @@
       return tipoConta === 'empresa' ? 'busca-talentos.html' : 'dashboard.html';
     }
 
+    // Se já existe sessão, NÃO redireciona sozinho (ex.: ao voltar com a seta
+    // do navegador). Pergunta se a pessoa quer continuar ou trocar de conta.
     Auth.onAuthChange = function (loggedIn, tipoConta) {
-      if (loggedIn) window.location.href = destinoPorTipoConta(tipoConta);
+      if (!loggedIn) return;
+
+      const aviso = document.getElementById('jaLogado');
+      const form = document.getElementById('loginForm');
+      const titulo = document.querySelector('.auth-card .card-body > h2');
+      const subtitulo = document.querySelector('.auth-card .card-body > .subtitle');
+      const erro = document.getElementById('errorMsg');
+
+      document.getElementById('jaLogadoMsg').textContent =
+        'Conectado como ' + (Auth.user?.nome || Auth.user?.email || 'usuário') + '.';
+
+      [titulo, subtitulo, erro, form].forEach(el => el && el.classList.add('hidden'));
+      document.querySelectorAll('.auth-card .card-body > p').forEach(p => p.classList.add('hidden'));
+      aviso.classList.remove('hidden');
+
+      document.getElementById('btnContinuar').onclick = function () {
+        window.location.href = destinoPorTipoConta(tipoConta);
+      };
+
+      document.getElementById('btnOutraConta').onclick = async function () {
+        await Auth.logout(false);
+        aviso.classList.add('hidden');
+        [titulo, subtitulo, form].forEach(el => el && el.classList.remove('hidden'));
+        document.querySelectorAll('.auth-card .card-body > p').forEach(p => p.classList.remove('hidden'));
+      };
     };
 
     Auth.init();
