@@ -1626,3 +1626,34 @@ a:hover {
     width: 100%;
   }
 }
+
+/* Itens que faltam no currículo */
+.progress-missing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.progress-missing-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-600);
+}
+
+.progress-missing-chip {
+  font: inherit;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--unicap-200);
+  background: #fff;
+  color: var(--unicap-500);
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.progress-missing-chip:hover {
+  background: var(--unicap-50);
+}

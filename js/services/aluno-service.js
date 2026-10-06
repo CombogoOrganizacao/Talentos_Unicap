@@ -83,6 +83,9 @@ const API = {
         // PERFIL DO ALUNO
         // ==========================
         telefone: perfil.telefone || '',
+        curso: perfil.curso || '',
+        periodo: perfil.periodo || '',
+        endereco: perfil.endereco || '',
         cidade: perfil.cidade || '',
         estado: perfil.estado || '',
         sobre: perfil.sobre || '',

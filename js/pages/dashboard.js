@@ -37,6 +37,12 @@ function isTrue(v) {
   return v === true || v === 'true';
 }
 
+// A tabela formacoes não tem coluna "atual": uma formação está
+// em curso quando não possui ano de conclusão.
+function formacaoEmCurso(item) {
+  return isTrue(item?.atual) || !item?.ano_conclusao;
+}
+
 // ============================================
 // VALIDAÇÃO DE CAMPOS OBRIGATÓRIOS
 // ============================================
@@ -423,6 +429,10 @@ async function savePersonal() {
   hideFormAlert('alert-personal');
 
   const data = {
+    telefone: UI.val('telefone'),
+    curso: UI.val('curso').trim(),
+    periodo: UI.val('periodo'),
+    endereco: UI.val('endereco').trim(),
     cidade: UI.val('cidade'),
     estado: UI.val('estado'),
     sobre: UI.val('bio'),
@@ -761,21 +771,28 @@ const sectionConfig = {
 
         ${item.ano_conclusao
         ? ` — ${item.ano_conclusao}`
-        : isTrue(item.atual)
-          ? ' — Em curso'
-          : ''
-      }
-
-        ${isTrue(item.atual)
-        ? ' <span class="badge badge-green">Em curso</span>'
-        : ''
+        : ' — <span class="badge badge-green">Em curso</span>'
       }
       </div>
     `,
 
     form: edit => {
       const emCurso =
-        isTrue(edit?.atual);
+        edit
+          ? formacaoEmCurso(edit)
+          : false;
+
+      const dataInicioForm =
+        edit?.data_inicio ||
+        (edit?.ano_inicio
+          ? `${edit.ano_inicio}-01-01`
+          : '');
+
+      const dataFimForm =
+        edit?.data_fim ||
+        (edit?.ano_conclusao
+          ? `${edit.ano_conclusao}-12-31`
+          : '');
 
       const grauSelecionado =
         edit?.nivel ||
@@ -907,7 +924,7 @@ const sectionConfig = {
             <input
               type="date"
               id="formacao_f_data_inicio"
-              value="${edit?.data_inicio || ''}"
+              value="${dataInicioForm}"
               required
             >
 
@@ -925,7 +942,7 @@ const sectionConfig = {
             <input
               type="date"
               id="formacao_f_data_fim"
-              value="${edit?.data_fim || ''}"
+              value="${dataFimForm}"
             >
 
           </div>
@@ -1043,22 +1060,17 @@ const sectionConfig = {
       'Nenhuma habilidade cadastrada ainda.',
 
     render: item => `
-      <span class="badge badge-blue">
-        ${item.categoria || ''}
-      </span>
+      <div>
+        <strong>
+          ${item.nome || item.habilidade || ''}
+        </strong>
+      </div>
 
-      <strong>
-        ${item.nome || item.habilidade || ''}
-      </strong>
-
-      ${item.nivel
-        ? `
-            <span style="font-size:12px;color:var(--gray-500)">
-              ${item.nivel}
-            </span>
-          `
-        : ''
-      }
+      <div style="font-size:13px;color:var(--gray-500)">
+        ${[item.categoria, item.nivel]
+        .filter(Boolean)
+        .join(' | ')}
+      </div>
     `,
 
     form: edit => `
@@ -2297,6 +2309,61 @@ function editItem(
 }
 
 // ============================================
+// ITENS QUE FALTAM PARA COMPLETAR O CURRÍCULO
+// ============================================
+
+function renderMissingItems(items) {
+  const box =
+    document.getElementById(
+      'progressMissing'
+    );
+
+  if (!box) {
+    return;
+  }
+
+  if (!items.length) {
+    box.innerHTML = '';
+    return;
+  }
+
+  box.innerHTML =
+    '<span class="progress-missing-label">Falta preencher:</span>' +
+    items
+      .map(
+        i => `
+          <button
+            type="button"
+            class="progress-missing-chip"
+            onclick="goToMissing('${i.tab}', '${i.field || ''}')"
+          >
+            ${i.label}
+          </button>
+        `
+      )
+      .join('');
+}
+
+function goToMissing(tab, field) {
+  switchTab(tab);
+
+  if (!field) {
+    return;
+  }
+
+  const el = document.getElementById(field);
+
+  if (el) {
+    el.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    });
+
+    el.focus();
+  }
+}
+
+// ============================================
 // PROGRESSO DO CURRÍCULO
 // ============================================
 
@@ -2305,54 +2372,31 @@ function updateProgress() {
     return;
   }
 
-  let filled = 0;
+  // Cada item do checklist: o que conta para a completude,
+  // o nome exibido e a aba onde o aluno resolve.
+  const checklist = [
+    { done: !!profile.sobre, label: 'Sobre mim', tab: 'personal', field: 'bio' },
+    { done: !!profile.curso, label: 'Curso', tab: 'personal', field: 'curso' },
+    { done: !!profile.telefone, label: 'Telefone', tab: 'personal', field: 'telefone' },
+    { done: !!profile.cidade, label: 'Cidade', tab: 'personal', field: 'cidade' },
+    { done: !!profile.experiencias?.length, label: 'Experiência', tab: 'experience' },
+    { done: !!profile.habilidades?.length, label: 'Habilidade', tab: 'skills' },
+    { done: !!profile.projetos?.length, label: 'Projeto', tab: 'projects' },
+    { done: !!profile.certificacoes?.length, label: 'Certificado', tab: 'certificates' }
+  ];
 
-  const total = 8;
+  const total = checklist.length;
 
-  if (profile.sobre) {
-    filled++;
-  }
+  const filled = checklist.filter(i => i.done).length;
 
-  if (profile.curso) {
-    filled++;
-  }
-
-  if (profile.telefone) {
-    filled++;
-  }
-
-  if (profile.cidade) {
-    filled++;
-  }
-
-  if (
-    profile.experiencias?.length
-  ) {
-    filled++;
-  }
-
-  if (
-    profile.habilidades?.length
-  ) {
-    filled++;
-  }
-
-  if (
-    profile.projetos?.length
-  ) {
-    filled++;
-  }
-
-  if (
-    profile.certificacoes?.length
-  ) {
-    filled++;
-  }
+  const missingItems = checklist.filter(i => !i.done);
 
   const pct =
     Math.round(
       (filled / total) * 100
     );
+
+  renderMissingItems(missingItems);
 
   const progressFill =
     document.getElementById(

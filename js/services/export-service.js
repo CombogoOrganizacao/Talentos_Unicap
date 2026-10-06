@@ -52,9 +52,9 @@ function renderCVPreview(profile, showLogo = true) {
     html += `<div class="cv-section"><h2>FORMAÇÃO ACADÊMICA</h2>`;
     profile.formacoes.forEach(e => {
       html += `<div class="item">
-        <h3>${e.grau} em ${e.area_estudo}</h3>
-        <div class="subtitle">${e.instituicao}</div>
-        <div class="date">${formatDate(e.data_inicio)} — ${isTrue(e.atual) ? 'Em curso' : (e.data_fim ? formatDate(e.data_fim) : 'Presente')}${isTrue(e.atual) ? ' <span class="badge badge-green">Em curso</span>' : ''}</div>
+        <h3>${e.nivel || ''}${e.curso ? ` em ${e.curso}` : ''}</h3>
+        <div class="subtitle">${e.instituicao || ''}</div>
+        <div class="date">${e.ano_inicio || ''}${e.ano_inicio ? ' — ' : ''}${e.ano_conclusao || 'Em curso'}${e.ano_conclusao ? '' : ' <span class="badge badge-green">Em curso</span>'}</div>
       </div>`;
     });
     html += `</div>`;
@@ -79,8 +79,9 @@ function renderCVPreview(profile, showLogo = true) {
     html += `<div class="cv-section"><h2>PROJETOS</h2>`;
     profile.projetos.forEach(p => {
       html += `<div class="item">
-        <h3>${p.nome}${p.url ? ` <a href="${p.url}" target="_blank" style="font-size:12px">↗</a>` : ''}</h3>
+        <h3>${p.titulo || ''}${p.link_github ? ` <a href="${p.link_github}" target="_blank" style="font-size:12px">GitHub ↗</a>` : ''}${p.link_demo ? ` <a href="${p.link_demo}" target="_blank" style="font-size:12px">Demo ↗</a>` : ''}</h3>
         ${p.descricao ? `<div class="desc">${p.descricao}</div>` : ''}
+        ${p.tecnologias ? `<div class="desc"><strong>Tecnologias:</strong> ${p.tecnologias}</div>` : ''}
       </div>`;
     });
     html += `</div>`;
@@ -91,7 +92,7 @@ function renderCVPreview(profile, showLogo = true) {
     html += `<div class="cv-section"><h2>CERTIFICAÇÕES</h2>`;
     profile.certificacoes.forEach(c => {
       html += `<div class="item">
-        <h3>${c.nome}${c.emissor ? ` — ${c.emissor}` : ''}${c.url ? ` <a href="${c.url}" target="_blank" style="font-size:12px">↗</a>` : ''}</h3>
+        <h3>${c.nome}${c.instituicao ? ` — ${c.instituicao}` : ''}${c.link_certificado ? ` <a href="${c.link_certificado}" target="_blank" style="font-size:12px">↗</a>` : ''}</h3>
         <div class="date">
           ${c.data_emissao ? formatDate(c.data_emissao) : ''}
           ${isTrue(c.sem_validade) ? ' <span class="badge badge-green">Sem validade</span>' : (c.data_validade ? ` — Válido até ${formatDate(c.data_validade)}` : '')}
@@ -319,16 +320,15 @@ async function exportDOCX(includeLogo = true) {
       children.push(heading('FORMAÇÃO ACADÊMICA'));
       profile.formacoes.forEach(e => {
         children.push(new Paragraph({
-          children: [new TextRun({ text: `${e.grau} em ${e.area_estudo}`, bold: true, size: 24 })],
+          children: [new TextRun({ text: `${e.nivel || ''}${e.curso ? ` em ${e.curso}` : ''}`, bold: true, size: 24 })],
           spacing: { before: 100 }
         }));
         if (e.instituicao) {
           children.push(new Paragraph({ children: [new TextRun({ text: e.instituicao, size: 22, color: BRAND })] }));
         }
-        const emCurso = isTrue(e.atual);
         children.push(new Paragraph({
           children: [new TextRun({
-            text: `${formatDate(e.data_inicio)} — ${emCurso ? 'Em curso' : (e.data_fim ? formatDate(e.data_fim) : 'Presente')}`,
+            text: `${e.ano_inicio || ''}${e.ano_inicio ? ' — ' : ''}${e.ano_conclusao || 'Em curso'}`,
             size: 20, color: MUTED, italics: true
           })],
           spacing: { after: 100 }
@@ -357,7 +357,7 @@ async function exportDOCX(includeLogo = true) {
       children.push(heading('PROJETOS'));
       profile.projetos.forEach(p => {
         children.push(new Paragraph({
-          children: [new TextRun({ text: p.nome + (p.url ? `  (${p.url})` : ''), bold: true, size: 24 })],
+          children: [new TextRun({ text: (p.titulo || '') + (p.link_github ? `  (${p.link_github})` : '') + (p.link_demo ? `  (${p.link_demo})` : ''), bold: true, size: 24 })],
           spacing: { before: 100 }
         }));
         if (p.descricao) {
@@ -371,7 +371,7 @@ async function exportDOCX(includeLogo = true) {
       children.push(heading('CERTIFICAÇÕES'));
       profile.certificacoes.forEach(c => {
         children.push(new Paragraph({
-          children: [new TextRun({ text: c.nome + (c.emissor ? ` — ${c.emissor}` : ''), bold: true, size: 24 })],
+          children: [new TextRun({ text: c.nome + (c.instituicao ? ` — ${c.instituicao}` : ''), bold: true, size: 24 })],
           spacing: { before: 100 }
         }));
         const semValidade = isTrue(c.sem_validade);
