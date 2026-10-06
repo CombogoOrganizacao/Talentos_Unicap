@@ -245,10 +245,17 @@ const Auth = {
   },
 
   async logout(redirect = true) {
-    await supabaseClient.auth.signOut();
+    try {
+      await supabaseClient.auth.signOut();
+    } catch (e) {
+      // Sem rede: encerra ao menos a sessão local deste navegador
+      try { await supabaseClient.auth.signOut({ scope: 'local' }); } catch (_) {}
+    }
     this.user = null;
     this.uid = null;
-    if (redirect) window.location.href = 'index.html';
+    // replace() tira a página protegida do histórico: a seta "voltar"
+    // não reabre o dashboard depois de sair.
+    if (redirect) window.location.replace('index.html');
   },
 
   async isLoggedIn() {
@@ -256,3 +263,9 @@ const Auth = {
     return !!session;
   }
 };
+
+// Ao voltar pela seta do navegador, a página pode vir do cache (bfcache)
+// com o estado antigo (logado/deslogado). Recarrega para refletir a sessão real.
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) window.location.reload();
+});
