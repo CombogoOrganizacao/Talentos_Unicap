@@ -45,6 +45,10 @@
     });
     const prazoOpt = ordenacaoSelect.querySelector('option[value="prazo"]');
     if (prazoOpt) prazoOpt.remove();
+
+    // Botão "Meu Currículo" só aparece para aluno/egresso
+    const btnCurriculo = document.getElementById("btnMeuCurriculo");
+    if (btnCurriculo) btnCurriculo.hidden = false;
   }
 
   async function iniciar() {
@@ -65,7 +69,6 @@
     }
     await carregarVagas();
   }
-  
 
   // ---------- Helpers ----------
   function formatDateBR(iso) {
@@ -220,7 +223,7 @@
       saveVagas(vagas);
       closeAllDropdowns();
       render();
-        } else if (action === "encerrar") {
+    } else if (action === "encerrar") {
       const resultado = await APIEmpresa.vagas.encerrar(vaga.id);
       if (resultado && resultado.error) { alert(resultado.error); return; }
       closeAllDropdowns();

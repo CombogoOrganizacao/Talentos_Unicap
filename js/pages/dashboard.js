@@ -148,12 +148,15 @@ function toggleValidadeVisibility(type) {
 // ============================================
 
 function initDashboard() {
-  Auth.onAuthChange = function (loggedIn) {
+  Auth.onAuthChange = function (loggedIn, tipoConta) {
     if (!loggedIn) {
       window.location.href = 'login.html';
       return;
     }
-
+    if (tipoConta === 'empresa') {
+      window.location.href = 'lista-vagas.html';
+      return;
+    }
     loadProfile();
   };
 
