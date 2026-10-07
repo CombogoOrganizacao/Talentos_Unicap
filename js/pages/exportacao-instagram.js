@@ -3,7 +3,7 @@
 
   // ---------- 1. Recuperar dados da vaga ----------
   function getVagaData() {
-    // Prioridade 1: querystring (?vaga=base64json), vindo da página de cadastro/listagem
+    // Prioridade 1: querystring (?vaga=base64json)
     const params = new URLSearchParams(window.location.search);
     const encoded = params.get("vaga");
     if (encoded) {
@@ -13,36 +13,83 @@
         console.warn("Não foi possível decodificar os dados da URL.", err);
       }
     }
-    // Prioridade 2: última vaga publicada salva no localStorage
-    try {
-      const saved = localStorage.getItem("talentosUnicap.ultimaVagaPublicada");
-      if (saved) return JSON.parse(saved);
-    } catch (err) { /* ignora */ }
 
-    // Fallback: dados de exemplo
-    return {
-      titulo: "Estágio em Desenvolvimento Frontend React",
-      empresa: "Departamento de TI - UNICAP",
-      area: "Sistemas para Internet / Ciência da Computação",
-      carga: "30h semanais",
-      descricao: "Atuar no desenvolvimento de novas interfaces responsivas em React; integrar APIs RESTful; trabalhar em colaboração direta com o time de design UI/UX da universidade.",
-      requisitos: "• Estar regularmente matriculado em curso de TI ou Design na UNICAP\n• Conhecimentos sólidos em ReactJS e versionamento Git\n• Boa comunicação e vontade de aprender metodologias ágeis.",
-      desejavel: "",
-      remuneracao: "R$ 1.500,00 + Vale Transporte",
-      local: "Híbrido (Recife - PE)",
-      periodoInicio: "2026-10-15",
-      periodoFim: "2026-10-30",
-      status: "Ativa",
-      contato: "carreiras@unicap.br"
-    };
+    // Prioridade 2: procura no localStorage qualquer item que pareça uma vaga
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        const raw = localStorage.getItem(key);
+        try {
+          const parsed = JSON.parse(raw);
+          const candidate = Array.isArray(parsed) ? parsed[parsed.length - 1] : parsed;
+          if (candidate && typeof candidate === "object") {
+            const flatTest = JSON.stringify(candidate).toLowerCase();
+            if (flatTest.includes("titulo") || flatTest.includes("title")) {
+              console.log("Vaga encontrada na chave:", key);
+              return candidate;
+            }
+          }
+        } catch (_) {
+          /* valor não é JSON, ignora */
+        }
+      }
+    } catch (err) {
+      console.warn("Não foi possível ler o localStorage.", err);
+    }
+
+    return {};
   }
 
-  const vaga = getVagaData();
+  const vagaRaw = getVagaData();
+  console.log("DADOS DA VAGA:", vagaRaw);
+
+  // Achata objetos aninhados: {a:{b:1}} vira {b:1}
+  function flatten(obj, out = {}) {
+    Object.entries(obj || {}).forEach(([k, v]) => {
+      if (v && typeof v === "object" && !Array.isArray(v)) flatten(v, out);
+      else out[k] = v;
+    });
+    return out;
+  }
+  const flat = flatten(vagaRaw);
+
+  // Campos terminados em "id" (id, empresa_id, empresaId...) nunca são texto para exibir
+  const isIdKey = (k) => /(^|_)id$/i.test(k) || /[a-z]Id$/.test(k);
+
+  // Procura o primeiro campo cujo nome contenha algum dos trechos (respeitando a ordem)
+  const pick = (...parts) => {
+    for (const p of parts) {
+      for (const [k, v] of Object.entries(flat)) {
+        if (isIdKey(k)) continue;
+        if (!k.toLowerCase().includes(p)) continue;
+        if (v === null || v === undefined || v === "") continue;
+        if (Array.isArray(v)) {
+          if (v.length) return v.join("\n");
+          continue;
+        }
+        return String(v);
+      }
+    }
+    return "";
+  };
+
+  const vaga = {
+    titulo:      pick("titulo", "title", "cargo"),
+    empresa:     pick("empresa_nome", "empresanome", "nome_empresa", "nomeempresa", "empresa", "company", "depart", "setor"),
+    carga:       pick("carga_horaria", "cargahoraria", "carga", "horas"),
+    remuneracao: pick("remunera", "bolsa", "salario", "valor"),
+    local:       pick("local", "modalidade", "cidade"),
+    periodoFim:  pick("periodofim", "periodo_fim", "datafim", "data_fim", "prazo", "limite", "encerr"),
+    contato:     pick("contato", "link", "email"),
+    requisitos:  pick("requisito", "habilidade"),
+    descricao:   pick("descri"),
+    area:        pick("area", "curso", "categoria")
+  };
 
   // ---------- 2. Helpers ----------
   function formatDateBR(isoDate) {
     if (!isoDate) return "";
-    const [y, m, d] = isoDate.split("-");
+    const [y, m, d] = String(isoDate).slice(0, 10).split("-");
     if (!y || !m || !d) return isoDate;
     return `${d}/${m}/${y}`;
   }
@@ -56,18 +103,29 @@
 
   const prazoFim = formatDateBR(vaga.periodoFim);
   const tipoVaga = tipoVagaFromTitulo(vaga.titulo);
+  const linkCandidatura = vaga.contato || "vagas.unicap.br";
+
+  // Linhas de meta (só as que têm dado)
+  const metaItems = [
+    vaga.carga ? "⏱ " + vaga.carga : "",
+    vaga.remuneracao ? "$ " + vaga.remuneracao : "",
+    vaga.local ? "📍 " + vaga.local : ""
+  ].filter(Boolean);
 
   // ---------- 3. Preencher o card visual ----------
-  document.getElementById("postTitulo").textContent = vaga.titulo || "";
-  document.getElementById("postEmpresa").textContent = vaga.empresa || "";
-  document.getElementById("postTipoPill").textContent = tipoVaga;
-  document.getElementById("postCarga").textContent = "⏱ " + (vaga.carga || "");
-  document.getElementById("postSalario").textContent = "$ " + (vaga.remuneracao || "");
-  document.getElementById("postLocal").textContent = "📍 " + (vaga.local || "");
-  document.getElementById("postPrazo").textContent = prazoFim ? `Seleção até ${prazoFim}` : "";
+  function setText(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
 
-  const linkCandidatura = vaga.contato || "vagas.unicap.br";
-  document.getElementById("postCtaLabel").textContent = `CANDIDATE-SE! ${linkCandidatura.toUpperCase()}`;
+  setText("postTitulo", vaga.titulo || "");
+  setText("postEmpresa", vaga.empresa || "");
+  setText("postTipoPill", tipoVaga);
+  setText("postCarga", vaga.carga ? "⏱ " + vaga.carga : "");
+  setText("postSalario", vaga.remuneracao ? "$ " + vaga.remuneracao : "");
+  setText("postLocal", vaga.local ? "📍 " + vaga.local : "");
+  setText("postPrazo", prazoFim ? `Seleção até ${prazoFim}` : "");
+  setText("postCtaLabel", `CANDIDATE-SE! ${linkCandidatura.toUpperCase()}`);
 
   // ---------- 4. Montar legenda ----------
   function bulletList(text) {
@@ -97,26 +155,54 @@
       "🔶 OPORTUNIDADE DE " + tipoVaga + " NA UNICAP!",
       "",
       `Estamos selecionando estudantes para a vaga de ${vaga.titulo || "—"}. ${vaga.descricao ? vaga.descricao : "Se você deseja atuar com tecnologias modernas e fazer a diferença em projetos reais, seu lugar é aqui!"}`,
-      "",
-      `🏢 Empresa: ${vaga.empresa || "—"}`,
-      `⏱ Carga Horária: ${vaga.carga || "—"}${vaga.local ? " (" + vaga.local.split(" (")[0] + ")" : ""}`,
-      `💰 Bolsa: ${vaga.remuneracao || "—"}`,
-      `📍 Local: ${vaga.local || "—"}`,
-      "",
-      "Requisitos principais:",
-      bulletList(vaga.requisitos),
-      "",
-      `⏳ Inscrições abertas até ${prazoFim || "—"}.`,
-      "",
+      ""
+    ];
+
+    const detalhes = [];
+    if (vaga.empresa) detalhes.push(`🏢 Empresa: ${vaga.empresa}`);
+    if (vaga.carga) detalhes.push(`⏱ Carga Horária: ${vaga.carga}`);
+    if (vaga.remuneracao) detalhes.push(`💰 Bolsa: ${vaga.remuneracao}`);
+    if (vaga.local) detalhes.push(`📍 Local: ${vaga.local}`);
+    if (detalhes.length) linhas.push(...detalhes, "");
+
+    if (vaga.requisitos) {
+      linhas.push("Requisitos principais:", bulletList(vaga.requisitos), "");
+    }
+
+    if (prazoFim) linhas.push(`⏳ Inscrições abertas até ${prazoFim}.`, "");
+
+    linhas.push(
       `🔗 Candidate-se enviando seu currículo pelo portal Talentos UNICAP: ${linkCandidatura}`,
       "",
       hashtags.join(" ")
-    ];
+    );
     return linhas.join("\n");
   }
 
   const legendaTexto = document.getElementById("legendaTexto");
   legendaTexto.value = buildLegenda();
+
+  // ---------- 5. Copiar para a área de transferência ----------
+  function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise((resolve, reject) => {
+      try {
+        const tmp = document.createElement("textarea");
+        tmp.value = text;
+        tmp.style.position = "fixed";
+        tmp.style.opacity = "0";
+        document.body.appendChild(tmp);
+        tmp.select();
+        document.execCommand("copy");
+        document.body.removeChild(tmp);
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
 
   // Hashtags sugeridas (chips clicáveis)
   const hashtagListEl = document.getElementById("hashtagList");
@@ -138,28 +224,6 @@
     });
     hashtagListEl.appendChild(chip);
   });
-
-  // ---------- 5. Copiar legenda ----------
-  function copyToClipboard(text) {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      return navigator.clipboard.writeText(text);
-    }
-    return new Promise((resolve, reject) => {
-      try {
-        const tmp = document.createElement("textarea");
-        tmp.value = text;
-        tmp.style.position = "fixed";
-        tmp.style.opacity = "0";
-        document.body.appendChild(tmp);
-        tmp.select();
-        document.execCommand("copy");
-        document.body.removeChild(tmp);
-        resolve();
-      } catch (err) {
-        reject(err);
-      }
-    });
-  }
 
   const btnCopiarLegenda = document.getElementById("btnCopiarLegenda");
   btnCopiarLegenda.addEventListener("click", () => {
@@ -270,35 +334,45 @@
     ctx.fillText(pillText, pillX + pillWidth / 2, pillY + 22);
     ctx.textAlign = "left";
 
+    // Título
     ctx.fillStyle = "#ffffff";
     ctx.font = "700 54px Inter, Arial, sans-serif";
     ctx.textBaseline = "alphabetic";
     const titleY = isStory ? H * 0.42 : pad + 220;
     const linesUsed = wrapText(ctx, vaga.titulo || "", pad, titleY, W - pad * 2, 62);
 
-    ctx.fillStyle = "#D97706";
-    ctx.font = "700 30px Inter, Arial, sans-serif";
-    const empresaY = titleY + linesUsed * 62 + 20;
-    ctx.fillText(vaga.empresa || "", pad, empresaY);
+    // Empresa (opcional)
+    let cursorY = titleY + linesUsed * 62 + 20;
+    if (vaga.empresa) {
+      ctx.fillStyle = "#D97706";
+      ctx.font = "700 30px Inter, Arial, sans-serif";
+      ctx.fillText(vaga.empresa, pad, cursorY);
+    }
 
+    // Divisória
     ctx.strokeStyle = "rgba(255,255,255,0.25)";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(pad, empresaY + 36);
-    ctx.lineTo(W - pad, empresaY + 36);
+    ctx.moveTo(pad, cursorY + 36);
+    ctx.lineTo(W - pad, cursorY + 36);
     ctx.stroke();
 
+    // Meta (só o que existe)
+    cursorY += 90;
     ctx.fillStyle = "rgba(255,255,255,0.92)";
     ctx.font = "500 26px Inter, Arial, sans-serif";
-    const metaY = empresaY + 90;
-    ctx.fillText("⏱ " + (vaga.carga || ""), pad, metaY);
-    ctx.fillText("$ " + (vaga.remuneracao || ""), pad, metaY + 46);
-    ctx.fillText("📍 " + (vaga.local || ""), pad, metaY + 92);
+    metaItems.forEach((item) => {
+      ctx.fillText(item, pad, cursorY);
+      cursorY += 46;
+    });
 
-    ctx.fillStyle = "rgba(255,255,255,0.65)";
-    ctx.font = "500 24px Inter, Arial, sans-serif";
-    ctx.fillText(prazoFim ? `Seleção até ${prazoFim}` : "", pad, metaY + 146);
+    if (prazoFim) {
+      ctx.fillStyle = "rgba(255,255,255,0.65)";
+      ctx.font = "500 24px Inter, Arial, sans-serif";
+      ctx.fillText(`Seleção até ${prazoFim}`, pad, cursorY + 8);
+    }
 
+    // CTA
     const ctaH = 76;
     const ctaY = H - pad - ctaH;
     ctx.fillStyle = "#D97706";

@@ -82,6 +82,49 @@
     return true;
   }
 
+  // ---------- Helpers de conversão ----------
+  function normalizar(texto) {
+    return String(texto || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+  }
+
+  // "30h/semana" -> 30
+  function extrairCargaHoraria(data) {
+    const bruto = data.cargaHoraria || data.carga || "";
+    const match = String(bruto).match(/\d+/);
+    return match ? parseInt(match[0], 10) : null;
+  }
+
+  // "R$ 1.500,00" -> 1500 | "1500" -> 1500 | "A combinar" -> null
+  function converterRemuneracao(valor) {
+    const bruto = String(valor || "").trim();
+    if (!bruto) return null;
+    let limpo = bruto.replace(/[^\d.,]/g, "");
+    if (!limpo) return null;
+    if (limpo.includes(",")) {
+      // formato brasileiro: ponto separa milhar, vírgula separa decimal
+      limpo = limpo.replace(/\./g, "").replace(",", ".");
+    }
+    const numero = parseFloat(limpo);
+    return Number.isFinite(numero) ? numero : null;
+  }
+
+  // Retorna PRESENCIAL | REMOTO | HIBRIDO | null
+  function detectarModalidade(data) {
+    const validas = ["PRESENCIAL", "REMOTO", "HIBRIDO"];
+    if (data.modalidade) {
+      const m = normalizar(data.modalidade).toUpperCase();
+      if (validas.includes(m)) return m;
+    }
+    const t = normalizar(data.local);
+    if (t.includes("remot")) return "REMOTO";
+    if (t.includes("hibrid")) return "HIBRIDO";
+    if (t.includes("presencial")) return "PRESENCIAL";
+    return null;
+  }
+
   // ----- Salvar Rascunho -----
   btnRascunho.addEventListener("click", () => {
     const data = collectFormData();
@@ -110,36 +153,56 @@
 
   // ----- Publicar Vaga -----
   form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  if (!validate()) return;
+    event.preventDefault();
+    if (!validate()) return;
 
-  const data = collectFormData();
+    const data = collectFormData();
 
-  const dto = {
-    titulo: data.titulo,
-    descricao: data.descricao,
-    habilidadesRequisitadas: (data.requisitos || "")
-      .split(/[,\n]/).map(s => s.trim()).filter(Boolean),
-    modalidade: data.modalidade,                 // PRESENCIAL | REMOTO | HIBRIDO
-    cargaHoraria: parseInt(data.cargaHoraria, 10) || null,
-    local: data.local,
-    remuneracao: data.remuneracao,
-    periodoInicio: data.periodoInicio || null,
-    periodoFim: data.periodoFim || null,
-    contato: data.contato
-  };
+    const dto = {
+      titulo: data.titulo,
+      descricao: data.descricao,
+      habilidadesRequisitadas: (data.requisitos || "")
+        .split(/[,\n]/).map((s) => s.trim()).filter(Boolean),
+      modalidade: detectarModalidade(data),     // PRESENCIAL | REMOTO | HIBRIDO
+      cargaHoraria: extrairCargaHoraria(data),  // número inteiro
+      local: data.local,
+      remuneracao: converterRemuneracao(data.remuneracao), // número para o backend
+      periodoInicio: data.periodoInicio || null,
+      periodoFim: data.periodoFim || null,
+      contato: data.contato
+    };
 
-  showStatus("Publicando vaga...", null);
-  const resultado = await APIEmpresa.vagas.criar(dto);
+    showStatus("Publicando vaga...", null);
 
-  if (resultado && resultado.error) {
-    showStatus(resultado.error, "is-error");
-    return;
-  }
+    let resultado;
+    try {
+      resultado = await APIEmpresa.vagas.criar(dto);
+    } catch (err) {
+      showStatus("Erro ao publicar a vaga. Tente novamente.", "is-error");
+      return;
+    }
 
-  try { localStorage.removeItem(DRAFT_KEY); } catch (err) {}
+    if (!resultado || resultado.error) {
+      showStatus((resultado && resultado.error) || "Erro ao publicar a vaga.", "is-error");
+      return;
+    }
 
-  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(resultado))));
-  window.location.href = "exportacao-instagram.html?vaga=" + encoded;
-});
+    try { localStorage.removeItem(DRAFT_KEY); } catch (err) {}
+
+    // Junta o que veio do banco com o que foi digitado no formulário,
+    // para a página do Instagram receber empresa, bolsa, local, prazo etc.
+    const doFormulario = {};
+    Object.entries(data).forEach(([k, v]) => {
+      if (v !== null && v !== undefined && String(v).trim() !== "") doFormulario[k] = v;
+    });
+
+    const vagaParaInstagram = {
+      ...resultado,
+      ...doFormulario,
+      id: resultado.id
+    };
+
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(vagaParaInstagram))));
+    window.location.href = "exportacao-instagram.html?vaga=" + encoded;
+  });
 })();
