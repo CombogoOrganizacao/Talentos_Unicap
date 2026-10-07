@@ -1970,3 +1970,75 @@ img, svg, video { max-width: 100%; height: auto; }
 #cvContent.is-exporting .cv-header { padding: 32px; }
 #cvContent.is-exporting .cv-section { padding: 24px 32px; }
 #cvContent.is-exporting .cv-header .contacts { flex-direction: row; gap: 16px; }
+
+/* ---- Imagem da empresa: navbar da Busca de Talentos ---- */
+.empresa-foto {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--unicap-500);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  flex-shrink: 0;
+  overflow: visible;
+}
+.empresa-foto img,
+.empresa-foto .empresa-foto-inicial {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.empresa-foto img[hidden],
+.empresa-foto .empresa-foto-inicial[hidden] { display: none; }
+.empresa-foto-edit {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--unicap-500);
+  border: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+.empresa-foto:hover { box-shadow: 0 0 0 3px var(--unicap-100, #f8e1e6); }
+.empresa-foto.is-loading { opacity: .5; pointer-events: none; }
+
+/* ---- Imagem + nome da empresa nos cards de vaga ---- */
+.vaga-empresa-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+.vaga-empresa-row .empresa { margin: 0; }
+.empresa-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--unicap-50);
+  color: var(--unicap-500);
+  border: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.empresa-logo img { width: 100%; height: 100%; object-fit: cover; }

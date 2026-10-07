@@ -122,9 +122,43 @@
     }
     document.getElementById('empresaNome').textContent = perfil.nome_empresa || 'Empresa';
     document.getElementById('empresaAvatar').textContent = initials(perfil.nome_empresa)[0] || 'E';
+    mostrarFotoEmpresa(perfil.foto_perfil_url);
     carregarTalentos();
   };
   Auth.init();
+
+  // ---------- Imagem da empresa (exibir e editar) ----------
+  function mostrarFotoEmpresa(url) {
+    const img = document.getElementById('empresaFoto');
+    const inicial = document.getElementById('empresaAvatar');
+    if (url) {
+      img.src = url;
+      img.hidden = false;
+      inicial.hidden = true;
+    } else {
+      img.hidden = true;
+      inicial.hidden = false;
+    }
+  }
+
+  document.getElementById('inputFotoEmpresa').addEventListener('change', async (event) => {
+    const input = event.target;
+    const file = input.files && input.files[0];
+    if (!file) return;
+
+    const label = document.getElementById('empresaFotoLabel');
+    label.classList.add('is-loading');
+    const resultado = await APIEmpresa.uploadFotoPerfil(file);
+    label.classList.remove('is-loading');
+    input.value = ''; // permite escolher o mesmo arquivo de novo
+
+    if (resultado && resultado.error) {
+      alert(resultado.error);
+      return;
+    }
+    // Cache-buster: o navegador mostra a imagem nova na hora.
+    mostrarFotoEmpresa(resultado.foto_perfil_url + '?t=' + Date.now());
+  });
 
   document.getElementById('btnSair').addEventListener('click', () => Auth.logout());
 

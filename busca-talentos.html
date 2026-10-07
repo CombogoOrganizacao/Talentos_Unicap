@@ -23,7 +23,16 @@
       <div class="nav-links">
         <a href="busca-talentos.html" class="nav-text-link active">Buscar Talentos</a>
         <a href="caixa-saida-empresa.html" class="nav-text-link">Mensagens Enviadas</a>
-        <span class="avatar" id="empresaAvatar" style="width:32px;height:32px;border-radius:50%;background:var(--unicap-500);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">T</span>
+        <a href="lista-vagas.html" class="nav-text-link">Minhas Vagas</a>
+        <a href="cadastro-vaga.html" class="btn btn-primary btn-sm" id="btnNovaVaga">
+          <i class="ph-fill ph-plus"></i> Nova Vaga
+        </a>
+        <label class="empresa-foto" id="empresaFotoLabel" title="Clique para alterar a imagem da empresa">
+          <span class="empresa-foto-inicial" id="empresaAvatar">T</span>
+          <img id="empresaFoto" alt="Imagem da empresa" hidden>
+          <span class="empresa-foto-edit"><i class="ph-fill ph-camera"></i></span>
+          <input type="file" id="inputFotoEmpresa" accept="image/png,image/jpeg,image/webp" hidden>
+        </label>
         <span id="empresaNome" style="font-size:14px;font-weight:600;color:var(--gray-800);"></span>
         <button class="btn btn-secondary btn-sm" id="btnSair">Sair</button>
       </div>

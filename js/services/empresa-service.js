@@ -27,8 +27,15 @@ const APIEmpresa = {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) return { error: 'Usuário não autenticado' };
     if (!file) return { error: 'Nenhum arquivo selecionado' };
+    if (!/^image\/(png|jpe?g|webp)$/.test(file.type)) {
+      return { error: 'Envie uma imagem PNG, JPG ou WEBP.' };
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      return { error: 'A imagem deve ter no máximo 2 MB.' };
+    }
 
-    const caminho = `${session.user.id}/foto-perfil-${Date.now()}-${file.name}`;
+    const nomeSeguro = String(file.name || 'logo').replace(/[^a-zA-Z0-9._-]/g, '_');
+    const caminho = `${session.user.id}/foto-perfil-${Date.now()}-${nomeSeguro}`;
     const { error: erroUpload } = await supabaseClient.storage
       .from('fotos-empresa')
       .upload(caminho, file, { upsert: true });
@@ -103,13 +110,19 @@ const APIEmpresa = {
 
       if (error) return APIEmpresa._erro(error, 'Erro ao listar vagas');
 
+      // Nome e imagem da empresa logada (exibidos em todos os cards)
+      const perfil = await APIEmpresa.getPerfil();
+      const nomeEmpresa = perfil && !perfil.error ? perfil.nome_empresa : '';
+      const logoEmpresa = perfil && !perfil.error ? (perfil.foto_perfil_url || '') : '';
+
       return (data || []).map(v => ({
         ...v,
-        status: v.status === 'ABERTA' ? 'Ativa' : 'Encerrada',
+        status: { ABERTA: 'Ativa', PAUSADA: 'Pausada' }[v.status] || 'Encerrada',
         criadoEm: v.data_criacao,
         carga: v.carga_horaria ? `${v.carga_horaria}h` : '',
         local: v.local || this._modalidade(v.modalidade),
-        empresa: v.empresa || '',
+        empresa: v.empresa || nomeEmpresa,
+        empresaLogo: logoEmpresa,
         periodoFim: v.periodo_fim || null,
         habilidadesRequisitadas: (v.vaga_habilidades || []).map(x => x.habilidade)
       }));
@@ -125,6 +138,7 @@ const APIEmpresa = {
         titulo: v.titulo,
         descricao: v.descricao || '',
         empresa: v.empresa || '',
+        empresaLogo: v.empresa_logo || '',
         status: 'Ativa',
         criadoEm: v.data_criacao,
         carga: v.carga_horaria ? `${v.carga_horaria}h` : '',
@@ -147,6 +161,25 @@ const APIEmpresa = {
         .eq('id', vagaId).select().single();
       if (error) return APIEmpresa._erro(error, 'Erro ao encerrar vaga');
       return data;
+    },
+
+    // Pausa (PAUSADA) ou reativa (ABERTA) uma vaga da empresa logada
+    async pausar(vagaId, pausar) {
+      const { data, error } = await supabaseClient
+        .from('vagas').update({ status: pausar ? 'PAUSADA' : 'ABERTA' })
+        .eq('id', vagaId).select().single();
+      if (error) return APIEmpresa._erro(error, 'Erro ao atualizar vaga');
+      return data;
+    },
+
+    async excluir(vagaId) {
+      const { error: hError } = await supabaseClient
+        .from('vaga_habilidades').delete().eq('vaga_id', vagaId);
+      if (hError) return APIEmpresa._erro(hError, 'Erro ao excluir requisitos da vaga');
+      const { error } = await supabaseClient
+        .from('vagas').delete().eq('id', vagaId);
+      if (error) return APIEmpresa._erro(error, 'Erro ao excluir vaga');
+      return { ok: true };
     },
 
     async buscarPorId(vagaId) {

@@ -160,6 +160,18 @@
 
       node.querySelector('[data-role="titulo"]').textContent = vaga.titulo || "Vaga sem título";
       node.querySelector('[data-role="empresa"]').textContent = vaga.empresa || "";
+
+      // Imagem da empresa (ou a inicial do nome, se ela ainda não enviou imagem)
+      const logoEl = node.querySelector('[data-role="logo"]');
+      if (vaga.empresaLogo) {
+        const img = document.createElement("img");
+        img.src = vaga.empresaLogo;
+        img.alt = "";
+        img.loading = "lazy";
+        logoEl.appendChild(img);
+      } else {
+        logoEl.textContent = ((vaga.empresa || "?").trim()[0] || "?").toUpperCase();
+      }
       node.querySelector('[data-role="carga"]').textContent = "⏱ " + (vaga.carga || "—");
       node.querySelector('[data-role="local"]').textContent = "📍 " + (vaga.local || "—");
       node.querySelector('[data-role="salario"]').textContent = "$ " + (vaga.remuneracao || "—");
@@ -219,10 +231,10 @@
     if (action === "instagram" || action === "instagram-footer") {
       goToInstagramExport(vaga);
     } else if (action === "pausar") {
-      vaga.status = vaga.status === "Pausada" ? "Ativa" : "Pausada";
-      saveVagas(vagas);
+      const resultado = await APIEmpresa.vagas.pausar(vaga.id, vaga.status !== "Pausada");
+      if (resultado && resultado.error) { alert(resultado.error); return; }
       closeAllDropdowns();
-      render();
+      carregarVagas();
     } else if (action === "encerrar") {
       const resultado = await APIEmpresa.vagas.encerrar(vaga.id);
       if (resultado && resultado.error) { alert(resultado.error); return; }
@@ -230,8 +242,9 @@
       carregarVagas();
     } else if (action === "excluir") {
       if (confirm(`Excluir a vaga "${vaga.titulo}"? Essa ação não pode ser desfeita.`)) {
-        vagas = vagas.filter((v) => v.id !== id);
-        saveVagas(vagas);
+        const resultado = await APIEmpresa.vagas.excluir(vaga.id);
+        if (resultado && resultado.error) { alert(resultado.error); return; }
+        closeAllDropdowns();
         carregarVagas();
       }
     }
