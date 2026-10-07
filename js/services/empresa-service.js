@@ -75,6 +75,12 @@ const APIEmpresa = {
         descricao: dto.descricao || null,
         modalidade: dto.modalidade || null,
         carga_horaria: dto.cargaHoraria ?? null,
+        local: dto.local || null,
+        remuneracao: dto.remuneracao || null,
+        periodo_inicio: dto.periodoInicio || null,
+        periodo_fim: dto.periodoFim || null,
+        contato: dto.contato || null,
+        area: dto.area || null,
         status: 'ABERTA'
       };
 

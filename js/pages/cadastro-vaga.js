@@ -97,20 +97,6 @@
     return match ? parseInt(match[0], 10) : null;
   }
 
-  // "R$ 1.500,00" -> 1500 | "1500" -> 1500 | "A combinar" -> null
-  function converterRemuneracao(valor) {
-    const bruto = String(valor || "").trim();
-    if (!bruto) return null;
-    let limpo = bruto.replace(/[^\d.,]/g, "");
-    if (!limpo) return null;
-    if (limpo.includes(",")) {
-      // formato brasileiro: ponto separa milhar, vírgula separa decimal
-      limpo = limpo.replace(/\./g, "").replace(",", ".");
-    }
-    const numero = parseFloat(limpo);
-    return Number.isFinite(numero) ? numero : null;
-  }
-
   // Retorna PRESENCIAL | REMOTO | HIBRIDO | null
   function detectarModalidade(data) {
     const validas = ["PRESENCIAL", "REMOTO", "HIBRIDO"];
@@ -166,7 +152,8 @@
       modalidade: detectarModalidade(data),     // PRESENCIAL | REMOTO | HIBRIDO
       cargaHoraria: extrairCargaHoraria(data),  // número inteiro
       local: data.local,
-      remuneracao: converterRemuneracao(data.remuneracao), // número para o backend
+      remuneracao: data.remuneracao,
+      area: data.area,
       periodoInicio: data.periodoInicio || null,
       periodoFim: data.periodoFim || null,
       contato: data.contato

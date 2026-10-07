@@ -213,7 +213,7 @@
     const card = event.target.closest(".vaga-card");
     if (!card) return;
     const id = card.dataset.id;
-    const vaga = vagas.find((v) => v.id === id);
+    const vaga = vagas.find((v) => String(v.id) === String(id));
 
     if (event.target.closest('[data-action="menu"]')) {
       const dropdown = card.querySelector('[data-role="dropdown"]');
