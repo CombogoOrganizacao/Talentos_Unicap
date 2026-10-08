@@ -8,7 +8,7 @@ const CandidaturaService = {
         const {
             data: { session },
             error
-        } = await supabaseClient.auth.getSession();
+        } = await window.supabaseClient.auth.getSession();
 
         if (error) {
             throw new Error(error.message);
@@ -33,7 +33,7 @@ const CandidaturaService = {
             const session = await this._session();
 
             const { data: candidaturaExistente, error: consultaError } =
-                await supabaseClient
+                await window.supabaseClient
                     .from("candidaturas")
                     .select("id, status")
                     .eq("vaga_id", vagaId)
@@ -50,7 +50,7 @@ const CandidaturaService = {
                 };
             }
 
-            const { data, error } = await supabaseClient
+            const { data, error } = await window.supabaseClient
                 .from("candidaturas")
                 .insert({
                     vaga_id: vagaId,
@@ -102,7 +102,7 @@ const CandidaturaService = {
 
             const session = await this._session();
 
-            const { data, error } = await supabaseClient
+            const { data, error } = await window.supabaseClient
                 .from("candidaturas")
                 .select(`
                     id,
@@ -157,7 +157,7 @@ const CandidaturaService = {
 
         try {
 
-            const { data, error } = await supabaseClient
+            const { data, error } = await window.supabaseClient
                 .from("candidaturas")
                 .update({
                     status: "CANCELADA"
@@ -191,7 +191,7 @@ const CandidaturaService = {
 
         try {
 
-            const { data, error } = await supabaseClient
+            const { data, error } = await window.supabaseClient
                 .from("candidaturas")
                 .select(`
                     id,
@@ -254,7 +254,7 @@ const CandidaturaService = {
 
         try {
 
-            const { data, error } = await supabaseClient
+            const { data, error } = await window.supabaseClient
                 .from("candidaturas")
                 .update({
                     status: status
@@ -296,7 +296,7 @@ const CandidaturaService = {
 
             const session = await this._session();
 
-            const { data, error } = await supabaseClient
+            const { data, error } = await window.supabaseClient
                 .from("candidaturas")
                 .select(`
                     id,

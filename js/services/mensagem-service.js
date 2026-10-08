@@ -3,7 +3,7 @@
 // ============================================
 const Mensagens = {
   async _session() {
-    const { data: { session } } = await supabaseClient.auth.getSession();
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
     return session;
   },
 
@@ -11,7 +11,7 @@ const Mensagens = {
     const session = await this._session();
     if (!session) return [];
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await window.supabaseClient
       .from('mensagens')
       .select(`
         *,
@@ -30,7 +30,7 @@ const Mensagens = {
     const ids = rows.map(m => m.id);
     let respostas = [];
     if (ids.length) {
-      const { data: r } = await supabaseClient
+      const { data: r } = await window.supabaseClient
         .from('mensagens')
         .select('id,resposta_de_id,conteudo,data_envio')
         .in('resposta_de_id', ids);
@@ -47,11 +47,11 @@ const Mensagens = {
 
     let realVagaId = vagaId || null;
     if (!realVagaId && vagaRelacionada) {
-      const { data } = await supabaseClient.from('vagas').select('id').eq('titulo', vagaRelacionada).limit(1).maybeSingle();
+      const { data } = await window.supabaseClient.from('vagas').select('id').eq('titulo', vagaRelacionada).limit(1).maybeSingle();
       realVagaId = data?.id || null;
     }
 
-    const { data, error } = await supabaseClient.from('mensagens').insert({
+    const { data, error } = await window.supabaseClient.from('mensagens').insert({
       remetente_id: session.user.id,
       destinatario_id: destinatarioId,
       assunto: assunto || '',
@@ -72,7 +72,7 @@ const Mensagens = {
   },
 
   async marcarComoLida(msgId) {
-    const { error } = await supabaseClient.from('mensagens')
+    const { error } = await window.supabaseClient.from('mensagens')
       .update({ lida: true }).eq('id', msgId);
     if (error) return { error: error.message };
     return { success: true };
@@ -89,11 +89,11 @@ const Mensagens = {
     if (!session) return { error: 'Usuário não autenticado' };
     if (!texto || !texto.trim()) return { error: 'Escreva uma resposta antes de enviar.' };
 
-    const { data: original, error: originalError } = await supabaseClient
+    const { data: original, error: originalError } = await window.supabaseClient
       .from('mensagens').select('remetente_id,vaga_id').eq('id', msgId).single();
     if (originalError || !original) return { error: 'Mensagem original não encontrada' };
 
-    const { error } = await supabaseClient.from('mensagens').insert({
+    const { error } = await window.supabaseClient.from('mensagens').insert({
       remetente_id: session.user.id,
       destinatario_id: original.remetente_id,
       conteudo: texto.trim(),

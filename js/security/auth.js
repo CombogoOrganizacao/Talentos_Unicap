@@ -20,7 +20,7 @@ const Auth = {
   },
 
   async init() {
-    const { data: { session } } = await supabaseClient.auth.getSession();
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
 
     if (session) {
       try {
@@ -37,7 +37,7 @@ const Auth = {
       setTimeout(() => this.onAuthChange(false), 0);
     }
 
-    supabaseClient.auth.onAuthStateChange((event, sessionAtual) => {
+    window.supabaseClient.auth.onAuthStateChange((event, sessionAtual) => {
       if (event === 'SIGNED_OUT') {
         this.user = null;
         this.uid = null;
@@ -49,7 +49,7 @@ const Auth = {
   onAuthChange(loggedIn, tipoConta) {},
 
   async _carregarUsuario(userId) {
-    const { data: usuario, error } = await supabaseClient
+    const { data: usuario, error } = await window.supabaseClient
       .from('usuarios')
       .select('id, nome, tipo_conta')
       .eq('id', userId)
@@ -57,7 +57,7 @@ const Auth = {
 
     if (error) throw error;
 
-    const { data: authData } = await supabaseClient.auth.getUser();
+    const { data: authData } = await window.supabaseClient.auth.getUser();
     this.user = {
       id: usuario.id,
       nome: usuario.nome,
@@ -70,14 +70,14 @@ const Auth = {
 
   async _detectarTipoConta() {
     if (!this.user) {
-      const { data: { session } } = await supabaseClient.auth.getSession();
+      const { data: { session } } = await window.supabaseClient.auth.getSession();
       if (session) await this._carregarUsuario(session.user.id);
     }
     return this.user?.tipoConta || null;
   },
 
   async register(nome, email, senha) {
-    const { data, error } = await supabaseClient.auth.signUp({
+    const { data, error } = await window.supabaseClient.auth.signUp({
       email,
       password: senha,
       options: {
@@ -106,7 +106,7 @@ const Auth = {
   },
 
   async registerEmpresa({ cnpj, razaoSocial, nomeFantasia, setor, senha, email }) {
-    const { data, error } = await supabaseClient.auth.signUp({
+    const { data, error } = await window.supabaseClient.auth.signUp({
       email,
       password: senha,
       options: {
@@ -152,7 +152,7 @@ const Auth = {
     // Empresas podem usar e-mail OU CNPJ. Para CNPJ, a consulta acontece
     // em uma Edge Function para que o e-mail interno nunca seja exposto.
     if (value.includes('@')) {
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
+      const { data, error } = await window.supabaseClient.auth.signInWithPassword({
         email: value,
         password: senha
       });
@@ -172,7 +172,7 @@ const Auth = {
       throw new Error('Informe um CNPJ válido com 14 dígitos.');
     }
 
-    const { data, error } = await supabaseClient.functions.invoke('login-empresa-cnpj', {
+    const { data, error } = await window.supabaseClient.functions.invoke('login-empresa-cnpj', {
       body: { cnpj: cnpjNormalizado, senha }
     });
 
@@ -193,7 +193,7 @@ const Auth = {
       throw new Error('A autenticação por CNPJ não retornou uma sessão válida.');
     }
 
-    const { data: sessionData, error: sessionError } = await supabaseClient.auth.setSession({
+    const { data: sessionData, error: sessionError } = await window.supabaseClient.auth.setSession({
       access_token: data.session.access_token,
       refresh_token: data.session.refresh_token
     });
@@ -215,7 +215,7 @@ const Auth = {
     const address = String(email || '').trim();
     if (!address) throw new Error('Informe o e-mail da conta.');
 
-    const { error } = await supabaseClient.auth.resend({
+    const { error } = await window.supabaseClient.auth.resend({
       type: 'signup',
       email: address,
       options: { emailRedirectTo: this.getEmailConfirmationUrl() }
@@ -228,7 +228,7 @@ const Auth = {
     const address = String(email || '').trim();
     if (!address) throw new Error('Informe o e-mail da conta.');
 
-    const { error } = await supabaseClient.auth.resetPasswordForEmail(address, {
+    const { error } = await window.supabaseClient.auth.resetPasswordForEmail(address, {
       redirectTo: this.getPasswordResetUrl()
     });
 
@@ -236,7 +236,7 @@ const Auth = {
   },
 
   async updatePassword(newPassword) {
-    const { data, error } = await supabaseClient.auth.updateUser({
+    const { data, error } = await window.supabaseClient.auth.updateUser({
       password: newPassword
     });
 
@@ -246,10 +246,10 @@ const Auth = {
 
   async logout(redirect = true) {
     try {
-      await supabaseClient.auth.signOut();
+      await window.supabaseClient.auth.signOut();
     } catch (e) {
       // Sem rede: encerra ao menos a sessão local deste navegador
-      try { await supabaseClient.auth.signOut({ scope: 'local' }); } catch (_) {}
+      try { await window.supabaseClient.auth.signOut({ scope: 'local' }); } catch (_) {}
     }
     this.user = null;
     this.uid = null;
@@ -259,7 +259,7 @@ const Auth = {
   },
 
   async isLoggedIn() {
-    const { data: { session } } = await supabaseClient.auth.getSession();
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
     return !!session;
   }
 };

@@ -1136,6 +1136,15 @@
           prazoEl.remove();
         }
 
+        const candidatosBtnAluno =
+          node.querySelector(
+            '[data-action="candidatos"]'
+          );
+
+        if (candidatosBtnAluno) {
+          candidatosBtnAluno.remove();
+        }
+
 
         // Verifica se já existe
         // candidatura.
@@ -1187,6 +1196,15 @@
             String(
               vaga.id
             );
+        }
+
+        const candidatarBtn =
+          node.querySelector(
+            '[data-action="candidatar"]'
+          );
+
+        if (candidatarBtn) {
+          candidatarBtn.remove();
         }
       }
 

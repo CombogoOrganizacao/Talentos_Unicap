@@ -5,10 +5,10 @@ const APIEmpresa = {
   },
 
   async getPerfil() {
-    const { data: { session } } = await supabaseClient.auth.getSession();
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
     if (!session) return { error: 'Usuário não autenticado' };
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await window.supabaseClient
       .from('perfis_empresa')
       .select('*, usuarios(id,nome,tipo_conta)')
       .eq('usuario_id', session.user.id)
@@ -24,7 +24,7 @@ const APIEmpresa = {
   },
 
   async uploadFotoPerfil(file) {
-    const { data: { session } } = await supabaseClient.auth.getSession();
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
     if (!session) return { error: 'Usuário não autenticado' };
     if (!file) return { error: 'Nenhum arquivo selecionado' };
     if (!/^image\/(png|jpe?g|webp)$/.test(file.type)) {
@@ -36,17 +36,17 @@ const APIEmpresa = {
 
     const nomeSeguro = String(file.name || 'logo').replace(/[^a-zA-Z0-9._-]/g, '_');
     const caminho = `${session.user.id}/foto-perfil-${Date.now()}-${nomeSeguro}`;
-    const { error: erroUpload } = await supabaseClient.storage
+    const { error: erroUpload } = await window.supabaseClient.storage
       .from('fotos-empresa')
       .upload(caminho, file, { upsert: true });
 
     if (erroUpload) return this._erro(erroUpload, 'Erro ao enviar foto de perfil');
 
-    const { data: urlData } = supabaseClient.storage
+    const { data: urlData } = window.supabaseClient.storage
       .from('fotos-empresa')
       .getPublicUrl(caminho);
 
-    const { data, error } = await supabaseClient
+    const { data, error } = await window.supabaseClient
       .from('perfis_empresa')
       .update({ foto_perfil_url: urlData.publicUrl, foto_perfil_key: caminho })
       .eq('usuario_id', session.user.id)
@@ -58,14 +58,14 @@ const APIEmpresa = {
   },
 
   async buscarAlunos() {
-    const { data, error } = await supabaseClient.rpc('obter_perfis_alunos_para_empresas');
+    const { data, error } = await window.supabaseClient.rpc('obter_perfis_alunos_para_empresas');
     if (error) return this._erro(error, 'Erro ao buscar alunos');
     return Array.isArray(data) ? data : [];
   },
 
   vagas: {
     async criar(dto) {
-      const { data: { session } } = await supabaseClient.auth.getSession();
+      const { data: { session } } = await window.supabaseClient.auth.getSession();
       if (!session) return { error: 'Usuário não autenticado' };
 
       const habilidades = dto.habilidadesRequisitadas || [];
@@ -84,13 +84,13 @@ const APIEmpresa = {
         status: 'ABERTA'
       };
 
-      const { data, error } = await supabaseClient
+      const { data, error } = await window.supabaseClient
         .from('vagas').insert(payload).select().single();
 
       if (error) return APIEmpresa._erro(error, 'Erro ao publicar vaga');
 
       if (habilidades.length) {
-        const { error: hError } = await supabaseClient
+        const { error: hError } = await window.supabaseClient
           .from('vaga_habilidades')
           .insert(habilidades.map(h => ({ vaga_id: data.id, habilidade: h })));
         if (hError) return APIEmpresa._erro(hError, 'Vaga criada, mas não foi possível salvar os requisitos');
@@ -105,10 +105,10 @@ const APIEmpresa = {
 
     // Vagas da empresa logada (todas: abertas e encerradas)
     async minhas() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
+      const { data: { session } } = await window.supabaseClient.auth.getSession();
       if (!session) return APIEmpresa._erro(null, 'Usuário não autenticado');
 
-      const { data, error } = await supabaseClient
+      const { data, error } = await window.supabaseClient
         .from('vagas')
         .select('*, vaga_habilidades(habilidade)')
         .eq('empresa_id', session.user.id)
@@ -136,7 +136,7 @@ const APIEmpresa = {
 
     // Vagas abertas de todas as empresas (somente leitura, para o aluno)
     async abertas() {
-      const { data, error } = await supabaseClient.rpc('listar_vagas_abertas');
+      const { data, error } = await window.supabaseClient.rpc('listar_vagas_abertas');
       if (error) return APIEmpresa._erro(error, 'Erro ao carregar vagas');
 
       return (Array.isArray(data) ? data : []).map(v => ({
@@ -157,14 +157,14 @@ const APIEmpresa = {
     },
 
     async alunosCompativeis(vagaId) {
-      const { data, error } = await supabaseClient
+      const { data, error } = await window.supabaseClient
         .rpc('alunos_compativeis_com_vaga', { vaga_id: vagaId });
       if (error) return APIEmpresa._erro(error, 'Erro ao buscar alunos compatíveis');
       return data || [];
     },
 
     async encerrar(vagaId) {
-      const { data, error } = await supabaseClient
+      const { data, error } = await window.supabaseClient
         .from('vagas').update({ status: 'FECHADA' })
         .eq('id', vagaId).select().single();
       if (error) return APIEmpresa._erro(error, 'Erro ao encerrar vaga');
@@ -173,7 +173,7 @@ const APIEmpresa = {
 
     // Pausa (PAUSADA) ou reativa (ABERTA) uma vaga da empresa logada
     async pausar(vagaId, pausar) {
-      const { data, error } = await supabaseClient
+      const { data, error } = await window.supabaseClient
         .from('vagas').update({ status: pausar ? 'PAUSADA' : 'ABERTA' })
         .eq('id', vagaId).select().single();
       if (error) return APIEmpresa._erro(error, 'Erro ao atualizar vaga');
@@ -181,17 +181,17 @@ const APIEmpresa = {
     },
 
     async excluir(vagaId) {
-      const { error: hError } = await supabaseClient
+      const { error: hError } = await window.supabaseClient
         .from('vaga_habilidades').delete().eq('vaga_id', vagaId);
       if (hError) return APIEmpresa._erro(hError, 'Erro ao excluir requisitos da vaga');
-      const { error } = await supabaseClient
+      const { error } = await window.supabaseClient
         .from('vagas').delete().eq('id', vagaId);
       if (error) return APIEmpresa._erro(error, 'Erro ao excluir vaga');
       return { ok: true };
     },
 
     async buscarPorId(vagaId) {
-      const { data, error } = await supabaseClient
+      const { data, error } = await window.supabaseClient
         .from('vagas').select('*, vaga_habilidades(habilidade)')
         .eq('id', vagaId).single();
       if (error) return APIEmpresa._erro(error, 'Erro ao carregar vaga');
