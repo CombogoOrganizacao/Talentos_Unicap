@@ -141,8 +141,23 @@ const API = {
   },
 
   async getPublicProfile(id) {
-    const { data, error } = await window.supabaseClient.rpc('obter_perfil_publico', { p_usuario_id: id });
-    if (error) return this._erro(error, 'Erro ao carregar perfil público');
+    const { data, error } = await window.supabaseClient
+      .rpc('obter_perfil_publico', {
+        p_usuario_id: id
+      });
+
+    if (error) {
+      console.error('Erro RPC obter_perfil_publico:', {
+        idEnviado: id,
+        codigo: error.code,
+        mensagem: error.message,
+        detalhes: error.details,
+        dica: error.hint
+      });
+
+      return this._erro(error, 'Erro ao carregar perfil público');
+    }
+
     return data;
   },
 
