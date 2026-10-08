@@ -1,10 +1,11 @@
-const CandidaturaService = {
+window.CandidaturaService = {
 
     // =========================================================
     // SESSÃO
     // =========================================================
 
     async _session() {
+
         const {
             data: { session },
             error
@@ -32,25 +33,36 @@ const CandidaturaService = {
 
             const session = await this._session();
 
-            const { data: candidaturaExistente, error: consultaError } =
-                await window.supabaseClient
-                    .from("candidaturas")
-                    .select("id, status")
-                    .eq("vaga_id", vagaId)
-                    .eq("aluno_id", session.user.id)
-                    .maybeSingle();
+            const {
+                data: candidaturaExistente,
+                error: consultaError
+            } = await window.supabaseClient
+                .from("candidaturas")
+                .select("id, status")
+                .eq("vaga_id", vagaId)
+                .eq("aluno_id", session.user.id)
+                .maybeSingle();
 
             if (consultaError) {
-                return { error: consultaError.message };
+
+                return {
+                    error: consultaError.message
+                };
+
             }
 
             if (candidaturaExistente) {
+
                 return {
                     error: "Você já se candidatou a esta vaga."
                 };
+
             }
 
-            const { data, error } = await window.supabaseClient
+            const {
+                data,
+                error
+            } = await window.supabaseClient
                 .from("candidaturas")
                 .insert({
                     vaga_id: vagaId,
@@ -64,14 +76,17 @@ const CandidaturaService = {
 
                 // Candidatura duplicada
                 if (error.code === "23505") {
+
                     return {
                         error: "Você já se candidatou a esta vaga."
                     };
+
                 }
 
                 return {
                     error: error.message
                 };
+
             }
 
             return data;
@@ -88,7 +103,9 @@ const CandidaturaService = {
                     error.message ||
                     "Não foi possível realizar a candidatura."
             };
+
         }
+
     },
 
 
@@ -102,7 +119,10 @@ const CandidaturaService = {
 
             const session = await this._session();
 
-            const { data, error } = await window.supabaseClient
+            const {
+                data,
+                error
+            } = await window.supabaseClient
                 .from("candidaturas")
                 .select(`
                     id,
@@ -110,7 +130,6 @@ const CandidaturaService = {
                     status,
                     mensagem,
                     data_candidatura,
-
                     vagas (
                         id,
                         titulo,
@@ -128,9 +147,11 @@ const CandidaturaService = {
                 });
 
             if (error) {
+
                 return {
                     error: error.message
                 };
+
             }
 
             return data || [];
@@ -145,7 +166,9 @@ const CandidaturaService = {
             return {
                 error: error.message
             };
+
         }
+
     },
 
 
@@ -157,7 +180,10 @@ const CandidaturaService = {
 
         try {
 
-            const { data, error } = await window.supabaseClient
+            const {
+                data,
+                error
+            } = await window.supabaseClient
                 .from("candidaturas")
                 .update({
                     status: "CANCELADA"
@@ -167,9 +193,11 @@ const CandidaturaService = {
                 .single();
 
             if (error) {
+
                 return {
                     error: error.message
                 };
+
             }
 
             return data;
@@ -179,7 +207,9 @@ const CandidaturaService = {
             return {
                 error: error.message
             };
+
         }
+
     },
 
 
@@ -191,7 +221,10 @@ const CandidaturaService = {
 
         try {
 
-            const { data, error } = await window.supabaseClient
+            const {
+                data,
+                error
+            } = await window.supabaseClient
                 .from("candidaturas")
                 .select(`
                     id,
@@ -199,7 +232,6 @@ const CandidaturaService = {
                     status,
                     mensagem,
                     data_candidatura,
-
                     usuarios (
                         id,
                         nome
@@ -220,6 +252,7 @@ const CandidaturaService = {
                 return {
                     error: error.message
                 };
+
             }
 
             return data || [];
@@ -229,7 +262,9 @@ const CandidaturaService = {
             return {
                 error: error.message
             };
+
         }
+
     },
 
 
@@ -250,11 +285,15 @@ const CandidaturaService = {
             return {
                 error: "Status inválido."
             };
+
         }
 
         try {
 
-            const { data, error } = await window.supabaseClient
+            const {
+                data,
+                error
+            } = await window.supabaseClient
                 .from("candidaturas")
                 .update({
                     status: status
@@ -273,6 +312,7 @@ const CandidaturaService = {
                 return {
                     error: error.message
                 };
+
             }
 
             return data;
@@ -282,7 +322,9 @@ const CandidaturaService = {
             return {
                 error: error.message
             };
+
         }
+
     },
 
 
@@ -296,7 +338,10 @@ const CandidaturaService = {
 
             const session = await this._session();
 
-            const { data, error } = await window.supabaseClient
+            const {
+                data,
+                error
+            } = await window.supabaseClient
                 .from("candidaturas")
                 .select(`
                     id,
@@ -313,6 +358,7 @@ const CandidaturaService = {
                 return {
                     error: error.message
                 };
+
             }
 
             return data;
@@ -322,7 +368,9 @@ const CandidaturaService = {
             return {
                 error: error.message
             };
+
         }
+
     },
 
 
@@ -343,9 +391,21 @@ const CandidaturaService = {
             RECUSADO: "Recusado",
 
             CANCELADA: "Cancelada"
+
         };
 
         return statusMap[status] || status;
+
     }
 
 };
+
+
+// =========================================================
+// COMPATIBILIDADE GLOBAL
+// =========================================================
+
+window.APICandidatura = window.CandidaturaService;
+
+const CandidaturaService = window.CandidaturaService;
+const APICandidatura = window.APICandidatura;
