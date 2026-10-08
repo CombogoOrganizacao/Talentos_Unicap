@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Candidatos da vaga</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
+</head>
+
+<body>
+
+    <header>
+
+        <h1>Candidatos</h1>
+
+        <a href="lista-vagas.html">
+            Voltar para vagas
+        </a>
+
+    </header>
+
+
+    <main>
+
+        <h2 id="tituloVaga">
+            Candidatos da vaga
+        </h2>
+
+        <div id="candidatosContainer">
+
+            <p>
+                Carregando candidatos...
+            </p>
+
+        </div>
+
+    </main>
+
+
+    <template id="candidatoTemplate">
+
+        <article class="candidato-card">
+
+            <h3 data-role="nome"></h3>
+
+            <p>
+                <strong>Data da candidatura:</strong>
+                <span data-role="data"></span>
+            </p>
+
+            <p>
+                <strong>Mensagem:</strong>
+                <span data-role="mensagem"></span>
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                <span data-role="status"></span>
+            </p>
+
+            <div class="candidato-acoes">
+
+                <a
+                    data-role="curriculo"
+                    target="_blank">
+
+                    Ver currículo
+
+                </a>
+
+                <button
+                    type="button"
+                    data-action="analise">
+
+                    Colocar em análise
+
+                </button>
+
+                <button
+                    type="button"
+                    data-action="selecionar">
+
+                    Selecionar
+
+                </button>
+
+                <button
+                    type="button"
+                    data-action="recusar">
+
+                    Recusar
+
+                </button>
+
+            </div>
+
+        </article>
+
+    </template>
+
+
+    <script src="js/config.js"></script>
+
+    <script src="js/supabase-client.js"></script>
+
+    <script src="js/auth.js"></script>
+
+    <script src="js/services/candidatura-service.js"></script>
+
+    <script src="js/pages/candidaturas-vaga.js"></script>
+
+</body>
+
+</html>

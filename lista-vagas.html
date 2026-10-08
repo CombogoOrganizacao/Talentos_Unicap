@@ -38,7 +38,8 @@
       <div class="page-intro-row">
         <div>
           <h1 id="pageTitle" style="font-size:28px;margin-bottom:8px;">Minhas Vagas</h1>
-          <p class="page-desc" id="pageDesc">Acompanhe, edite e gerencie todas as oportunidades cadastradas para estudantes e
+          <p class="page-desc" id="pageDesc">Acompanhe, edite e gerencie todas as oportunidades cadastradas para
+            estudantes e
             egressos da UNICAP.</p>
         </div>
         <a class="btn btn-primary" id="btnNovaVaga" href="cadastro-vaga.html" hidden>
@@ -74,7 +75,8 @@
       <button class="tab-btn" data-status="Ativa">Ativas <span class="count" id="countAtiva">0</span></button>
       <button class="tab-btn" data-status="Rascunho">Rascunhos <span class="count" id="countRascunho">0</span></button>
       <button class="tab-btn" data-status="Pausada">Pausadas <span class="count" id="countPausada">0</span></button>
-      <button class="tab-btn" data-status="Encerrada">Encerradas <span class="count" id="countEncerrada">0</span></button>
+      <button class="tab-btn" data-status="Encerrada">Encerradas <span class="count"
+          id="countEncerrada">0</span></button>
     </div>
 
     <div class="vagas-grid" id="vagasGrid"></div>
@@ -126,9 +128,28 @@
       <p class="prazo" data-role="prazo"></p>
 
       <div class="vaga-card-footer">
-        <button class="btn btn-outline btn-sm" type="button" data-action="instagram-footer">
-          <i class="ph ph-instagram-logo"></i> Divulgar
-        </button>
+
+        <div class="vaga-card-footer">
+
+          <!-- Botão usado pelos alunos -->
+          <button type="button" class="btn btn-primary btn-sm" data-action="candidatar">
+            <i class="ph-fill ph-paper-plane-tilt"></i>
+            Candidatar-se
+          </button>
+
+          <!-- Botão usado pelas empresas -->
+          <button type="button" class="btn btn-secondary btn-sm" data-action="candidatos">
+            <i class="ph-fill ph-users"></i>
+            Ver candidatos
+          </button>
+
+          <!-- Divulgação da vaga -->
+          <button class="btn btn-outline btn-sm" type="button" data-action="instagram-footer">
+            <i class="ph ph-instagram-logo"></i>
+            Divulgar
+          </button>
+
+        </div>
       </div>
     </article>
   </template>
@@ -138,6 +159,7 @@
   <script src="js/config/supabase-client.js"></script>
   <script src="js/services/empresa-service.js"></script>
   <script src="js/security/auth.js"></script>
+  <script src="js/services/candidatura-service.js"></script>
   <script src="js/pages/lista-vagas.js"></script>
   <script src="js/utils/mobile-nav.js" defer></script>
 </body>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Minhas Candidaturas</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
+</head>
+
+<body>
+
+    <header>
+
+        <h1>Minhas Candidaturas</h1>
+
+        <a href="lista-vagas.html">
+            Voltar para vagas
+        </a>
+
+    </header>
+
+
+    <main>
+
+        <div id="candidaturasContainer">
+
+            <p>
+                Carregando candidaturas...
+            </p>
+
+        </div>
+
+    </main>
+
+
+    <template id="candidaturaTemplate">
+
+        <article class="candidatura-card">
+
+            <h2 data-role="titulo"></h2>
+
+            <p>
+                <strong>Área:</strong>
+                <span data-role="area"></span>
+            </p>
+
+            <p>
+                <strong>Modalidade:</strong>
+                <span data-role="modalidade"></span>
+            </p>
+
+            <p>
+                <strong>Local:</strong>
+                <span data-role="local"></span>
+            </p>
+
+            <p>
+                <strong>Data da candidatura:</strong>
+                <span data-role="data"></span>
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                <span data-role="status"></span>
+            </p>
+
+            <button
+                type="button"
+                data-role="cancelar">
+
+                Cancelar candidatura
+
+            </button>
+
+        </article>
+
+    </template>
+
+
+    <script src="js/config.js"></script>
+
+    <script src="js/supabase-client.js"></script>
+
+    <script src="js/auth.js"></script>
+
+    <script src="js/services/candidatura-service.js"></script>
+
+    <script src="js/pages/minhas-candidaturas.js"></script>
+
+</body>
+
+</html>
