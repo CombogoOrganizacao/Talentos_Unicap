@@ -32,6 +32,24 @@ const CandidaturaService = {
 
             const session = await this._session();
 
+            const { data: candidaturaExistente, error: consultaError } =
+                await supabaseClient
+                    .from("candidaturas")
+                    .select("id, status")
+                    .eq("vaga_id", vagaId)
+                    .eq("aluno_id", session.user.id)
+                    .maybeSingle();
+
+            if (consultaError) {
+                return { error: consultaError.message };
+            }
+
+            if (candidaturaExistente) {
+                return {
+                    error: "Você já se candidatou a esta vaga."
+                };
+            }
+
             const { data, error } = await supabaseClient
                 .from("candidaturas")
                 .insert({

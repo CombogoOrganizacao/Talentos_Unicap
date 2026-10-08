@@ -148,8 +148,10 @@ const APIEmpresa = {
         status: 'Ativa',
         criadoEm: v.data_criacao,
         carga: v.carga_horaria ? `${v.carga_horaria}h` : '',
-        local: this._modalidade(v.modalidade),
-        periodoFim: null,
+        local: v.local || this._modalidade(v.modalidade),
+        remuneracao: v.remuneracao || '',
+        periodoFim: v.periodo_fim || null,
+        area: v.area || '',
         habilidadesRequisitadas: v.habilidades || []
       }));
     },
