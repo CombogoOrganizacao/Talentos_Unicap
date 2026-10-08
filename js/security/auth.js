@@ -2,12 +2,11 @@
 // Autenticação - Supabase Auth (produção)
 // ============================================
 
-const Auth = {
+window.Auth = {
   user: null,
   uid: null,
 
   getSiteUrl() {
-    // Usa automaticamente o domínio atual (Vercel ou domínio próprio).
     return window.location.origin;
   },
 
@@ -20,7 +19,8 @@ const Auth = {
   },
 
   async init() {
-    const { data: { session } } = await window.supabaseClient.auth.getSession();
+    const { data: { session } } =
+      await window.supabaseClient.auth.getSession();
 
     if (session) {
       try {
@@ -37,7 +37,7 @@ const Auth = {
       setTimeout(() => this.onAuthChange(false), 0);
     }
 
-    window.supabaseClient.auth.onAuthStateChange((event, sessionAtual) => {
+    window.supabaseClient.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') {
         this.user = null;
         this.uid = null;
@@ -49,48 +49,63 @@ const Auth = {
   onAuthChange(loggedIn, tipoConta) {},
 
   async _carregarUsuario(userId) {
-    const { data: usuario, error } = await window.supabaseClient
-      .from('usuarios')
-      .select('id, nome, tipo_conta')
-      .eq('id', userId)
-      .single();
+    const { data: usuario, error } =
+      await window.supabaseClient
+        .from('usuarios')
+        .select('id, nome, tipo_conta')
+        .eq('id', userId)
+        .single();
 
     if (error) throw error;
 
-    const { data: authData } = await window.supabaseClient.auth.getUser();
+    const { data: authData } =
+      await window.supabaseClient.auth.getUser();
+
     this.user = {
       id: usuario.id,
       nome: usuario.nome,
       email: authData?.user?.email || '',
-      tipoConta: usuario.tipo_conta === 'EMPRESA' ? 'empresa' : 'aluno'
+      tipoConta:
+        usuario.tipo_conta === 'EMPRESA'
+          ? 'empresa'
+          : 'aluno'
     };
+
     this.uid = usuario.id;
     return this.user;
   },
 
   async _detectarTipoConta() {
     if (!this.user) {
-      const { data: { session } } = await window.supabaseClient.auth.getSession();
-      if (session) await this._carregarUsuario(session.user.id);
+      const { data: { session } } =
+        await window.supabaseClient.auth.getSession();
+
+      if (session) {
+        await this._carregarUsuario(session.user.id);
+      }
     }
+
     return this.user?.tipoConta || null;
   },
 
   async register(nome, email, senha) {
-    const { data, error } = await window.supabaseClient.auth.signUp({
-      email,
-      password: senha,
-      options: {
-        emailRedirectTo: this.getEmailConfirmationUrl(),
-        data: { nome, tipoConta: 'ALUNO' }
-      }
-    });
+    const { data, error } =
+      await window.supabaseClient.auth.signUp({
+        email,
+        password: senha,
+        options: {
+          emailRedirectTo: this.getEmailConfirmationUrl(),
+          data: { nome, tipoConta: 'ALUNO' }
+        }
+      });
 
     if (error) throw error;
-    if (!data.user) throw new Error('O Supabase não retornou o usuário criado.');
+    if (!data.user) {
+      throw new Error(
+        'O Supabase não retornou o usuário criado.'
+      );
+    }
 
-    // Com "Confirm Email" ativo, o Supabase não cria uma sessão aqui.
-    // Portanto, NÃO tratamos o usuário como logado antes da confirmação.
     if (data.session) {
       await this._carregarUsuario(data.user.id);
     } else {
@@ -105,29 +120,38 @@ const Auth = {
     };
   },
 
-  async registerEmpresa({ cnpj, razaoSocial, nomeFantasia, setor, senha, email }) {
-    const { data, error } = await window.supabaseClient.auth.signUp({
-      email,
-      password: senha,
-      options: {
-        emailRedirectTo: this.getEmailConfirmationUrl(),
-        data: {
-          nome: razaoSocial,
-          tipoConta: 'EMPRESA',
-          cnpj: String(cnpj || '').replace(/\D/g, ''),
-          razaoSocial,
-          nomeFantasia,
-          setor
+  async registerEmpresa({
+    cnpj,
+    razaoSocial,
+    nomeFantasia,
+    setor,
+    senha,
+    email
+  }) {
+    const { data, error } =
+      await window.supabaseClient.auth.signUp({
+        email,
+        password: senha,
+        options: {
+          emailRedirectTo: this.getEmailConfirmationUrl(),
+          data: {
+            nome: razaoSocial,
+            tipoConta: 'EMPRESA',
+            cnpj: String(cnpj || '').replace(/\D/g, ''),
+            razaoSocial,
+            nomeFantasia,
+            setor
+          }
         }
-      }
-    });
+      });
 
     if (error) throw error;
-    if (!data.user) throw new Error('O Supabase não retornou o usuário criado.');
+    if (!data.user) {
+      throw new Error(
+        'O Supabase não retornou o usuário criado.'
+      );
+    }
 
-    // O trigger do banco cria usuarios + perfis_empresa.
-    // Não fazemos INSERT/UPSERT pelo frontend, pois com confirmação de e-mail
-    // ativa ainda não existe sessão autenticada neste momento.
     if (data.session) {
       await this._carregarUsuario(data.user.id);
     } else {
@@ -145,19 +169,23 @@ const Auth = {
   async login(identifier, senha) {
     const value = String(identifier || '').trim();
 
-    if (!value) throw new Error('Informe o e-mail ou CNPJ.');
-    if (!senha) throw new Error('Informe a senha.');
+    if (!value) {
+      throw new Error('Informe o e-mail ou CNPJ.');
+    }
 
-    // Alunos continuam usando e-mail diretamente no Supabase Auth.
-    // Empresas podem usar e-mail OU CNPJ. Para CNPJ, a consulta acontece
-    // em uma Edge Function para que o e-mail interno nunca seja exposto.
+    if (!senha) {
+      throw new Error('Informe a senha.');
+    }
+
     if (value.includes('@')) {
-      const { data, error } = await window.supabaseClient.auth.signInWithPassword({
-        email: value,
-        password: senha
-      });
+      const { data, error } =
+        await window.supabaseClient.auth.signInWithPassword({
+          email: value,
+          password: senha
+        });
 
       if (error) throw error;
+
       await this._carregarUsuario(data.user.id);
       return this.user;
     }
@@ -166,42 +194,74 @@ const Auth = {
   },
 
   async loginEmpresaPorCnpj(cnpj, senha) {
-    const cnpjNormalizado = String(cnpj || '').replace(/\D/g, '');
+    const cnpjNormalizado =
+      String(cnpj || '').replace(/\D/g, '');
 
     if (!/^\d{14}$/.test(cnpjNormalizado)) {
-      throw new Error('Informe um CNPJ válido com 14 dígitos.');
+      throw new Error(
+        'Informe um CNPJ válido com 14 dígitos.'
+      );
     }
 
-    const { data, error } = await window.supabaseClient.functions.invoke('login-empresa-cnpj', {
-      body: { cnpj: cnpjNormalizado, senha }
-    });
+    const { data, error } =
+      await window.supabaseClient.functions.invoke(
+        'login-empresa-cnpj',
+        {
+          body: {
+            cnpj: cnpjNormalizado,
+            senha
+          }
+        }
+      );
 
     if (error) {
-      let message = error.message || 'Não foi possível entrar.';
-      // functions.invoke pode devolver o corpo JSON como contexto do erro.
+      let message =
+        error.message || 'Não foi possível entrar.';
+
       try {
         const context = error.context;
-        if (context && typeof context.json === 'function') {
+
+        if (
+          context &&
+          typeof context.json === 'function'
+        ) {
           const body = await context.json();
-          if (body?.error) message = body.error;
+
+          if (body?.error) {
+            message = body.error;
+          }
         }
       } catch (_) {}
+
       throw new Error(message);
     }
 
-    if (!data?.session?.access_token || !data?.session?.refresh_token) {
-      throw new Error('A autenticação por CNPJ não retornou uma sessão válida.');
+    if (
+      !data?.session?.access_token ||
+      !data?.session?.refresh_token
+    ) {
+      throw new Error(
+        'A autenticação por CNPJ não retornou uma sessão válida.'
+      );
     }
 
-    const { data: sessionData, error: sessionError } = await window.supabaseClient.auth.setSession({
-      access_token: data.session.access_token,
-      refresh_token: data.session.refresh_token
-    });
+    const { data: sessionData, error: sessionError } =
+      await window.supabaseClient.auth.setSession({
+        access_token: data.session.access_token,
+        refresh_token: data.session.refresh_token
+      });
 
     if (sessionError) throw sessionError;
 
-    const userId = sessionData?.user?.id || data?.user?.id;
-    if (!userId) throw new Error('A sessão foi criada, mas o usuário não foi identificado.');
+    const userId =
+      sessionData?.user?.id ||
+      data?.user?.id;
+
+    if (!userId) {
+      throw new Error(
+        'A sessão foi criada, mas o usuário não foi identificado.'
+      );
+    }
 
     await this._carregarUsuario(userId);
     return this.user;
@@ -212,35 +272,58 @@ const Auth = {
   },
 
   async resendConfirmation(email) {
-    const address = String(email || '').trim();
-    if (!address) throw new Error('Informe o e-mail da conta.');
+    const address =
+      String(email || '').trim();
 
-    const { error } = await window.supabaseClient.auth.resend({
-      type: 'signup',
-      email: address,
-      options: { emailRedirectTo: this.getEmailConfirmationUrl() }
-    });
+    if (!address) {
+      throw new Error(
+        'Informe o e-mail da conta.'
+      );
+    }
+
+    const { error } =
+      await window.supabaseClient.auth.resend({
+        type: 'signup',
+        email: address,
+        options: {
+          emailRedirectTo:
+            this.getEmailConfirmationUrl()
+        }
+      });
 
     if (error) throw error;
   },
 
   async sendPasswordReset(email) {
-    const address = String(email || '').trim();
-    if (!address) throw new Error('Informe o e-mail da conta.');
+    const address =
+      String(email || '').trim();
 
-    const { error } = await window.supabaseClient.auth.resetPasswordForEmail(address, {
-      redirectTo: this.getPasswordResetUrl()
-    });
+    if (!address) {
+      throw new Error(
+        'Informe o e-mail da conta.'
+      );
+    }
+
+    const { error } =
+      await window.supabaseClient.auth.resetPasswordForEmail(
+        address,
+        {
+          redirectTo:
+            this.getPasswordResetUrl()
+        }
+      );
 
     if (error) throw error;
   },
 
   async updatePassword(newPassword) {
-    const { data, error } = await window.supabaseClient.auth.updateUser({
-      password: newPassword
-    });
+    const { data, error } =
+      await window.supabaseClient.auth.updateUser({
+        password: newPassword
+      });
 
     if (error) throw error;
+
     return data.user;
   },
 
@@ -248,24 +331,34 @@ const Auth = {
     try {
       await window.supabaseClient.auth.signOut();
     } catch (e) {
-      // Sem rede: encerra ao menos a sessão local deste navegador
-      try { await window.supabaseClient.auth.signOut({ scope: 'local' }); } catch (_) {}
+      try {
+        await window.supabaseClient.auth.signOut({
+          scope: 'local'
+        });
+      } catch (_) {}
     }
+
     this.user = null;
     this.uid = null;
-    // replace() tira a página protegida do histórico: a seta "voltar"
-    // não reabre o dashboard depois de sair.
-    if (redirect) window.location.replace('index.html');
+
+    if (redirect) {
+      window.location.replace('index.html');
+    }
   },
 
   async isLoggedIn() {
-    const { data: { session } } = await window.supabaseClient.auth.getSession();
+    const { data: { session } } =
+      await window.supabaseClient.auth.getSession();
+
     return !!session;
   }
 };
 
-// Ao voltar pela seta do navegador, a página pode vir do cache (bfcache)
-// com o estado antigo (logado/deslogado). Recarrega para refletir a sessão real.
+// Compatibilidade explícita com scripts antigos.
+const Auth = window.Auth;
+
 window.addEventListener('pageshow', (event) => {
-  if (event.persisted) window.location.reload();
+  if (event.persisted) {
+    window.location.reload();
+  }
 });

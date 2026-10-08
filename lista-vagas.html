@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 
 <head>
@@ -27,634 +26,428 @@
 
 <body>
 
-  <!-- =========================================================
-       NAVBAR
-  ========================================================== -->
-
+  <!-- NAVBAR -->
   <nav class="navbar">
+    <div class="container">
 
-```
-<div class="container">
+      <a href="index.html" class="navbar-brand">
+        <img
+          src="img/asabranca_Unicap.png"
+          width="40"
+          alt="UNICAP">
+        Talento<span>UNICAP</span>
+      </a>
 
-  <a href="index.html" class="navbar-brand">
+      <div class="nav-links">
 
-    <img
-      src="img/asabranca_Unicap.png"
-      width="40"
-      alt="UNICAP">
+        <!-- ALUNO -->
+        <a
+          href="dashboard.html"
+          id="btnMeuCurriculo"
+          class="btn btn-secondary btn-sm"
+          hidden>
+          <i class="ph-fill ph-scroll"></i>
+          Meu Currículo
+        </a>
 
-    Talento<span>UNICAP</span>
+        <a
+          href="minhas-candidaturas.html"
+          id="btnMinhasCandidaturas"
+          class="btn btn-secondary btn-sm"
+          hidden>
+          <i class="ph-fill ph-paper-plane-tilt"></i>
+          Minhas Candidaturas
+        </a>
 
-  </a>
+        <!-- EMPRESA -->
+        <a
+          href="busca-talentos.html"
+          id="btnPainelEmpresa"
+          class="btn btn-secondary btn-sm"
+          hidden>
+          <i class="ph-fill ph-buildings"></i>
+          Painel da Empresa
+        </a>
 
-  <div class="nav-links">
+        <button
+          class="btn btn-secondary btn-sm"
+          type="button"
+          onclick="Auth.logout()">
+          <i class="ph-fill ph-sign-out"></i>
+          Sair
+        </button>
 
-    <!-- ALUNO -->
-    <a
-      href="dashboard.html"
-      id="btnMeuCurriculo"
-      class="btn btn-secondary btn-sm"
-      hidden>
-
-      <i class="ph-fill ph-scroll"></i>
-      Meu Currículo
-
-    </a>
-
-    <a
-      href="minhas-candidaturas.html"
-      id="btnMinhasCandidaturas"
-      class="btn btn-secondary btn-sm"
-      hidden>
-
-      <i class="ph-fill ph-paper-plane-tilt"></i>
-      Minhas Candidaturas
-
-    </a>
-
-    <!-- EMPRESA -->
-    <a
-      href="busca-talentos.html"
-      id="btnPainelEmpresa"
-      class="btn btn-secondary btn-sm"
-      hidden>
-
-      <i class="ph-fill ph-buildings"></i>
-      Painel da Empresa
-
-    </a>
-
-    <!-- SAIR -->
-    <button
-      class="btn btn-secondary btn-sm"
-      type="button"
-      onclick="Auth.logout()">
-
-      <i class="ph-fill ph-sign-out"></i>
-      Sair
-
-    </button>
-
-  </div>
-
-</div>
-```
-
+      </div>
+    </div>
   </nav>
-
-  <!-- =========================================================
-       CONTEÚDO
-  ========================================================== -->
 
   <main
     class="container"
     style="padding-top:32px;padding-bottom:64px;">
 
-```
-<!-- CABEÇALHO -->
+    <!-- CABEÇALHO -->
+    <div class="page-intro">
 
-<div class="page-intro">
-
-  <p class="eyebrow">
-
-    <i class="ph-fill ph-briefcase"></i>
-
-    Portal de Vagas
-
-  </p>
-
-
-  <div class="page-intro-row">
-
-    <div>
-
-      <h1
-        id="pageTitle"
-        style="font-size:28px;margin-bottom:8px;">
-
-        Minhas Vagas
-
-      </h1>
-
-
-      <p
-        class="page-desc"
-        id="pageDesc">
-
-        Acompanhe, edite e gerencie todas as oportunidades
-        cadastradas para estudantes e egressos da UNICAP.
-
+      <p class="eyebrow">
+        <i class="ph-fill ph-briefcase"></i>
+        Portal de Vagas
       </p>
+
+      <div class="page-intro-row">
+
+        <div>
+          <h1
+            id="pageTitle"
+            style="font-size:28px;margin-bottom:8px;">
+            Minhas Vagas
+          </h1>
+
+          <p
+            class="page-desc"
+            id="pageDesc">
+            Acompanhe, edite e gerencie todas as oportunidades
+            cadastradas para estudantes e egressos da UNICAP.
+          </p>
+        </div>
+
+        <!-- NOVA VAGA - EMPRESA -->
+        <a
+          class="btn btn-primary"
+          id="btnNovaVaga"
+          href="cadastro-vaga.html"
+          hidden>
+          <i class="ph-fill ph-plus"></i>
+          Nova Vaga
+        </a>
+
+      </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="toolbar">
+
+      <div class="search-box">
+        <i class="ph ph-magnifying-glass"></i>
+
+        <input
+          type="search"
+          id="busca"
+          placeholder="Buscar por título, empresa ou área...">
+      </div>
+
+      <div class="toolbar-filters">
+
+        <select
+          id="filtroStatus"
+          aria-label="Filtrar por status">
+
+          <option value="">
+            Todos os status
+          </option>
+
+          <option value="Ativa">
+            Ativa
+          </option>
+
+          <option value="Rascunho">
+            Rascunho
+          </option>
+
+          <option value="Pausada">
+            Pausada
+          </option>
+
+          <option value="Encerrada">
+            Encerrada
+          </option>
+
+        </select>
+
+        <select
+          id="ordenacao"
+          aria-label="Ordenar vagas">
+
+          <option value="recentes">
+            Mais recentes
+          </option>
+
+          <option value="antigas">
+            Mais antigas
+          </option>
+
+          <option value="titulo">
+            Título (A-Z)
+          </option>
+
+          <option value="prazo">
+            Prazo mais próximo
+          </option>
+
+        </select>
+
+      </div>
+    </div>
+
+    <!-- ABAS DE STATUS - EMPRESA -->
+    <div
+      class="tabs"
+      id="statusTabs">
+
+      <button
+        class="tab-btn active"
+        type="button"
+        data-status="">
+        Todas
+        <span
+          class="count"
+          id="countTodas">
+          0
+        </span>
+      </button>
+
+      <button
+        class="tab-btn"
+        type="button"
+        data-status="Ativa">
+        Ativas
+        <span
+          class="count"
+          id="countAtiva">
+          0
+        </span>
+      </button>
+
+      <button
+        class="tab-btn"
+        type="button"
+        data-status="Rascunho">
+        Rascunhos
+        <span
+          class="count"
+          id="countRascunho">
+          0
+        </span>
+      </button>
+
+      <button
+        class="tab-btn"
+        type="button"
+        data-status="Pausada">
+        Pausadas
+        <span
+          class="count"
+          id="countPausada">
+          0
+        </span>
+      </button>
+
+      <button
+        class="tab-btn"
+        type="button"
+        data-status="Encerrada">
+        Encerradas
+        <span
+          class="count"
+          id="countEncerrada">
+          0
+        </span>
+      </button>
 
     </div>
 
+    <!-- GRID DE VAGAS -->
+    <div
+      class="vagas-grid"
+      id="vagasGrid">
+    </div>
 
-    <!-- NOVA VAGA - EMPRESA -->
-
-    <a
-      class="btn btn-primary"
-      id="btnNovaVaga"
-      href="cadastro-vaga.html"
+    <!-- ESTADO VAZIO -->
+    <div
+      class="empty-state"
+      id="emptyState"
       hidden>
 
-      <i class="ph-fill ph-plus"></i>
-
-      Nova Vaga
-
-    </a>
-
-  </div>
-
-</div>
-
-
-<!-- =======================================================
-     FILTROS
-======================================================== -->
-
-<div class="toolbar">
-
-  <div class="search-box">
-
-    <i class="ph ph-magnifying-glass"></i>
-
-    <input
-      type="search"
-      id="busca"
-      placeholder="Buscar por título, empresa ou área...">
-
-  </div>
-
-
-  <div class="toolbar-filters">
-
-    <select
-      id="filtroStatus"
-      aria-label="Filtrar por status">
-
-      <option value="">
-        Todos os status
-      </option>
-
-      <option value="Ativa">
-        Ativa
-      </option>
-
-      <option value="Rascunho">
-        Rascunho
-      </option>
-
-      <option value="Pausada">
-        Pausada
-      </option>
-
-      <option value="Encerrada">
-        Encerrada
-      </option>
-
-    </select>
-
-
-    <select
-      id="ordenacao"
-      aria-label="Ordenar vagas">
-
-      <option value="recentes">
-        Mais recentes
-      </option>
-
-      <option value="antigas">
-        Mais antigas
-      </option>
-
-      <option value="titulo">
-        Título (A-Z)
-      </option>
-
-      <option value="prazo">
-        Prazo mais próximo
-      </option>
-
-    </select>
-
-  </div>
-
-</div>
-
-
-<!-- =======================================================
-     ABAS DE STATUS - EMPRESA
-======================================================== -->
-
-<div
-  class="tabs"
-  id="statusTabs">
-
-  <button
-    class="tab-btn active"
-    type="button"
-    data-status="">
-
-    Todas
-
-    <span
-      class="count"
-      id="countTodas">
-
-      0
-
-    </span>
-
-  </button>
-
-
-  <button
-    class="tab-btn"
-    type="button"
-    data-status="Ativa">
-
-    Ativas
-
-    <span
-      class="count"
-      id="countAtiva">
-
-      0
-
-    </span>
-
-  </button>
-
-
-  <button
-    class="tab-btn"
-    type="button"
-    data-status="Rascunho">
-
-    Rascunhos
-
-    <span
-      class="count"
-      id="countRascunho">
-
-      0
-
-    </span>
-
-  </button>
-
-
-  <button
-    class="tab-btn"
-    type="button"
-    data-status="Pausada">
-
-    Pausadas
-
-    <span
-      class="count"
-      id="countPausada">
-
-      0
-
-    </span>
-
-  </button>
-
-
-  <button
-    class="tab-btn"
-    type="button"
-    data-status="Encerrada">
-
-    Encerradas
-
-    <span
-      class="count"
-      id="countEncerrada">
-
-      0
-
-    </span>
-
-  </button>
-
-</div>
-
-
-<!-- =======================================================
-     GRID DE VAGAS
-======================================================== -->
-
-<div
-  class="vagas-grid"
-  id="vagasGrid">
-
-</div>
-
-
-<!-- =======================================================
-     ESTADO VAZIO
-======================================================== -->
-
-<div
-  class="empty-state"
-  id="emptyState"
-  hidden>
-
-  <div class="icon">
-
-    <i class="ph-fill ph-briefcase"></i>
-
-  </div>
-
-
-  <h2 id="emptyTitle">
-
-    Nenhuma vaga cadastrada ainda
-
-  </h2>
-
-
-  <p id="emptyDesc">
-
-    Publique a primeira oportunidade para estudantes
-    e egressos da UNICAP.
-
-  </p>
-
-
-  <a
-    class="btn btn-primary"
-    id="emptyCta"
-    href="cadastro-vaga.html"
-    hidden>
-
-    Cadastrar Nova Vaga
-
-  </a>
-
-</div>
-```
+      <div class="icon">
+        <i class="ph-fill ph-briefcase"></i>
+      </div>
+
+      <h2 id="emptyTitle">
+        Nenhuma vaga cadastrada ainda
+      </h2>
+
+      <p id="emptyDesc">
+        Publique a primeira oportunidade para estudantes
+        e egressos da UNICAP.
+      </p>
+
+      <a
+        class="btn btn-primary"
+        id="emptyCta"
+        href="cadastro-vaga.html"
+        hidden>
+        Cadastrar Nova Vaga
+      </a>
+
+    </div>
 
   </main>
 
-  <!-- =========================================================
-       FOOTER
-  ========================================================== -->
-
+  <!-- FOOTER -->
   <footer class="footer">
-
-```
-© 2026 TalentosUNICAP —
-Universidade Católica de Pernambuco
-```
-
+    © 2026 TalentosUNICAP —
+    Universidade Católica de Pernambuco
   </footer>
 
-  <!-- =========================================================
-       TEMPLATE DOS CARDS
-  ========================================================== -->
-
+  <!-- TEMPLATE DOS CARDS -->
   <template id="vagaCardTemplate">
 
-```
-<article class="card vaga-card">
+    <article class="card vaga-card">
 
+      <div class="vaga-card-top">
 
-  <!-- TOPO -->
+        <span
+          class="badge"
+          data-role="status">
+        </span>
 
-  <div class="vaga-card-top">
+        <!-- MENU EMPRESA -->
+        <div class="vaga-menu">
 
-    <span
-      class="badge"
-      data-role="status">
+          <button
+            class="icon-btn"
+            type="button"
+            data-action="menu"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-label="Mais ações">
+            <i class="ph-fill ph-dots-three-vertical"></i>
+          </button>
 
-    </span>
+          <div
+            class="vaga-dropdown"
+            data-role="dropdown"
+            hidden>
 
+            <button
+              type="button"
+              data-action="instagram">
+              Divulgar no Instagram
+            </button>
 
-    <!-- MENU EMPRESA -->
+            <button
+              type="button"
+              data-action="pausar">
+              Pausar vaga
+            </button>
 
-    <div class="vaga-menu">
+            <button
+              type="button"
+              data-action="encerrar">
+              Encerrar vaga
+            </button>
 
-      <button
-        class="icon-btn"
-        type="button"
-        data-action="menu"
-        aria-haspopup="true"
-        aria-expanded="false"
-        aria-label="Mais ações">
+            <button
+              type="button"
+              class="danger"
+              data-action="excluir">
+              Excluir vaga
+            </button>
 
-        <i class="ph-fill ph-dots-three-vertical"></i>
+          </div>
+        </div>
+      </div>
 
-      </button>
+      <h3 data-role="titulo"></h3>
 
+      <div class="vaga-empresa-row">
 
-      <div
-        class="vaga-dropdown"
-        data-role="dropdown"
-        hidden>
+        <span
+          class="empresa-logo"
+          data-role="logo"
+          aria-hidden="true">
+        </span>
 
+        <p
+          class="empresa"
+          data-role="empresa">
+        </p>
 
+      </div>
+
+      <div class="meta">
+
+        <span data-role="carga"></span>
+        <span data-role="local"></span>
+        <span data-role="salario"></span>
+
+      </div>
+
+      <p
+        class="vaga-descricao"
+        data-role="descricao">
+      </p>
+
+      <p
+        class="vaga-requisitos"
+        data-role="requisitos">
+      </p>
+
+      <p
+        class="prazo"
+        data-role="prazo">
+      </p>
+
+      <div class="vaga-card-footer">
+
+        <!-- ALUNO -->
         <button
           type="button"
-          data-action="instagram">
+          class="btn btn-primary btn-sm"
+          data-action="candidatar">
 
-          Divulgar no Instagram
+          <i class="ph-fill ph-paper-plane-tilt"></i>
+          Candidatar-se
 
         </button>
 
-
+        <!-- EMPRESA -->
         <button
           type="button"
-          data-action="pausar"
-          data-role="pausar-btn">
+          class="btn btn-secondary btn-sm"
+          data-action="candidatos">
 
-          Pausar vaga
+          <i class="ph-fill ph-users"></i>
+          Ver candidaturas
 
         </button>
 
-
+        <!-- EMPRESA -->
         <button
+          class="btn btn-outline btn-sm"
           type="button"
-          data-action="encerrar">
+          data-action="instagram-footer">
 
-          Encerrar vaga
-
-        </button>
-
-
-        <button
-          type="button"
-          class="danger"
-          data-action="excluir">
-
-          Excluir vaga
+          <i class="ph ph-instagram-logo"></i>
+          Divulgar
 
         </button>
 
       </div>
 
-    </div>
-
-  </div>
-
-
-  <!-- TÍTULO -->
-
-  <h3 data-role="titulo"></h3>
-
-
-  <!-- EMPRESA -->
-
-  <div class="vaga-empresa-row">
-
-    <span
-      class="empresa-logo"
-      data-role="logo"
-      aria-hidden="true">
-
-    </span>
-
-
-    <p
-      class="empresa"
-      data-role="empresa">
-
-    </p>
-
-  </div>
-
-
-  <!-- INFORMAÇÕES -->
-
-  <div class="meta">
-
-    <span data-role="carga"></span>
-
-    <span data-role="local"></span>
-
-    <span data-role="salario"></span>
-
-  </div>
-
-
-  <!-- DESCRIÇÃO -->
-
-  <p
-    class="vaga-descricao"
-    data-role="descricao">
-
-  </p>
-
-
-  <!-- REQUISITOS -->
-
-  <p
-    class="vaga-requisitos"
-    data-role="requisitos">
-
-  </p>
-
-
-  <!-- PRAZO -->
-
-  <p
-    class="prazo"
-    data-role="prazo">
-
-  </p>
-
-
-  <!-- =====================================================
-       BOTÕES
-  ====================================================== -->
-
-  <div class="vaga-card-footer">
-
-
-    <!-- ALUNO: CANDIDATAR-SE -->
-
-    <button
-      type="button"
-      class="btn btn-primary btn-sm"
-      data-action="candidatar">
-
-      <i class="ph-fill ph-paper-plane-tilt"></i>
-
-      Candidatar-se
-
-    </button>
-
-
-    <!-- EMPRESA: VER CANDIDATURAS -->
-
-    <button
-      type="button"
-      class="btn btn-secondary btn-sm"
-      data-action="candidatos">
-
-      <i class="ph-fill ph-users"></i>
-
-      Ver candidaturas
-
-    </button>
-
-
-    <!-- EMPRESA: INSTAGRAM -->
-
-    <button
-      class="btn btn-outline btn-sm"
-      type="button"
-      data-action="instagram-footer">
-
-      <i class="ph ph-instagram-logo"></i>
-
-      Divulgar
-
-    </button>
-
-
-  </div>
-
-</article>
-```
+    </article>
 
   </template>
 
-  <!-- =========================================================
-       SCRIPTS
-  ========================================================== -->
-
-  <!-- Supabase -->
-
+  <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- Configuração -->
-
   <script src="js/config/config.js"></script>
-
-  <!-- Cliente Supabase -->
-
   <script src="js/config/supabase-client.js"></script>
 
-  <!-- Serviços -->
-
-  <script src="js/services/empresa-service.js"></script>
-
-  <!-- Autenticação -->
-
   <script src="js/security/auth.js"></script>
-
-  <!-- Candidaturas -->
-
+  <script src="js/services/empresa-service.js"></script>
   <script src="js/services/candidatura-service.js"></script>
 
-  <!-- Página -->
-
   <script src="js/pages/lista-vagas.js"></script>
-
-  <!-- Navegação mobile -->
 
   <script
     src="js/utils/mobile-nav.js"
@@ -662,5 +455,4 @@ Universidade Católica de Pernambuco
   </script>
 
 </body>
-
 </html>
