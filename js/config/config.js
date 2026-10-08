@@ -3,7 +3,7 @@
 // (equivalente ao pacote Config/ do backend: só dados de configuração,
 // sem lógica de negócio. Lógica de cidades/cursos foi para js/utils/)
 // ============================================
-const CONFIG = {
+window.CONFIG = {
 
   
    supabaseUrl: 'https://rzxlojrznxamobumxlrq.supabase.co',
@@ -60,7 +60,7 @@ const CONFIG = {
   ]
 };
 
-const MAPA_GRAU_PARA_CHAVE = {
+window.MAPA_GRAU_PARA_CHAVE = {
   'Graduação': 'cursos',
   'Especialização': 'especializacoes',
   'Mestrado': 'mestrados',

@@ -7,14 +7,14 @@
     );
   }
 
-  if (!window.CONFIG || !CONFIG.supabaseUrl || !CONFIG.supabaseAnonKey) {
+  if (!window.CONFIG || !window.CONFIG.supabaseUrl || !window.CONFIG.supabaseAnonKey) {
     throw new Error(
       "CONFIG do Supabase não foi carregado corretamente. Verifique config/config.js."
     );
   }
 
   window.supabaseClient = window.supabase.createClient(
-    CONFIG.supabaseUrl,
-    CONFIG.supabaseAnonKey
+    window.CONFIG.supabaseUrl,
+    window.CONFIG.supabaseAnonKey
   );
 })();
