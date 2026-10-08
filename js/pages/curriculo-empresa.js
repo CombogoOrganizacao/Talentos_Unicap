@@ -52,20 +52,13 @@
 
     const params = new URLSearchParams(window.location.search);
 
-    /*
-     * O perfil vindo de obter_perfis_alunos_para_empresas()
-     * possui:
-     *
-     * uid  -> UUID do usuário
-     * id   -> UUID do usuário
-     * slug -> UUID convertido para texto
-     *
-     * A RPC obter_perfil_publico() espera:
-     *
-     * p_usuario_id UUID
-     */
+
+
 
     const slug = params.get('slug');
+
+    console.log('URL atual:', window.location.href);
+    console.log('slug recebido:', slug);
 
     const cvContent = document.getElementById('cvContent');
 

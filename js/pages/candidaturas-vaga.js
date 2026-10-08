@@ -3,7 +3,6 @@ document.addEventListener(
     carregarCandidatos
 );
 
-
 async function carregarCandidatos() {
 
     const container =
@@ -20,13 +19,11 @@ async function carregarCandidatos() {
         params.get("vaga");
 
     if (!vagaId) {
-
         container.innerHTML = `
             <p>
                 Nenhuma vaga foi informada.
             </p>
         `;
-
         return;
     }
 
@@ -115,9 +112,43 @@ async function carregarCandidatos() {
                         '[data-role="curriculo"]'
                     );
 
-                linkCurriculo.href =
-                    `perfil-publico.html?id=${candidatura.aluno_id}`;
+                /*
+                 * O currículo da empresa usa:
+                 *
+                 * curriculo-empresa.html?slug=UUID
+                 *
+                 * O curriculo-empresa.js recebe esse
+                 * UUID e chama getPublicProfile().
+                 */
 
+                if (candidatura.aluno_id) {
+
+                    linkCurriculo.href =
+                        `curriculo-empresa.html?slug=${encodeURIComponent(
+                            candidatura.aluno_id
+                        )}`;
+
+                    linkCurriculo.target = "_blank";
+
+                } else {
+
+                    linkCurriculo.removeAttribute(
+                        "href"
+                    );
+
+                    linkCurriculo.removeAttribute(
+                        "target"
+                    );
+
+                    linkCurriculo.textContent =
+                        "Currículo indisponível";
+
+                    linkCurriculo.style.opacity =
+                        "0.6";
+
+                    linkCurriculo.style.pointerEvents =
+                        "none";
+                }
 
                 // =====================================
                 // BOTÃO ANÁLISE
@@ -136,7 +167,6 @@ async function carregarCandidatos() {
                     )
                 );
 
-
                 // =====================================
                 // BOTÃO SELECIONAR
                 // =====================================
@@ -154,7 +184,6 @@ async function carregarCandidatos() {
                     )
                 );
 
-
                 // =====================================
                 // BOTÃO RECUSAR
                 // =====================================
@@ -171,7 +200,6 @@ async function carregarCandidatos() {
                         "RECUSADO"
                     )
                 );
-
 
                 container.appendChild(
                     node
@@ -191,7 +219,6 @@ async function carregarCandidatos() {
         `;
     }
 }
-
 
 async function alterarStatus(
     candidaturaId,
@@ -241,7 +268,6 @@ async function alterarStatus(
 
     location.reload();
 }
-
 
 function formatarData(data) {
 
