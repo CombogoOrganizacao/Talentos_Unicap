@@ -1,411 +1,208 @@
-window.CandidaturaService = {
-
-    // =========================================================
-    // SESSÃO
-    // =========================================================
-
-    async _session() {
-
-        const {
-            data: { session },
-            error
-        } = await window.supabaseClient.auth.getSession();
-
-        if (error) {
-            throw new Error(error.message);
-        }
-
-        if (!session) {
-            throw new Error("Usuário não autenticado.");
-        }
-
-        return session;
-    },
-
-
-    // =========================================================
-    // ALUNO - CANDIDATAR-SE
-    // =========================================================
-
-    async candidatar(vagaId, mensagem = null) {
-
-        try {
-
-            const session = await this._session();
-
-            const {
-                data: candidaturaExistente,
-                error: consultaError
-            } = await window.supabaseClient
-                .from("candidaturas")
-                .select("id, status")
-                .eq("vaga_id", vagaId)
-                .eq("aluno_id", session.user.id)
-                .maybeSingle();
-
-            if (consultaError) {
-
-                return {
-                    error: consultaError.message
-                };
-
-            }
-
-            if (candidaturaExistente) {
-
-                return {
-                    error: "Você já se candidatou a esta vaga."
-                };
-
-            }
-
-            const {
-                data,
-                error
-            } = await window.supabaseClient
-                .from("candidaturas")
-                .insert({
-                    vaga_id: vagaId,
-                    aluno_id: session.user.id,
-                    mensagem: mensagem || null
-                })
-                .select()
-                .single();
-
-            if (error) {
-
-                // Candidatura duplicada
-                if (error.code === "23505") {
-
-                    return {
-                        error: "Você já se candidatou a esta vaga."
-                    };
-
-                }
-
-                return {
-                    error: error.message
-                };
-
-            }
-
-            return data;
-
-        } catch (error) {
-
-            console.error(
-                "Erro ao realizar candidatura:",
-                error
-            );
-
-            return {
-                error:
-                    error.message ||
-                    "Não foi possível realizar a candidatura."
-            };
-
-        }
-
-    },
-
-
-    // =========================================================
-    // ALUNO - MINHAS CANDIDATURAS
-    // =========================================================
-
-    async minhas() {
-
-        try {
-
-            const session = await this._session();
-
-            const {
-                data,
-                error
-            } = await window.supabaseClient
-                .from("candidaturas")
-                .select(`
-                    id,
-                    vaga_id,
-                    status,
-                    mensagem,
-                    data_candidatura,
-                    vagas (
-                        id,
-                        titulo,
-                        descricao,
-                        area,
-                        modalidade,
-                        local,
-                        remuneracao,
-                        periodo_fim
-                    )
-                `)
-                .eq("aluno_id", session.user.id)
-                .order("data_candidatura", {
-                    ascending: false
-                });
-
-            if (error) {
-
-                return {
-                    error: error.message
-                };
-
-            }
-
-            return data || [];
-
-        } catch (error) {
-
-            console.error(
-                "Erro ao buscar candidaturas:",
-                error
-            );
-
-            return {
-                error: error.message
-            };
-
-        }
-
-    },
-
-
-    // =========================================================
-    // ALUNO - CANCELAR CANDIDATURA
-    // =========================================================
-
-    async cancelar(candidaturaId) {
-
-        try {
-
-            const {
-                data,
-                error
-            } = await window.supabaseClient
-                .from("candidaturas")
-                .update({
-                    status: "CANCELADA"
-                })
-                .eq("id", candidaturaId)
-                .select()
-                .single();
-
-            if (error) {
-
-                return {
-                    error: error.message
-                };
-
-            }
-
-            return data;
-
-        } catch (error) {
-
-            return {
-                error: error.message
-            };
-
-        }
-
-    },
-
-
-    // =========================================================
-    // EMPRESA - VER CANDIDATOS DA VAGA
-    // =========================================================
-
-    async candidatosDaVaga(vagaId) {
-
-        try {
-
-            const {
-                data,
-                error
-            } = await window.supabaseClient
-                .from("candidaturas")
-                .select(`
-                    id,
-                    aluno_id,
-                    status,
-                    mensagem,
-                    data_candidatura,
-                    usuarios (
-                        id,
-                        nome
-                    )
-                `)
-                .eq("vaga_id", vagaId)
-                .order("data_candidatura", {
-                    ascending: false
-                });
-
-            if (error) {
-
-                console.error(
-                    "Erro ao buscar candidatos:",
-                    error
-                );
-
-                return {
-                    error: error.message
-                };
-
-            }
-
-            return data || [];
-
-        } catch (error) {
-
-            return {
-                error: error.message
-            };
-
-        }
-
-    },
-
-
-    // =========================================================
-    // EMPRESA - ALTERAR STATUS
-    // =========================================================
-
-    async atualizarStatus(candidaturaId, status) {
-
-        const statusPermitidos = [
-            "EM_ANALISE",
-            "SELECIONADO",
-            "RECUSADO"
-        ];
-
-        if (!statusPermitidos.includes(status)) {
-
-            return {
-                error: "Status inválido."
-            };
-
-        }
-
-        try {
-
-            const {
-                data,
-                error
-            } = await window.supabaseClient
-                .from("candidaturas")
-                .update({
-                    status: status
-                })
-                .eq("id", candidaturaId)
-                .select()
-                .single();
-
-            if (error) {
-
-                console.error(
-                    "Erro ao atualizar candidatura:",
-                    error
-                );
-
-                return {
-                    error: error.message
-                };
-
-            }
-
-            return data;
-
-        } catch (error) {
-
-            return {
-                error: error.message
-            };
-
-        }
-
-    },
-
-
-    // =========================================================
-    // VERIFICAR SE ALUNO JÁ SE CANDIDATOU
-    // =========================================================
-
-    async verificarCandidatura(vagaId) {
-
-        try {
-
-            const session = await this._session();
-
-            const {
-                data,
-                error
-            } = await window.supabaseClient
-                .from("candidaturas")
-                .select(`
-                    id,
-                    status,
-                    mensagem,
-                    data_candidatura
-                `)
-                .eq("vaga_id", vagaId)
-                .eq("aluno_id", session.user.id)
-                .maybeSingle();
-
-            if (error) {
-
-                return {
-                    error: error.message
-                };
-
-            }
-
-            return data;
-
-        } catch (error) {
-
-            return {
-                error: error.message
-            };
-
-        }
-
-    },
-
-
-    // =========================================================
-    // STATUS FORMATADO
-    // =========================================================
+// =========================================================
+// SERVIÇO DE CANDIDATURAS
+// Status: ENVIADA | EM_ANALISE | SELECIONADO | RECUSADO | CANCELADA
+// =========================================================
+(function () {
+  "use strict";
+
+  const STATUS_TEXTO = {
+    ENVIADA: "Candidatura enviada",
+    EM_ANALISE: "Em análise",
+    SELECIONADO: "Selecionado",
+    RECUSADO: "Não selecionado",
+    CANCELADA: "Cancelada"
+  };
+
+  function db() {
+    return window.supabaseClient;
+  }
+
+  function erro(e, fallback) {
+    console.error(fallback, e);
+    return { error: (e && e.message) || fallback };
+  }
+
+  window.CandidaturaService = {
 
     textoStatus(status) {
+      return STATUS_TEXTO[status] || status || "";
+    },
 
-        const statusMap = {
+    async _session() {
+      const { data: { session }, error } = await db().auth.getSession();
+      if (error) throw new Error(error.message);
+      if (!session) throw new Error("Usuário não autenticado.");
+      return session;
+    },
 
-            ENVIADA: "Candidatura enviada",
+    // =======================================================
+    // ALUNO
+    // =======================================================
 
-            EM_ANALISE: "Em análise",
+    // Candidata-se. Se o aluno já tinha cancelado, reativa a mesma candidatura.
+    async candidatar(vagaId, mensagem = null) {
+      try {
+        const session = await this._session();
+        const texto = (mensagem || "").trim() || null;
 
-            SELECIONADO: "Selecionado",
+        const { data: existente, error: erroConsulta } = await db()
+          .from("candidaturas")
+          .select("id, status")
+          .eq("vaga_id", vagaId)
+          .eq("aluno_id", session.user.id)
+          .maybeSingle();
 
-            RECUSADO: "Recusado",
+        if (erroConsulta) return erro(erroConsulta, "Não foi possível verificar sua candidatura.");
 
-            CANCELADA: "Cancelada"
+        if (existente) {
+          if (existente.status !== "CANCELADA") {
+            return { error: "Você já se candidatou a esta vaga." };
+          }
 
-        };
+          const { data, error } = await db()
+            .from("candidaturas")
+            .update({ status: "ENVIADA", mensagem: texto })
+            .eq("id", existente.id)
+            .select()
+            .maybeSingle();
 
-        return statusMap[status] || status;
+          if (error || !data) {
+            return {
+              error: "Não foi possível se candidatar novamente. A vaga pode ter sido encerrada ou pausada."
+            };
+          }
+          return data;
+        }
 
+        const { data, error } = await db()
+          .from("candidaturas")
+          .insert({ vaga_id: vagaId, aluno_id: session.user.id, mensagem: texto })
+          .select()
+          .single();
+
+        if (error) {
+          if (error.code === "23505") return { error: "Você já se candidatou a esta vaga." };
+          if (error.code === "42501") {
+            return { error: "Não foi possível se candidatar. A vaga pode ter sido encerrada ou pausada." };
+          }
+          return erro(error, "Não foi possível realizar a candidatura.");
+        }
+        return data;
+
+      } catch (e) {
+        return erro(e, "Não foi possível realizar a candidatura.");
+      }
+    },
+
+    // Candidaturas do aluno logado (inclui vagas pausadas/encerradas e a empresa)
+    async minhas() {
+      try {
+        await this._session();
+        const { data, error } = await db().rpc("minhas_candidaturas");
+        if (error) return erro(error, "Erro ao buscar candidaturas.");
+        return Array.isArray(data) ? data : [];
+      } catch (e) {
+        return erro(e, "Erro ao buscar candidaturas.");
+      }
+    },
+
+    // Uma única consulta: { "<vagaId>": { id, status } } com tudo que o aluno já fez
+    async statusPorVaga() {
+      try {
+        const session = await this._session();
+        const { data, error } = await db()
+          .from("candidaturas")
+          .select("id, vaga_id, status")
+          .eq("aluno_id", session.user.id);
+
+        if (error) return erro(error, "Erro ao verificar candidaturas.");
+
+        const mapa = {};
+        (data || []).forEach((c) => {
+          mapa[String(c.vaga_id)] = { id: c.id, status: c.status };
+        });
+        return mapa;
+      } catch (e) {
+        return erro(e, "Erro ao verificar candidaturas.");
+      }
+    },
+
+    // Mantido por compatibilidade: devolve a candidatura (ou null)
+    async verificarCandidatura(vagaId) {
+      try {
+        const session = await this._session();
+        const { data, error } = await db()
+          .from("candidaturas")
+          .select("id, status, mensagem, data_candidatura")
+          .eq("vaga_id", vagaId)
+          .eq("aluno_id", session.user.id)
+          .maybeSingle();
+
+        if (error) return erro(error, "Erro ao verificar candidatura.");
+        return data ? { ...data, existe: true } : null;
+      } catch (e) {
+        return erro(e, "Erro ao verificar candidatura.");
+      }
+    },
+
+    async cancelar(candidaturaId) {
+      try {
+        const { data, error } = await db()
+          .from("candidaturas")
+          .update({ status: "CANCELADA" })
+          .eq("id", candidaturaId)
+          .select()
+          .maybeSingle();
+
+        if (error) return erro(error, "Não foi possível cancelar a candidatura.");
+        if (!data) {
+          return { error: "Não foi possível cancelar: a empresa já decidiu sobre esta candidatura." };
+        }
+        return data;
+      } catch (e) {
+        return erro(e, "Não foi possível cancelar a candidatura.");
+      }
+    },
+
+    // =======================================================
+    // EMPRESA
+    // =======================================================
+
+    // Candidatos já ordenados do melhor encaixe para o pior
+    async candidatosDaVaga(vagaId) {
+      try {
+        const { data, error } = await db().rpc("candidatos_da_vaga", {
+          p_vaga_id: Number(vagaId)
+        });
+        if (error) return erro(error, "Erro ao buscar candidatos.");
+        return Array.isArray(data) ? data : [];
+      } catch (e) {
+        return erro(e, "Erro ao buscar candidatos.");
+      }
+    },
+
+    async atualizarStatus(candidaturaId, status) {
+      const permitidos = ["EM_ANALISE", "SELECIONADO", "RECUSADO"];
+      if (!permitidos.includes(status)) return { error: "Status inválido." };
+
+      try {
+        const { data, error } = await db()
+          .from("candidaturas")
+          .update({ status })
+          .eq("id", candidaturaId)
+          .select()
+          .maybeSingle();
+
+        if (error) return erro(error, "Erro ao atualizar candidatura.");
+        if (!data) {
+          return { error: "Candidatura não encontrada ou cancelada pelo aluno." };
+        }
+        return data;
+      } catch (e) {
+        return erro(e, "Erro ao atualizar candidatura.");
+      }
     }
+  };
 
-};
-
-
-// =========================================================
-// COMPATIBILIDADE GLOBAL
-// =========================================================
-
-window.APICandidatura = window.CandidaturaService;
-
-const CandidaturaService = window.CandidaturaService;
-const APICandidatura = window.APICandidatura;
+  window.APICandidatura = window.CandidaturaService;
+})();

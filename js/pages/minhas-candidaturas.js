@@ -1,197 +1,135 @@
-document.addEventListener(
-    "DOMContentLoaded",
-    carregarCandidaturas
-);
+// ============================================
+// MINHAS CANDIDATURAS (visão do aluno)
+// ============================================
+(function () {
+  "use strict";
 
+  const container = document.getElementById("candidaturasContainer");
+  const template = document.getElementById("candidaturaTemplate");
 
-async function carregarCandidaturas() {
+  const BADGE_STATUS = {
+    ENVIADA: "badge-blue",
+    EM_ANALISE: "badge-orange",
+    SELECIONADO: "badge-green",
+    RECUSADO: "badge-red",
+    CANCELADA: "badge-gray"
+  };
 
-    const container =
-        document.getElementById(
-            "candidaturasContainer"
-        );
+  const MODALIDADE = { PRESENCIAL: "Presencial", REMOTO: "Remoto", HIBRIDO: "Híbrido" };
 
-    try {
+  function esc(valor) {
+    return String(valor ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
 
-        const resultado =
-            await CandidaturaService.minhas();
+  // "2026-10-30" -> "30/10/2026" (sem o erro de fuso que mostra um dia a menos)
+  function formatarData(data) {
+    if (!data) return "";
+    const soData = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(data));
+    if (soData) return `${soData[3]}/${soData[2]}/${soData[1]}`;
+    const d = new Date(data);
+    return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("pt-BR");
+  }
 
-        if (resultado?.error) {
+  function aviso(html, classe) {
+    container.innerHTML = `<div class="${classe || "aviso-vazio"}">${html}</div>`;
+  }
 
-            container.innerHTML = `
-                <p>
-                    Erro ao carregar candidaturas:
-                    ${resultado.error}
-                </p>
-            `;
+  async function iniciar() {
+    const tipo = await Auth._detectarTipoConta();
 
-            return;
-        }
-
-        if (!resultado.length) {
-
-            container.innerHTML = `
-                <p>
-                    Você ainda não se candidatou
-                    a nenhuma vaga.
-                </p>
-
-                <a href="lista-vagas.html">
-                    Ver vagas disponíveis
-                </a>
-            `;
-
-            return;
-        }
-
-        container.innerHTML = "";
-
-        resultado.forEach(
-            candidatura => {
-
-                const template =
-                    document.getElementById(
-                        "candidaturaTemplate"
-                    );
-
-                const node =
-                    template.content.cloneNode(
-                        true
-                    );
-
-                const vaga =
-                    candidatura.vagas;
-
-                node.querySelector(
-                    '[data-role="titulo"]'
-                ).textContent =
-                    vaga?.titulo ||
-                    "Vaga";
-
-                node.querySelector(
-                    '[data-role="area"]'
-                ).textContent =
-                    vaga?.area ||
-                    "-";
-
-                node.querySelector(
-                    '[data-role="modalidade"]'
-                ).textContent =
-                    vaga?.modalidade ||
-                    "-";
-
-                node.querySelector(
-                    '[data-role="local"]'
-                ).textContent =
-                    vaga?.local ||
-                    "-";
-
-                node.querySelector(
-                    '[data-role="data"]'
-                ).textContent =
-                    formatarData(
-                        candidatura.data_candidatura
-                    );
-
-                node.querySelector(
-                    '[data-role="status"]'
-                ).textContent =
-                    CandidaturaService.textoStatus(
-                        candidatura.status
-                    );
-
-                const botaoCancelar =
-                    node.querySelector(
-                        '[data-role="cancelar"]'
-                    );
-
-                if (
-                    candidatura.status !==
-                        "ENVIADA" &&
-                    candidatura.status !==
-                        "EM_ANALISE"
-                ) {
-
-                    botaoCancelar.remove();
-
-                } else {
-
-                    botaoCancelar.addEventListener(
-                        "click",
-                        () => cancelar(
-                            candidatura.id
-                        )
-                    );
-                }
-
-                container.appendChild(
-                    node
-                );
-            }
-        );
-
-    } catch (error) {
-
-        console.error(error);
-
-        container.innerHTML = `
-            <p>
-                Não foi possível carregar
-                suas candidaturas.
-            </p>
-        `;
+    if (!tipo) {
+      window.location.href = "login.html";
+      return;
     }
-}
-
-
-async function cancelar(
-    candidaturaId
-) {
-
-    const confirmar =
-        confirm(
-            "Deseja cancelar esta candidatura?"
-        );
-
-    if (!confirmar) {
-        return;
+    if (tipo === "empresa") {
+      window.location.href = "lista-vagas.html";
+      return;
     }
 
-    const resultado =
-        await CandidaturaService.cancelar(
-            candidaturaId
-        );
+    await carregar();
+  }
 
-    if (resultado?.error) {
+  async function carregar() {
+    const resultado = await CandidaturaService.minhas();
 
-        alert(
-            resultado.error
-        );
-
-        return;
+    if (resultado && resultado.error) {
+      aviso(`Erro ao carregar candidaturas: ${esc(resultado.error)}`, "aviso-erro");
+      return;
     }
 
-    alert(
-        "Candidatura cancelada."
-    );
-
-    location.reload();
-}
-
-
-function formatarData(data) {
-
-    if (!data) {
-        return "-";
+    if (!resultado.length) {
+      aviso(`Você ainda não se candidatou a nenhuma vaga.<br><br>
+        <a class="btn btn-primary" href="lista-vagas.html">Ver vagas disponíveis</a>`);
+      return;
     }
 
-    return new Date(data)
-        .toLocaleDateString(
-            "pt-BR",
-            {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric"
-            }
-        );
-}
+    container.innerHTML = "";
+    resultado.forEach((c) => container.appendChild(montarCard(c)));
+  }
+
+  function montarCard(c) {
+    const node = template.content.cloneNode(true);
+    const q = (role) => node.querySelector(`[data-role="${role}"]`);
+    const vaga = c.vagas || {};
+
+    q("titulo").textContent = vaga.titulo || "Vaga";
+    q("empresa").textContent = vaga.empresa || "";
+    q("modalidade").textContent = MODALIDADE[vaga.modalidade] ? "💼 " + MODALIDADE[vaga.modalidade] : "";
+    q("local").textContent = vaga.local ? "📍 " + vaga.local : "";
+    q("remuneracao").textContent = vaga.remuneracao ? "$ " + vaga.remuneracao : "";
+    q("data").textContent = formatarData(c.data_candidatura);
+    q("prazo").textContent = vaga.periodo_fim ? `Seleção até ${formatarData(vaga.periodo_fim)}` : "";
+
+    const badge = q("status");
+    badge.textContent = CandidaturaService.textoStatus(c.status);
+    badge.classList.add(BADGE_STATUS[c.status] || "badge-gray");
+
+    // avisos sobre a situação da vaga
+    const aviso = q("aviso");
+    if (vaga.status === "FECHADA") {
+      aviso.textContent = "Esta vaga foi encerrada pela empresa.";
+      aviso.hidden = false;
+    } else if (vaga.status === "PAUSADA") {
+      aviso.textContent = "Esta vaga está temporariamente pausada.";
+      aviso.hidden = false;
+    }
+
+    // ações
+    const botaoCancelar = q("cancelar");
+    const podeCancelar = c.status === "ENVIADA" || c.status === "EM_ANALISE";
+
+    if (podeCancelar) {
+      botaoCancelar.addEventListener("click", () => cancelar(c.id, botaoCancelar));
+    } else {
+      botaoCancelar.remove();
+    }
+
+    if (c.status === "CANCELADA" && vaga.status === "ABERTA") {
+      q("reenviar").hidden = false;
+    }
+
+    return node;
+  }
+
+  async function cancelar(candidaturaId, botao) {
+    if (!confirm("Deseja cancelar esta candidatura?")) return;
+
+    botao.disabled = true;
+    const resultado = await CandidaturaService.cancelar(candidaturaId);
+
+    if (resultado && resultado.error) {
+      alert(resultado.error);
+      botao.disabled = false;
+      return;
+    }
+
+    await carregar();
+  }
+
+  iniciar();
+})();

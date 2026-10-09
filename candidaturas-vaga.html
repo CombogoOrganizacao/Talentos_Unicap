@@ -2,125 +2,125 @@
 <html lang="pt-BR">
 
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <title>Candidatos da vaga</title>
-
-    <link
-        rel="stylesheet"
-        href="css/style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Candidatos da vaga - TalentoUNICAP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
 </head>
 
 <body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <img src="img/asabranca_Unicap.png" width="40" alt="UNICAP">
+        Talento<span>UNICAP</span>
+      </a>
+      <div class="nav-links">
+        <a href="busca-talentos.html" class="nav-text-link">Buscar Talentos</a>
+        <a href="lista-vagas.html" class="nav-text-link active">Minhas Vagas</a>
+        <button class="btn btn-secondary btn-sm" type="button" onclick="Auth.logout()">
+          <i class="ph-fill ph-sign-out"></i> Sair
+        </button>
+      </div>
+    </div>
+  </nav>
 
-    <header>
+  <main class="container" style="padding-top:32px;padding-bottom:64px;max-width:960px;">
 
-        <h1>Candidatos</h1>
-
-        <a href="lista-vagas.html">
-            Voltar para vagas
-        </a>
-
-    </header>
-
-
-    <main>
-
-        <h2 id="tituloVaga">
-            Candidatos da vaga
-        </h2>
-
-        <div id="candidatosContainer">
-
-            <p>
-                Carregando candidatos...
-            </p>
-
+    <div class="page-intro">
+      <p class="eyebrow"><i class="ph-fill ph-users"></i> Candidaturas</p>
+      <div class="page-intro-row">
+        <div>
+          <h1 id="tituloVaga" style="font-size:28px;margin-bottom:8px;">Candidatos da vaga</h1>
+          <p class="page-desc" id="subtituloVaga">Carregando...</p>
         </div>
+        <a class="btn btn-secondary" href="lista-vagas.html">
+          <i class="ph-fill ph-arrow-left"></i> Voltar para vagas
+        </a>
+      </div>
+    </div>
 
-    </main>
+    <div id="vagaRequisitos" style="margin-bottom:16px;" hidden></div>
 
+    <div id="resumoMelhor" class="melhor-encaixe" hidden></div>
 
-    <template id="candidatoTemplate">
+    <div class="candidatos-toolbar" id="toolbar" hidden>
+      <select id="filtroStatus" aria-label="Filtrar por status">
+        <option value="">Todos os status</option>
+        <option value="ENVIADA">Candidatura enviada</option>
+        <option value="EM_ANALISE">Em análise</option>
+        <option value="SELECIONADO">Selecionado</option>
+        <option value="RECUSADO">Não selecionado</option>
+      </select>
+      <label>
+        <input type="checkbox" id="mostrarCanceladas"> Mostrar candidaturas canceladas
+      </label>
+    </div>
 
-        <article class="candidato-card">
+    <div id="candidatosContainer" class="page-stack">
+      <p class="aviso-vazio">Carregando candidatos...</p>
+    </div>
+  </main>
 
-            <h3 data-role="nome"></h3>
+  <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
 
-            <p>
-                <strong>Data da candidatura:</strong>
-                <span data-role="data"></span>
-            </p>
+  <template id="candidatoTemplate">
+    <article class="card candidato-card">
+      <div class="candidato-topo">
+        <div>
+          <span class="badge badge-gold" data-role="melhor" hidden>🏆 Melhor encaixe</span>
+          <h3 data-role="nome"></h3>
+          <p class="candidato-sub" data-role="subtitulo"></p>
+        </div>
+        <div class="compat" data-role="compat">
+          <span class="compat-valor" data-role="score">0%</span>
+          <span class="compat-rotulo" data-role="rotulo">compatibilidade</span>
+          <div class="compat-bar"><i data-role="barra"></i></div>
+        </div>
+      </div>
 
-            <p>
-                <strong>Mensagem:</strong>
-                <span data-role="mensagem"></span>
-            </p>
+      <div data-role="grupo-atendidos" hidden>
+        <p class="skill-grupo-titulo">Requisitos que ele(a) tem</p>
+        <div data-role="atendidos"></div>
+      </div>
 
-            <p>
-                <strong>Status:</strong>
-                <span data-role="status"></span>
-            </p>
+      <div data-role="grupo-faltando" hidden>
+        <p class="skill-grupo-titulo">Requisitos que faltam</p>
+        <div data-role="faltando"></div>
+      </div>
 
-            <div class="candidato-acoes">
+      <p class="candidato-msg" data-role="mensagem" hidden></p>
 
-                <a
-                    data-role="curriculo"
-                    target="_blank">
+      <p class="candidato-meta">
+        <span>Candidatou-se em <span data-role="data"></span></span>
+        <span class="badge" data-role="status"></span>
+        <span data-role="contato"></span>
+      </p>
 
-                    Ver currículo
+      <div class="candidato-acoes">
+        <a class="btn btn-outline btn-sm" data-role="curriculo">
+          <i class="ph-fill ph-scroll"></i> Ver currículo
+        </a>
+        <button class="btn btn-secondary btn-sm" type="button" data-action="EM_ANALISE">Colocar em análise</button>
+        <button class="btn btn-primary btn-sm" type="button" data-action="SELECIONADO">Selecionar</button>
+        <button class="btn btn-danger btn-sm" type="button" data-action="RECUSADO">Recusar</button>
+      </div>
+    </article>
+  </template>
 
-                </a>
-
-                <button
-                    type="button"
-                    data-action="analise">
-
-                    Colocar em análise
-
-                </button>
-
-                <button
-                    type="button"
-                    data-action="selecionar">
-
-                    Selecionar
-
-                </button>
-
-                <button
-                    type="button"
-                    data-action="recusar">
-
-                    Recusar
-
-                </button>
-
-            </div>
-
-        </article>
-
-    </template>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <script src="js/config/config.js"></script>
-
-    <script src="js/config/supabase-client.js"></script>
-
-    <script src="js/security/auth.js"></script>
-
-    <script src="js/services/candidatura-service.js"></script>
-
-    <script src="js/pages/candidaturas-vaga.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config/config.js"></script>
+  <script src="js/config/supabase-client.js"></script>
+  <script src="js/security/auth.js"></script>
+  <script src="js/services/empresa-service.js"></script>
+  <script src="js/services/candidatura-service.js"></script>
+  <script src="js/pages/candidaturas-vaga.js"></script>
+  <script src="js/utils/mobile-nav.js" defer></script>
 </body>
 
 </html>

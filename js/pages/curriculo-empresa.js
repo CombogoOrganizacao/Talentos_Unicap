@@ -57,6 +57,18 @@
 
     const slug = params.get('slug');
 
+    // Quando a empresa chega por uma candidatura (?vaga=ID), o aluno escolheu
+    // enviar o currículo para ela, mesmo que o perfil esteja oculto na busca.
+    const vagaContexto = params.get('vaga');
+
+    if (vagaContexto) {
+      const voltar = document.querySelector('a.btn[href="busca-talentos.html"]');
+      if (voltar) {
+        voltar.href = 'candidaturas-vaga.html?vaga=' + encodeURIComponent(vagaContexto);
+        if (voltar.lastChild) voltar.lastChild.textContent = ' Voltar aos candidatos';
+      }
+    }
+
     console.log('URL atual:', window.location.href);
     console.log('slug recebido:', slug);
 
@@ -120,8 +132,9 @@
     }
 
     if (
-      profile.visivel_para_empresas === false ||
-      profile.visivel_para_empresas === 'false'
+      !vagaContexto &&
+      (profile.visivel_para_empresas === false ||
+      profile.visivel_para_empresas === 'false')
     ) {
 
       cvContent.innerHTML = `

@@ -64,7 +64,7 @@
         if (!k.toLowerCase().includes(p)) continue;
         if (v === null || v === undefined || v === "") continue;
         if (Array.isArray(v)) {
-          if (v.length) return v.join("\n");
+          if (v.length && v.every((x) => typeof x !== "object")) return v.join("\n");
           continue;
         }
         return String(v);
@@ -73,15 +73,20 @@
     return "";
   };
 
+  // "30" (número vindo do banco) vira "30h/semana"
+  function formatarCarga(valor) {
+    return /^\d+$/.test(String(valor).trim()) ? `${String(valor).trim()}h/semana` : valor;
+  }
+
   const vaga = {
     titulo:      pick("titulo", "title", "cargo"),
     empresa:     pick("empresa_nome", "empresanome", "nome_empresa", "nomeempresa", "empresa", "company", "depart", "setor"),
-    carga:       pick("carga_horaria", "cargahoraria", "carga", "horas"),
+    carga:       formatarCarga(pick("carga", "carga_horaria", "cargahoraria", "horas")),
     remuneracao: pick("remunera", "bolsa", "salario", "valor"),
     local:       pick("local", "modalidade", "cidade"),
     periodoFim:  pick("periodofim", "periodo_fim", "datafim", "data_fim", "prazo", "limite", "encerr"),
     contato:     pick("contato", "link", "email"),
-    requisitos:  pick("requisito", "habilidade"),
+    requisitos:  pick("requisito", "requisitad", "habilidade"),
     descricao:   pick("descri"),
     area:        pick("area", "curso", "categoria")
   };

@@ -6,6 +6,13 @@ let vagas = [];
 let vagasFiltradas = [];
 let modo = "empresa";
 
+const STATUS_BADGE_CLASS = {
+  Ativa: "badge-green",
+  Rascunho: "badge-gray",
+  Pausada: "badge-orange",
+  Encerrada: "badge-red"
+};
+
 // ============================================
 // ELEMENTOS DA PÁGINA
 // ============================================
@@ -65,6 +72,14 @@ function escapeHtml(valor) {
 
 function formatarData(data) {
   if (!data) return "";
+
+  // Datas sem horário (YYYY-MM-DD) são formatadas direto,
+  // senão o fuso do Brasil mostraria um dia a menos.
+  const apenasData = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(data));
+  if (apenasData) {
+    return `${apenasData[3]}/${apenasData[2]}/${apenasData[1]}`;
+  }
+
 
   const d = new Date(data);
 
@@ -212,6 +227,8 @@ async function carregarVagas() {
       Array.isArray(resultado)
         ? resultado
         : [];
+
+    await carregarStatusCandidaturas();
 
     atualizarContadores();
     aplicarFiltros();
@@ -407,14 +424,55 @@ function aplicarOrdenacao() {
 // BOTÃO DE CANDIDATURA
 // ============================================
 
-async function configurarBotaoCandidatura(
-  node,
-  vaga
-) {
-  const botao =
-    node.querySelector(
-      '[data-action="candidatar"]'
-    );
+// Candidaturas do aluno logado: { "<vagaId>": { id, status } }
+let candidaturasPorVaga = {};
+
+async function carregarStatusCandidaturas() {
+  candidaturasPorVaga = {};
+
+  if (modo !== "aluno" || !window.CandidaturaService) return;
+
+  const mapa = await CandidaturaService.statusPorVaga();
+
+  if (mapa && !mapa.error) {
+    candidaturasPorVaga = mapa;
+  } else if (mapa && mapa.error) {
+    console.warn("Não foi possível carregar suas candidaturas:", mapa.error);
+  }
+}
+
+function atualizarBotaoCandidatura(botao, vagaId) {
+  botao.dataset.vagaId = vagaId;
+  botao.disabled = false;
+  botao.classList.remove("disabled");
+  botao.innerHTML =
+    '<i class="ph-fill ph-paper-plane-tilt"></i> Candidatar-se';
+
+  const candidatura = candidaturasPorVaga[String(vagaId)];
+  if (!candidatura) return;
+
+  if (candidatura.status === "CANCELADA") {
+    botao.innerHTML =
+      '<i class="ph-fill ph-paper-plane-tilt"></i> Candidatar-se novamente';
+    return;
+  }
+
+  const textos = {
+    ENVIADA: "✓ Candidatura enviada",
+    EM_ANALISE: "Em análise",
+    SELECIONADO: "🎉 Selecionado",
+    RECUSADO: "Não selecionado"
+  };
+
+  botao.disabled = true;
+  botao.classList.add("disabled");
+  botao.textContent =
+    textos[candidatura.status] ||
+    CandidaturaService.textoStatus(candidatura.status);
+}
+
+function configurarBotaoCandidatura(node, vaga) {
+  const botao = node.querySelector('[data-action="candidatar"]');
 
   if (!botao) return;
 
@@ -423,121 +481,52 @@ async function configurarBotaoCandidatura(
     return;
   }
 
-  botao.dataset.vagaId =
-    vaga.id;
-
-  try {
-    if (
-      window.CandidaturaService &&
-      typeof CandidaturaService.verificarCandidatura ===
-        "function"
-    ) {
-      const resultado =
-        await CandidaturaService.verificarCandidatura(
-          vaga.id
-        );
-
-      if (resultado?.error) {
-        console.warn(
-          "Não foi possível verificar candidatura:",
-          resultado.error
-        );
-        return;
-      }
-
-      if (resultado?.existe) {
-        botao.disabled = true;
-
-        if (
-          typeof CandidaturaService.textoStatus ===
-          "function"
-        ) {
-          botao.textContent =
-            CandidaturaService.textoStatus(
-              resultado.status
-            );
-        } else {
-          botao.textContent =
-            "✓ Candidatura enviada";
-        }
-
-        botao.classList.add("disabled");
-      }
-    }
-  } catch (erro) {
-    console.warn(
-      "Erro ao verificar candidatura:",
-      erro
-    );
-  }
+  atualizarBotaoCandidatura(botao, vaga.id);
 }
 
 // ============================================
 // REALIZAR CANDIDATURA
 // ============================================
 
-async function realizarCandidatura(
-  botao,
-  vagaId
-) {
+async function realizarCandidatura(botao, vagaId) {
   if (!botao || !vagaId) return;
 
   if (!window.CandidaturaService) {
-    alert(
-      "Serviço de candidatura não carregado."
-    );
+    alert("Serviço de candidatura não carregado.");
     return;
   }
 
-  const confirmar =
-    confirm(
-      "Deseja realmente se candidatar a esta vaga?"
-    );
+  const confirmar = confirm(
+    "Deseja realmente se candidatar a esta vaga?\n\n" +
+    "A empresa poderá ver o seu currículo completo."
+  );
 
   if (!confirmar) return;
-
-  const textoOriginal =
-    botao.textContent;
 
   botao.disabled = true;
   botao.textContent = "Enviando...";
 
   try {
-    const resultado =
-      await CandidaturaService.candidatar(
-        vagaId
-      );
+    const resultado = await CandidaturaService.candidatar(vagaId);
 
     if (resultado?.error) {
       alert(resultado.error);
-      botao.disabled = false;
-      botao.textContent =
-        textoOriginal;
+      atualizarBotaoCandidatura(botao, vagaId);
       return;
     }
 
-    botao.textContent =
-      "✓ Candidatura enviada";
+    candidaturasPorVaga[String(vagaId)] = {
+      id: resultado.id,
+      status: "ENVIADA"
+    };
 
-    botao.classList.add("disabled");
-
-    alert(
-      "Candidatura enviada com sucesso!"
-    );
+    atualizarBotaoCandidatura(botao, vagaId);
+    alert("Candidatura enviada com sucesso!");
 
   } catch (erro) {
-    console.error(
-      "Erro ao realizar candidatura:",
-      erro
-    );
-
-    alert(
-      "Não foi possível realizar a candidatura."
-    );
-
-    botao.disabled = false;
-    botao.textContent =
-      textoOriginal;
+    console.error("Erro ao realizar candidatura:", erro);
+    alert("Não foi possível realizar a candidatura.");
+    atualizarBotaoCandidatura(botao, vagaId);
   }
 }
 
@@ -627,8 +616,15 @@ function render() {
       );
 
     if (status) {
-      status.textContent =
-        vaga.status || "Ativa";
+      if (modo === "aluno") {
+        status.remove();
+      } else {
+        const textoStatus = vaga.status || "Ativa";
+        status.textContent = textoStatus;
+        status.classList.add(
+          STATUS_BADGE_CLASS[textoStatus] || "badge-gray"
+        );
+      }
     }
 
     if (titulo) {
@@ -644,18 +640,15 @@ function render() {
     }
 
     if (carga) {
-      carga.textContent =
-        vaga.carga || "";
+      carga.textContent = vaga.carga ? "⏱ " + vaga.carga : "";
     }
 
     if (local) {
-      local.textContent =
-        vaga.local || "";
+      local.textContent = vaga.local ? "📍 " + vaga.local : "";
     }
 
     if (salario) {
-      salario.textContent =
-        vaga.remuneracao || "";
+      salario.textContent = vaga.remuneracao ? "$ " + vaga.remuneracao : "";
 
       if (
         modo === "aluno" &&
@@ -895,37 +888,25 @@ function abrirCandidaturas(
 // INSTAGRAM
 // ============================================
 
-async function compartilharInstagram(
-  vagaId
-) {
-  const vaga =
-    vagas.find(
-      item =>
-        String(item.id) ===
-        String(vagaId)
-    );
+function compartilharInstagram(vagaId) {
+  const vaga = vagas.find(
+    (item) => String(item.id) === String(vagaId)
+  );
 
   if (!vaga) return;
 
-  const texto =
-    `Confira esta oportunidade: ${vaga.titulo}`;
-
   try {
-    await navigator.clipboard.writeText(
-      texto
+    localStorage.setItem(
+      "talentosUnicap.ultimaVagaPublicada",
+      JSON.stringify(vaga)
     );
+  } catch (erro) {}
 
-    alert(
-      "Texto da vaga copiado. Agora você pode publicar no Instagram."
-    );
-  } catch (erro) {
-    console.error(
-      "Erro ao copiar texto:",
-      erro
-    );
+  const encoded = btoa(
+    unescape(encodeURIComponent(JSON.stringify(vaga)))
+  );
 
-    alert(texto);
-  }
+  window.location.href = "exportacao-instagram.html?vaga=" + encoded;
 }
 
 // ============================================
