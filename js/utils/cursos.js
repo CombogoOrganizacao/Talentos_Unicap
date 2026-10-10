@@ -15,7 +15,13 @@ function gerarOpcoesCurso(grau, cursoSelecionado = '') {
   const opcoes = lista
     .map(c => `<option value="${c}" ${c === cursoSelecionado ? 'selected' : ''}>${c}</option>`)
     .join('');
-  return `<option value="">Selecione um curso</option>${opcoes}`;
+
+  // Curso fora das listas da UNICAP (ex.: importado do LinkedIn, de outra instituição):
+  // mantém o valor salvo como opção, para não ser perdido ao editar a formação.
+  const extra = cursoSelecionado && !lista.includes(cursoSelecionado)
+    ? `<option value="${String(cursoSelecionado).replace(/"/g, '&quot;').replace(/</g, '&lt;')}" selected>${String(cursoSelecionado).replace(/</g, '&lt;')}</option>`
+    : '';
+  return `<option value="">Selecione um curso</option>${extra}${opcoes}`;
 }
 
 // Atualiza o dropdown de curso quando o grau muda

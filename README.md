@@ -28,6 +28,7 @@ Para as empresas, a plataforma oferece recursos para criação de perfil, busca 
 * Visualização do currículo.
 * Exportação do currículo em **PDF**.
 * Exportação do currículo em **DOCX**.
+* Importação do currículo a partir do **LinkedIn** (arquivo oficial de dados, com revisão antes de salvar).
 * Perfil público.
 * Visualização de vagas.
 * Recebimento de mensagens de empresas.
@@ -65,6 +66,7 @@ Para as empresas, a plataforma oferece recursos para criação de perfil, busca 
 | Backend serverless | Supabase Edge Functions  |
 | Exportação PDF     | jsPDF + html2canvas      |
 | Exportação DOCX    | docx + FileSaver         |
+| Importação LinkedIn| JSZip (leitura do ZIP)   |
 | API externa        | IBGE                     |
 | Deploy             | Vercel                   |
 
@@ -81,6 +83,35 @@ A arquitetura atual do projeto utiliza o **Supabase como plataforma de backend**
 O front-end é uma aplicação web estática desenvolvida com **HTML, CSS e JavaScript**, consumindo diretamente os serviços do Supabase.
 
 > **Importante:** versões anteriores do projeto utilizaram uma API REST em Spring Boot. Porém, a implementação atual deste repositório utiliza Supabase como backend principal.
+
+---
+
+# 🔗 Importação de dados do LinkedIn
+
+O LinkedIn **não possui API pública** para ler experiências, formação e habilidades de um perfil, e fazer
+*scraping* viola os termos de uso. Por isso a importação usa o arquivo oficial **"Obter uma cópia dos seus dados"**
+(ZIP com CSVs), que o próprio aluno baixa em
+[linkedin.com/mypreferences/d/download-my-data](https://www.linkedin.com/mypreferences/d/download-my-data).
+
+O arquivo é lido **inteiramente no navegador** (nada é enviado ao LinkedIn nem a terceiros). O aluno revisa o que
+será importado e só o que estiver marcado é gravado, pelos mesmos recursos de `aluno-service.js` usados nas telas manuais.
+
+| Arquivo do LinkedIn | Vai para |
+| ------------------- | -------- |
+| `Profile.csv` | Sobre mim (resumo, ou título profissional se não houver resumo), endereço, cidade/estado, GitHub e portfólio (campo *Websites*) |
+| `PhoneNumbers.csv` | Telefone (prefere celular brasileiro) |
+| `Positions.csv` | Experiências (sem data de término = trabalho atual) |
+| `Education.csv` | Formação; curso e período do cabeçalho (período **estimado** pela data de início) |
+| `Skills.csv` / `Languages.csv` | Habilidades (Técnica, Soft Skill ou Ferramenta) e Idiomas (com nível) |
+| `Projects.csv` | Projetos (com término = Concluído) |
+| `Certifications.csv` | Certificações (certificação sem data de emissão não é importada, pois o campo é obrigatório) |
+
+Regras: campos já preenchidos **não** são sobrescritos por padrão; itens já cadastrados são ignorados
+(deduplicação); textos são limpos de HTML e limitados aos tamanhos definidos em `RegraNgocios`; URLs só são aceitas com
+`http(s)`. O arquivo do LinkedIn não traz o endereço do perfil, então o link vem de um campo opcional no modal.
+
+Arquivos: `js/services/linkedin-import-service.js` (leitura, conversão, plano e gravação, sem dependência de DOM),
+`js/pages/linkedin-import.js` (modal) e a biblioteca JSZip (CDN com SRI) em `dashboard.html`.
 
 ---
 

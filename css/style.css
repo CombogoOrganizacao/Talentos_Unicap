@@ -2155,3 +2155,82 @@ img, svg, video { max-width: 100%; height: auto; }
 .candidatura-aviso { font-size: 13px; color: var(--gold-500); }
 .aviso-vazio { text-align: center; padding: 48px 16px; color: var(--gray-500); }
 .aviso-erro { background: #FEE2E2; color: var(--red-500); border-radius: 8px; padding: 12px 16px; }
+
+
+/* ============================================
+   IMPORTAÇÃO DO LINKEDIN (dashboard)
+   ============================================ */
+.li-modal { max-width: 720px; }
+.li-passos { margin: 0 0 16px 18px; padding: 0; color: var(--gray-600); font-size: 14px; line-height: 1.5; }
+.li-passos li { margin-bottom: 6px; }
+.li-secao { margin-bottom: 20px; }
+.li-secao h4 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 15px; margin-bottom: 8px; }
+.li-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--gray-100, #f3f4f6); }
+.li-item > label, label.li-item { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; flex: 1; min-width: 0; }
+.li-item input[type="checkbox"] { margin-top: 3px; flex-shrink: 0; }
+.li-item .li-sub { display: block; font-size: 13px; color: var(--gray-500); overflow-wrap: anywhere; }
+.li-item .li-aviso { color: var(--red-500, #b91c1c); }
+.li-bloqueado { opacity: .7; }
+.li-grau { width: auto; max-width: 170px; padding: 6px 8px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 13px; }
+.li-todos { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray-600); margin-bottom: 4px; cursor: pointer; }
+.li-nivel { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; font-size: 13px; }
+.li-nivel select { width: auto; padding: 6px 8px; border: 1px solid var(--gray-300); border-radius: 8px; }
+.li-nivel small { color: var(--gray-500); }
+.li-resumo { margin: 0 0 0 18px; color: var(--gray-700); font-size: 14px; line-height: 1.7; }
+@media (max-width: 640px) { .li-item { flex-direction: column; } .li-grau { max-width: 100%; } }
+
+/* ============================================
+   BOTÃO "VER SENHA" (js/utils/password-toggle.js)
+   ============================================ */
+.password-field { position: relative; display: block; }
+.password-field input { padding-right: 46px; }
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--gray-500);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s, transform 0.18s ease;
+}
+.password-toggle:hover { color: var(--unicap-500); background: var(--gray-50); transform: translateY(-50%) scale(1.12); }
+.password-toggle:active { transform: translateY(-50%) scale(0.96); }
+.password-toggle:focus-visible { outline: 2px solid var(--unicap-500); outline-offset: 1px; }
+.password-toggle[aria-pressed="true"] { color: var(--unicap-500); }
+
+/* ============================================
+   BARRA "VOLTAR / PRÓXIMO" (js/utils/page-nav.js)
+   ============================================ */
+.page-nav { padding: 20px 0 28px; }
+.page-nav-inner { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.page-nav-btn {
+  min-width: 128px;
+  justify-content: center;
+  padding: 11px 22px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.2s, opacity 0.2s;
+}
+.page-nav-btn:hover:not(:disabled) {
+  transform: scale(1.08);
+  box-shadow: 0 6px 16px rgba(30, 64, 175, 0.18);
+}
+.page-nav-btn:active:not(:disabled) { transform: scale(0.97); }
+.page-nav-btn:focus-visible { outline: 2px solid var(--unicap-500); outline-offset: 2px; }
+.page-nav-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+@media (max-width: 480px) {
+  .page-nav-btn { flex: 1; min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-nav-btn, .password-toggle { transition: none; }
+  .page-nav-btn:hover:not(:disabled) { transform: none; }
+  .password-toggle:hover { transform: translateY(-50%); }
+}
+@media print { .page-nav { display: none !important; } }
