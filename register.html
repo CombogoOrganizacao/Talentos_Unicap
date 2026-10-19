@@ -81,7 +81,7 @@
       aviso.classList.remove('hidden');
 
       document.getElementById('btnContinuar').onclick = function () {
-        window.location.href = (tipoConta === 'empresa' ? 'busca-talentos.html' : 'dashboard.html');
+        (window.navegarComTransicao || function (u) { window.location.href = u; })((tipoConta === 'empresa' ? 'busca-talentos.html' : 'dashboard.html'));
       };
 
       document.getElementById('btnOutraConta').onclick = async function () {
@@ -132,11 +132,11 @@
         const result = await Auth.register(name, email, password);
 
         if (result.requiresEmailConfirmation) {
-          window.location.href = `confirmacao-email.html?email=${encodeURIComponent(email)}&tipo=aluno`;
+          (window.navegarComTransicao || function (u) { window.location.href = u; })(`confirmacao-email.html?email=${encodeURIComponent(email)}&tipo=aluno`);
           return;
         }
 
-        window.location.href = 'dashboard.html';
+        (window.navegarComTransicao || function (u) { window.location.href = u; })('dashboard.html');
 
       } catch (error) {
         console.error('Erro ao criar conta:', error);
@@ -149,6 +149,7 @@
       }
     });
   </script>
+  <script src="js/utils/ux.js" defer></script>
   <script src="js/utils/mobile-nav.js" defer></script>
 </body>
 

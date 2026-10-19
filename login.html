@@ -86,7 +86,7 @@
       aviso.classList.remove('hidden');
 
       document.getElementById('btnContinuar').onclick = function () {
-        window.location.href = destinoPorTipoConta(tipoConta);
+        (window.navegarComTransicao || function (u) { window.location.href = u; })(destinoPorTipoConta(tipoConta));
       };
 
       document.getElementById('btnOutraConta').onclick = async function () {
@@ -126,7 +126,7 @@
 
       try {
         const user = await Auth.loginWithIdentifier(identifier, password);
-        window.location.href = destinoPorTipoConta(user.tipoConta);
+        (window.navegarComTransicao || function (u) { window.location.href = u; })(destinoPorTipoConta(user.tipoConta));
       } catch (error) {
         console.error('Erro ao fazer login:', error);
 
@@ -152,6 +152,7 @@
     });
   </script>
   <script src="js/utils/password-toggle.js" defer></script>
+  <script src="js/utils/ux.js" defer></script>
   <script src="js/utils/mobile-nav.js" defer></script>
 </body>
 

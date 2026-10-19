@@ -16,9 +16,6 @@
   // Fluxo entre telas. Valor string = página; função = resolvida no clique;
   // null = botão desabilitado; ausente = histórico do navegador (voltar).
   var ROTAS = {
-    // Landing
-    'index.html': { voltar: null, proximo: 'login.html' },
-
     // Aluno: Currículo (abas) → Preview → Vagas → Candidaturas → Mensagens
     'preview.html': { voltar: 'dashboard.html', proximo: 'lista-vagas.html' },
     'minhas-candidaturas.html': { voltar: 'lista-vagas.html', proximo: 'caixa-entrada-aluno.html' },
@@ -64,7 +61,11 @@
     return b;
   }
 
-  function irPara(url) { if (url) window.location.href = url; }
+  function irPara(url) {
+    if (!url) return;
+    if (typeof window.navegarComTransicao === 'function') window.navegarComTransicao(url);
+    else window.location.href = url;
+  }
 
   function voltarHistorico() {
     if (window.history.length > 1) window.history.back();
@@ -73,6 +74,7 @@
 
   function montarBarra() {
     var pagina = paginaAtual();
+    if (pagina === 'index.html') return;   // página inicial: sem Voltar/Próximo
     var ehDashboard = !!document.querySelector('.tabs .tab-btn[data-tab]');
     var rota = ROTAS[pagina];
 
