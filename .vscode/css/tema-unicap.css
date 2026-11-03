@@ -1,0 +1,249 @@
+/* ============================================
+   TalentoUNICAP - Tema UNICAP: vermelho, bordô e dourado da Asa Branca (paleta + degradê + fundo animado do hero)
+   Carregar DEPOIS de style.css e ANTES de interno.css
+   ============================================ */
+
+/* Fontes da identidade: títulos (Schibsted Grotesk) e nome no currículo (Source Serif 4) */
+@import url('https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&display=swap');
+
+:root {
+  /* PALETA UNICAP: vermelho -> vermelho bordô, com o dourado da logo da Asa Branca (#C28330) como cor de apoio */
+  --unicap-50: #fdf2f4;
+  --unicap-100: #f8e1e6;
+  --unicap-200: #e9bfc8;
+  --unicap-300: #dc8f9f;
+  --unicap-400: #e0364c;   /* vermelho vivo */
+  --unicap-500: #b0102b;   /* vermelho UNICAP */
+  --unicap-600: #7a001e;   /* bordô */
+  --unicap-700: #570016;   /* bordô escuro */
+
+  --gold-100: #fbf1de;
+  --gold-300: #e8be72;     /* dourado claro */
+  --gold-400: #c28330;     /* dourado da Asa Branca */
+  --gold-500: #8a5a17;     /* dourado escuro (textos) */
+
+  /* DEGRADÊ DA MARCA: vermelho vivo -> vermelho -> bordô */
+  --grad-brand: linear-gradient(135deg, #e0364c 0%, #b0102b 50%, #7a001e 100%);
+  --grad-brand-rev: linear-gradient(135deg, #7a001e 0%, #b0102b 50%, #e0364c 100%);
+  --grad-brand-h: linear-gradient(90deg, #e0364c 0%, #b0102b 55%, #7a001e 100%);
+  /* degradê com o dourado da Asa Branca (destaques) */
+  --grad-gold: linear-gradient(90deg, #7a001e 0%, #b0102b 45%, #c28330 100%);
+}
+
+/* botão e barra de progresso */
+.btn-primary {
+  background: var(--grad-brand-h);
+  background-size: 140% 100%;
+  background-position: 0% 0;
+  color: white;
+  transition: background-position 0.35s ease, box-shadow 0.2s, transform 0.2s, opacity 0.2s;
+}
+.btn-primary:hover { background-position: 100% 0; box-shadow: 0 6px 16px rgba(176, 16, 43, 0.35); }
+.progress-fill { background: var(--grad-brand-h); }
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus { box-shadow: 0 0 0 3px rgba(176, 16, 43, .15); }
+
+/* faixas de topo e card de post */
+.company-hero, .empresa-hero { background: var(--grad-brand); }
+.post-card { background: linear-gradient(160deg, #e0364c 0%, #b0102b 50%, #7a001e 100%); }
+
+/* hero da página inicial */
+.hero {
+  background: linear-gradient(120deg, #e0364c, #b0102b 40%, #7a001e 72%, #570016);
+  background-size: 300% 300%;
+  animation: heroGradient 18s ease-in-out infinite;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+@keyframes heroGradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.hero > .container,
+.hero > *:not(.hero-bg) { position: relative; z-index: 2; }
+.hero .btn-primary { background: white; background-image: none; color: var(--unicap-600); }
+.hero .btn-primary:hover { background: var(--unicap-50); box-shadow: 0 8px 22px rgba(72, 8, 19, 0.3); }
+
+/* ============================================
+   HERO: FUNDO ANIMADO INTERATIVO
+   ============================================ */
+.hero-bg {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;   /* fallback para navegadores sem "inset" */
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: .55;
+  animation: blobDrift 22s ease-in-out infinite;
+}
+.hero-blob.b1 { width: 460px; height: 460px; left: -120px; top: -140px; background: radial-gradient(circle, #e0364c, transparent 70%); }
+.hero-blob.b2 { width: 520px; height: 520px; right: -160px; bottom: -200px; background: radial-gradient(circle, #c28330, transparent 70%); animation-delay: -8s; }
+.hero-blob.b3 { width: 340px; height: 340px; left: 45%; top: 20%; background: radial-gradient(circle, #b0102b, transparent 70%); opacity: .4; animation-delay: -14s; }
+
+@keyframes blobDrift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(60px, 40px) scale(1.12); }
+  66% { transform: translate(-40px, 60px) scale(.94); }
+}
+
+.hero-grid {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px);
+  background-size: 48px 48px;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+  mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+  animation: gridSlide 40s linear infinite;
+}
+@keyframes gridSlide { to { background-position: 48px 48px, 48px 48px; } }
+
+.hero-item {
+  position: absolute;
+  will-change: transform;
+}
+.hero-item-inner {
+  width: var(--s, 64px);
+  height: var(--s, 64px);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, rgba(255,255,255,.28), rgba(255,255,255,.08));
+  border: 1px solid rgba(255,255,255,.35);
+  box-shadow: 0 10px 30px rgba(70, 0, 18, .25), inset 0 1px 0 rgba(255,255,255,.4);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  opacity: var(--o, .85);
+  animation: itemFloat var(--d, 9s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+.hero-item-inner svg { width: 52%; height: 52%; }
+.hero-item.round .hero-item-inner { border-radius: 50%; }
+.hero-item.is-hit .hero-item-inner { animation: itemPop .6s ease; }
+
+@keyframes itemFloat {
+  0%, 100% { transform: translateY(0) rotate(var(--r0, -4deg)); }
+  50% { transform: translateY(-18px) rotate(var(--r1, 5deg)); }
+}
+@keyframes itemPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.35) rotate(8deg); box-shadow: 0 0 0 10px rgba(255,255,255,.18); }
+  100% { transform: scale(1); }
+}
+
+.hero-ripple {
+  position: absolute;
+  width: 20px; height: 20px;
+  margin: -10px 0 0 -10px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.8);
+  animation: heroRipple 1s ease-out forwards;
+}
+@keyframes heroRipple { to { transform: scale(14); opacity: 0; } }
+
+.hero-glow {
+  position: absolute;
+  width: 360px; height: 360px;
+  margin: -180px 0 0 -180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,.28), transparent 65%);
+  opacity: 0;
+  transition: opacity .4s;
+  left: 0; top: 0;
+  will-change: transform;
+}
+.hero.is-pointer .hero-glow { opacity: 1; }
+
+/* pausa tudo dentro do hero quando ele sai da tela (hero-background.js) */
+.hero-bg.is-paused *, .hero-bg.is-paused { animation-play-state: paused !important; }
+
+@media (max-width: 768px), (hover: none) {
+  /* aparelhos de toque/fracos: sem blur pesado e sem repintura do gradiente */
+  .hero-item-inner { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(255,255,255,.2); }
+  .hero { animation: none; background-size: 100% 100%; }
+  .hero-grid { animation: none; }
+}
+
+@media (max-width: 768px) {
+  .hero-item:nth-child(n+10) { display: none; }
+  .hero-item-inner { --s: 48px !important; border-radius: 14px; }
+  .hero-blob { filter: blur(40px); }
+}
+
+@media not all /* reduzir movimento ignorado de propósito */ {
+  .hero, .hero-blob, .hero-grid, .hero-item-inner { animation: none !important; }
+  .hero-item-inner { transform: none; }
+  .hero-glow, .hero-ripple { display: none; }
+}
+
+/* ============================================
+   IDENTIDADE: o currículo como objeto
+   (vale para todas as páginas; não toca no currículo exportado)
+   ============================================ */
+:root {
+  --font-display: 'Schibsted Grotesk', 'Inter', system-ui, sans-serif;
+  /* marca-texto no dourado claro da Asa Branca (legível com tinta escura e sobre o vermelho) */
+  --marker: #e8be72;
+}
+
+/* títulos com voz própria */
+h1, h2, .navbar-brand { font-family: var(--font-display); letter-spacing: -0.02em; }
+h1, h2 { text-wrap: balance; }
+
+/* o currículo (prévia, exportação e post) continua com a fonte original */
+#cvContent h1, #cvContent h2, .cv-header h1, .cv-header h2,
+.cv-preview h1, .cv-preview h2, .post-card h1, .post-card h2 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  letter-spacing: normal;
+}
+
+/* marca-texto: ênfase da marca em qualquer página (<mark class="marca"> ou <em class="marca">) */
+.marca {
+  font-style: normal;
+  color: #2a0f13;
+  padding: 0 .12em;
+  margin: 0 -.06em;
+  background: linear-gradient(100deg, transparent 0 .2em, var(--marker) .2em calc(100% - .15em), transparent calc(100% - .15em)) 0 62% / 100% 84% no-repeat;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* "UNICAP" da marca com o traço do marca-texto */
+.navbar-brand span {
+  background: linear-gradient(var(--marker), var(--marker)) 0 100% / 100% 4px no-repeat;
+  padding-bottom: 2px;
+}
+
+/* superfícies do navegador também levam a marca */
+::selection { background: var(--marker); color: #2a0f13; }
+input, textarea { caret-color: var(--unicap-500); }
+input[type="checkbox"], input[type="radio"], input[type="range"], progress { accent-color: var(--unicap-500); }
+a { text-underline-offset: 3px; }
+html { scrollbar-color: #dc8f9f transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #e3a4b1; border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background: #b0102b; background-clip: padding-box; }
+::-webkit-scrollbar-track { background: transparent; }
+[data-theme="dark"] { scrollbar-color: #7a4553 transparent; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #7a4553; background-clip: padding-box; }
+
+/* elementos utilitários */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap; border: 0;
+}

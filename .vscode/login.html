@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrar - TalentoUNICAP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=8">
+<link rel="stylesheet" href="css/tema-unicap.css?v=8">
+<link rel="stylesheet" href="css/interno.css?v=8">
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-brand">
+        <img src="img/asabranca_Unicap.png" width="40px" alt="">
+        Talento<span>UNICAP</span>
+      </a>
+
+      <div class="nav-links"><a href="register.html" class="btn btn-primary btn-sm">Criar Conta</a></div>
+    </div>
+  </nav>
+  <div class="auth-page">
+    <div class="card auth-card">
+      <div class="card-body">
+        <h2>Bem-vindo de volta</h2>
+        <p class="subtitle">Entre na sua conta para acessar seu currículo</p>
+
+<div id="jaLogado" class="hidden" style="text-align:center;">
+          <h2>Você já está conectado</h2>
+          <p class="subtitle" id="jaLogadoMsg"></p>
+          <button type="button" class="btn btn-primary" style="width:100%;" id="btnContinuar">Continuar</button>
+          <button type="button" class="btn btn-secondary" style="width:100%;margin-top:10px;" id="btnOutraConta">Entrar com outra conta</button>
+        </div>
+                <div id="errorMsg" class="error-msg hidden"></div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label>E-mail ou CNPJ</label>
+            <input type="text" id="email" inputmode="email" autocomplete="username" placeholder="seu@email.com ou 00.000.000/0000-00">
+          </div>
+          <div class="form-group">
+            <label>Senha</label>
+            <input type="password" id="password" placeholder="••••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;" id="loginBtn">Entrar</button>
+        </form>
+        <p style="text-align:center;margin-top:12px;font-size:13px;">
+          <a href="recuperar-senha.html">Esqueci minha senha</a>
+        </p>
+        <p style="text-align:center;margin-top:20px;font-size:14px;color:var(--gray-600);">
+          Não tem uma conta? <a href="register.html">Criar conta de aluno</a><br>
+          <span style="font-size:13px;">É uma empresa? <a href="cadastro-empresa.html">Cadastre sua empresa aqui</a></span>
+        </p>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config/config.js"></script>
+  <script src="js/config/supabase-client.js"></script>
+  <script src="js/services/aluno-service.js"></script>
+  <script src="js/security/auth.js"></script>
+  <script src="js/services/empresa-service.js"></script>
+  <script>
+    // Redireciona de acordo com o tipo de conta: empresa -> painel de busca
+    // de talentos; aluno -> editor de currículo.
+    function destinoPorTipoConta(tipoConta) {
+      return tipoConta === 'empresa' ? 'busca-talentos.html' : 'dashboard.html';
+    }
+
+    // Se já existe sessão, NÃO redireciona sozinho (ex.: ao voltar com a seta
+    // do navegador). Pergunta se a pessoa quer continuar ou trocar de conta.
+    Auth.onAuthChange = function (loggedIn, tipoConta) {
+      if (!loggedIn) return;
+
+      const aviso = document.getElementById('jaLogado');
+      const form = document.getElementById('loginForm');
+      const titulo = document.querySelector('.auth-card .card-body > h2');
+      const subtitulo = document.querySelector('.auth-card .card-body > .subtitle');
+      const erro = document.getElementById('errorMsg');
+
+      document.getElementById('jaLogadoMsg').textContent =
+        'Conectado como ' + (Auth.user?.nome || Auth.user?.email || 'usuário') + '.';
+
+      [titulo, subtitulo, erro, form].forEach(el => el && el.classList.add('hidden'));
+      document.querySelectorAll('.auth-card .card-body > p').forEach(p => p.classList.add('hidden'));
+      aviso.classList.remove('hidden');
+
+      document.getElementById('btnContinuar').onclick = function () {
+        (window.navegarComTransicao || function (u) { window.location.href = u; })(destinoPorTipoConta(tipoConta));
+      };
+
+      document.getElementById('btnOutraConta').onclick = async function () {
+        await Auth.logout(false);
+        aviso.classList.add('hidden');
+        [titulo, subtitulo, form].forEach(el => el && el.classList.remove('hidden'));
+        document.querySelectorAll('.auth-card .card-body > p').forEach(p => p.classList.remove('hidden'));
+      };
+    };
+
+    Auth.init();
+
+    // Alunos: e-mail. Empresas: e-mail ou CNPJ (via Edge Function).
+
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const identifier = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const btn = document.getElementById('loginBtn');
+      const errDiv = document.getElementById('errorMsg');
+
+      if (!identifier) {
+        errDiv.textContent = 'Digite seu e-mail ou CNPJ.';
+        errDiv.classList.remove('hidden');
+        return;
+      }
+      if (!password) {
+        errDiv.textContent = 'Digite sua senha.';
+        errDiv.classList.remove('hidden');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Entrando...';
+      errDiv.classList.add('hidden');
+
+      try {
+        const user = await Auth.loginWithIdentifier(identifier, password);
+        (window.navegarComTransicao || function (u) { window.location.href = u; })(destinoPorTipoConta(user.tipoConta));
+      } catch (error) {
+        console.error('Erro ao fazer login:', error);
+
+        const message = String(error?.message || '');
+        if (message.toLowerCase().includes('email not confirmed')) {
+          errDiv.innerHTML = `
+            <strong>E-mail ainda não confirmado.</strong><br>
+            Verifique sua caixa de entrada para ativar a conta.
+            <br><a href="confirmacao-email.html" style="display:inline-block;margin-top:6px;">
+              Reenviar e-mail de confirmação
+            </a>`;
+        } else if (message.toLowerCase().includes('invalid login credentials')) {
+          errDiv.textContent = 'E-mail/CNPJ ou senha incorretos.';
+        } else {
+          errDiv.textContent = message || 'Não foi possível entrar. Tente novamente.';
+        }
+
+        errDiv.classList.remove('hidden');
+
+        btn.disabled = false;
+        btn.textContent = 'Entrar';
+      }
+    });
+  </script>
+  <script src="js/utils/password-toggle.js" defer></script>
+  <script src="js/utils/ux.js?v=6" defer></script>
+  <script src="js/utils/mobile-nav.js" defer></script>
+<script src="js/components/theme-toggle.js"></script>
+<script src="js/components/scroll-fx.js?v=6"></script>
+  <script src="js/components/bg-icons.js?v=8" defer></script>
+</body>
+
+</html>

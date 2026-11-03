@@ -1,0 +1,4 @@
+pdf.js (Mozilla) 4.10.38 - build "legacy", licença Apache-2.0 (veja LICENSE).
+Usado só pela importação de currículo em PDF (js/services/curriculo-import-service.js),
+carregado sob demanda quando o aluno escolhe um PDF. Para atualizar:
+  npm i pdfjs-dist@<versão> e copie legacy/build/pdf.min.mjs e legacy/build/pdf.worker.min.mjs.

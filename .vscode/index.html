@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TalentoUNICAP - Currículos de Alunos da UNICAP</title>
+  <meta name="description" content="A plataforma oficial para alunos da UNICAP criarem currículos, se candidatarem a vagas e serem encontrados por empresas.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Schibsted+Grotesk:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=8">
+  <link rel="stylesheet" href="css/tema-unicap.css?v=8">
+  <link rel="stylesheet" href="css/interno.css?v=8">
+  <link rel="stylesheet" href="css/home.css?v=2">
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" type="text/css"
+    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+</head>
+
+<body class="lp">
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="img/asabranca_Unicap.png" width="40" alt="" style="display: block;">
+        <a href="index.html" class="navbar-brand" style="display: inline-flex; align-items: center; line-height: 1;">
+          Talentos<span>UNICAP</span>
+        </a>
+      </div>
+      <div class="nav-links">
+        <a href="cadastro-empresa.html" class="nav-text-link">Área da Empresa</a>
+        <div class="nav-links" id="navLinks"></div>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- 1. HERO: a folha editável -->
+    <section class="lp-hero" aria-labelledby="heroTitulo">
+      <div class="container">
+        <div class="lp-hero-copy">
+          <img class="lp-hero-logo" src="img/Novo_Logo_Unicap.png" alt="Universidade Católica de Pernambuco">
+          <h1 id="heroTitulo">Construa seu currículo <em class="marca" data-marca>profissional</em></h1>
+          <p class="lp-hero-lead">A plataforma oficial para alunos da UNICAP criarem currículos impactantes. Cadastre suas
+            experiências, habilidades e projetos, e exporte em PDF ou DOCX.</p>
+          <div class="lp-hero-actions">
+            <a href="register.html" class="btn btn-primary btn-lg" id="heroBtn">Criar Meu Currículo →</a>
+            <a href="login.html" class="btn btn-secondary btn-lg">Já tenho conta</a>
+            <a href="lista-vagas.html" class="btn-link"><i class="ph-bold ph-briefcase" aria-hidden="true"></i> Painel de Vagas</a>
+          </div>
+          <p class="lp-hero-hint"><i class="ph-bold ph-cursor-text" aria-hidden="true"></i> Escreva seu nome na folha ao lado e veja como fica.</p>
+        </div>
+
+        <div class="lp-sheet-wrap">
+          <article class="sheet" aria-labelledby="sheetTitulo">
+            <h2 class="visually-hidden" id="sheetTitulo">Prévia do currículo</h2>
+            <svg class="sheet-clip" viewBox="0 0 26 74" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true">
+              <path d="M8 22V60a5 5 0 0 0 10 0V10a7 7 0 0 0-14 0v52a9 9 0 0 0 18 0V24" />
+            </svg>
+            <div class="sheet-top">
+              <img src="img/asabranca_Unicap.png" alt="">
+              <span class="sheet-tag">Prévia · nada é salvo</span>
+            </div>
+
+            <label class="visually-hidden" for="sheetNome">Seu nome</label>
+            <input class="sheet-name" id="sheetNome" type="text" maxlength="60" autocomplete="name"
+              placeholder="Escreva seu nome" spellcheck="false">
+            <div class="sheet-line">
+              <span>Graduação em</span>
+              <label class="visually-hidden" for="sheetCurso">Seu curso</label>
+              <select class="sheet-course" id="sheetCurso">
+                <option value="">escolha o curso</option>
+              </select>
+              <span>· UNICAP</span>
+            </div>
+
+            <div class="sheet-sec">
+              <h3 class="sheet-h">Formação</h3>
+              <p>Universidade Católica de Pernambuco<br><small data-curso-label>Curso em andamento</small></p>
+            </div>
+
+            <div class="sheet-sec">
+              <h3 class="sheet-h">Habilidades</h3>
+              <div class="sheet-skills" role="group" aria-label="Adicionar habilidades à prévia">
+                <button type="button" class="skill-chip" aria-pressed="false"><i class="ph-bold ph-plus" aria-hidden="true"></i>Comunicação</button>
+                <button type="button" class="skill-chip" aria-pressed="false"><i class="ph-bold ph-plus" aria-hidden="true"></i>Trabalho em equipe</button>
+                <button type="button" class="skill-chip" aria-pressed="false"><i class="ph-bold ph-plus" aria-hidden="true"></i>Inglês</button>
+                <button type="button" class="skill-chip" aria-pressed="false"><i class="ph-bold ph-plus" aria-hidden="true"></i>Excel</button>
+                <button type="button" class="skill-chip" aria-pressed="false"><i class="ph-bold ph-plus" aria-hidden="true"></i>Oratória</button>
+                <button type="button" class="skill-chip" aria-pressed="false"><i class="ph-bold ph-plus" aria-hidden="true"></i>Python</button>
+              </div>
+            </div>
+
+            <div class="sheet-sec">
+              <h3 class="sheet-h">Experiência</h3>
+              <span class="skel w90"></span>
+              <span class="skel w75"></span>
+              <span class="skel w60"></span>
+            </div>
+
+            <div class="sheet-sec">
+              <h3 class="sheet-h">Projetos e certificações</h3>
+              <span class="skel w75"></span>
+              <span class="skel w40"></span>
+            </div>
+
+            <div class="sheet-foot">
+              <span>Pronto para exportar</span>
+              <span class="sheet-formats"><span>PDF</span><span>DOCX</span><span>LINK</span></span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. ETAPAS: pasta com abas -->
+    <section class="lp-steps" aria-labelledby="etapasTitulo">
+      <div class="container">
+        <div class="lp-head">
+          <h2 id="etapasTitulo">Da folha em branco ao <span class="marca" data-marca>PDF pronto</span></h2>
+          <p>Tudo que você precisa para se destacar, em quatro etapas. Clique em cada aba.</p>
+        </div>
+
+        <div class="folder">
+          <div class="folder-tabs" role="tablist" aria-label="Etapas do currículo">
+            <button type="button" class="folder-tab" role="tab" id="tab-1" aria-controls="painel-1" aria-selected="true"><span class="n">1</span><span>Importe<span class="label-long"> o que já tem</span></span></button>
+            <button type="button" class="folder-tab" role="tab" id="tab-2" aria-controls="painel-2" aria-selected="false" tabindex="-1"><span class="n">2</span><span>Preencha<span class="label-long"> sua trajetória</span></span></button>
+            <button type="button" class="folder-tab" role="tab" id="tab-3" aria-controls="painel-3" aria-selected="false" tabindex="-1"><span class="n">3</span><span>Fique visível</span></button>
+            <button type="button" class="folder-tab" role="tab" id="tab-4" aria-controls="painel-4" aria-selected="false" tabindex="-1"><span class="n">4</span><span>Exporte<span class="label-long"> e compartilhe</span></span></button>
+          </div>
+
+          <div class="folder-body">
+            <!-- Etapa 1 -->
+            <div class="folder-panel" role="tabpanel" id="painel-1" aria-labelledby="tab-1" tabindex="0">
+              <div class="panel-copy">
+                <h3>Comece pelo que você já tem</h3>
+                <p>Não precisa digitar tudo do zero. Traga seus dados e revise antes de salvar.</p>
+                <ul class="panel-list">
+                  <li><i class="ph-bold ph-linkedin-logo" aria-hidden="true"></i>Importe do LinkedIn pelo arquivo oficial de dados</li>
+                  <li><i class="ph-bold ph-file-pdf" aria-hidden="true"></i>Ou envie um currículo antigo em PDF ou Word (.docx)</li>
+                  <li><i class="ph-bold ph-eye" aria-hidden="true"></i>Você confere cada campo antes de ir para o currículo</li>
+                </ul>
+                <a href="register.html" class="panel-link">Criar conta e importar <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></a>
+              </div>
+              <div class="panel-visual panel-visual--import" aria-hidden="true">
+                <div class="import-files">
+                  <span class="file-chip"><i class="ph-bold ph-linkedin-logo"></i>dados-linkedin.zip</span>
+                  <span class="file-chip"><i class="ph-bold ph-file-pdf"></i>curriculo.pdf</span>
+                  <span class="file-chip"><i class="ph-bold ph-file-doc"></i>curriculo.docx</span>
+                </div>
+                <div class="mini-sheet">
+                  <div class="mini-name" data-nome>Seu nome</div>
+                  <div class="mini-row"><i class="ph-bold ph-check-circle"></i><span class="skel"></span></div>
+                  <div class="mini-row"><i class="ph-bold ph-check-circle"></i><span class="skel"></span></div>
+                  <div class="mini-row"><i class="ph-bold ph-check-circle"></i><span class="skel w60"></span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Etapa 2 -->
+            <div class="folder-panel" role="tabpanel" id="painel-2" aria-labelledby="tab-2" tabindex="0" hidden>
+              <div class="panel-copy">
+                <h3>Preencha sua trajetória</h3>
+                <p>Cada parte do currículo tem o seu lugar, e você atualiza quando quiser.</p>
+                <ul class="panel-list">
+                  <li><i class="ph-bold ph-graduation-cap" aria-hidden="true"></i>Formação acadêmica, com os cursos da UNICAP</li>
+                  <li><i class="ph-bold ph-briefcase" aria-hidden="true"></i>Experiências, projetos e certificações</li>
+                  <li><i class="ph-bold ph-paperclip" aria-hidden="true"></i>Upload de comprovantes</li>
+                </ul>
+                <a href="register.html" class="panel-link">Começar meu currículo <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></a>
+              </div>
+              <div class="panel-visual" aria-hidden="true">
+                <div class="mini-sheet">
+                  <div class="mini-name" data-nome>Seu nome</div>
+                  <div class="mini-row"><i class="ph-bold ph-check-circle"></i><strong>Formação</strong></div>
+                  <div class="mini-row"><i class="ph-bold ph-check-circle"></i><strong>Experiências</strong></div>
+                  <div class="mini-row"><i class="ph-bold ph-check-circle"></i><strong>Habilidades</strong></div>
+                  <div class="mini-row"><i class="ph-bold ph-check-circle"></i><strong>Projetos</strong></div>
+                  <div class="mini-row"><i class="ph-bold ph-check-circle"></i><strong>Certificações</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Etapa 3 -->
+            <div class="folder-panel" role="tabpanel" id="painel-3" aria-labelledby="tab-3" tabindex="0" hidden>
+              <div class="panel-copy">
+                <h3>Fique visível para as empresas</h3>
+                <p>Você decide quem vê seu perfil e quando está buscando oportunidade.</p>
+                <ul class="panel-list">
+                  <li><i class="ph-bold ph-toggle-right" aria-hidden="true"></i>Disponibilidade para estágio e visibilidade do perfil</li>
+                  <li><i class="ph-bold ph-briefcase" aria-hidden="true"></i>Painel de vagas e acompanhamento das candidaturas</li>
+                  <li><i class="ph-bold ph-envelope-simple" aria-hidden="true"></i>Mensagens de empresas direto na sua caixa de entrada</li>
+                </ul>
+                <a href="lista-vagas.html" class="panel-link">Ver o painel de vagas <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></a>
+              </div>
+              <div class="panel-visual">
+                <div class="mini-sheet">
+                  <div class="mini-name" data-nome aria-hidden="true">Seu nome</div>
+                  <span class="status-pill" id="statusPill" aria-live="polite">Não disponível</span>
+                  <div class="toggles">
+                    <div class="toggle-row">
+                      <span id="lblEstagio">Disponível para estágio</span>
+                      <button type="button" class="switch" role="switch" aria-checked="false" aria-labelledby="lblEstagio" data-switch="estagio"></button>
+                    </div>
+                    <div class="toggle-row">
+                      <span id="lblPerfil">Perfil visível para empresas</span>
+                      <button type="button" class="switch" role="switch" aria-checked="false" aria-labelledby="lblPerfil" data-switch="perfil"></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Etapa 4 -->
+            <div class="folder-panel" role="tabpanel" id="painel-4" aria-labelledby="tab-4" tabindex="0" hidden>
+              <div class="panel-copy">
+                <h3>Exporte e compartilhe</h3>
+                <p>Seu currículo sai pronto para enviar, imprimir ou mandar por link.</p>
+                <ul class="panel-list">
+                  <li><i class="ph-bold ph-file-pdf" aria-hidden="true"></i>PDF profissional para enviar ou imprimir</li>
+                  <li><i class="ph-bold ph-file-doc" aria-hidden="true"></i>DOCX editável no Word</li>
+                  <li><i class="ph-bold ph-link" aria-hidden="true"></i>Perfil público com link para recrutadores</li>
+                </ul>
+                <a href="register.html" class="panel-link">Criar meu currículo <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></a>
+              </div>
+              <div class="panel-visual" aria-hidden="true">
+                <div class="mini-sheet">
+                  <div class="mini-name" data-nome>Seu nome</div>
+                  <span class="skel w90"></span>
+                  <span class="skel w75"></span>
+                  <span class="skel w90"></span>
+                  <span class="skel w40"></span>
+                  <div class="share-link"><i class="ph-bold ph-link"></i>talentosunicap · perfil público</div>
+                </div>
+                <div class="stamps">
+                  <span class="stamp s1">PDF</span>
+                  <span class="stamp s2">DOCX</span>
+                  <span class="stamp s3">LINK</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. DOIS LADOS: aluno / empresa -->
+    <section class="lp-sides" aria-labelledby="ladosTitulo">
+      <div class="container sides-layout">
+        <div class="lp-head" style="margin-bottom:0;">
+          <h2 id="ladosTitulo">Uma folha, <span class="marca" data-marca>dois lados</span></h2>
+          <p>De um lado, o aluno monta o currículo. Do outro, a empresa encontra quem procura.</p>
+          <div class="side-switch" role="group" aria-label="Escolha o seu lado">
+            <span class="thumb" aria-hidden="true"></span>
+            <button type="button" aria-pressed="true" data-side="aluno"><i class="ph-bold ph-student" aria-hidden="true"></i>Sou aluno</button>
+            <button type="button" aria-pressed="false" data-side="empresa"><i class="ph-bold ph-buildings" aria-hidden="true"></i>Sou empresa</button>
+          </div>
+        </div>
+
+        <div class="flip" id="flip">
+          <div class="flip-inner">
+            <article class="flip-face flip-front" aria-label="Para alunos">
+              <header>
+                <h3>Para alunos</h3>
+                <span>Gratuito para quem estuda na UNICAP</span>
+              </header>
+              <ul class="flip-list">
+                <li><i class="ph-bold ph-scroll" aria-hidden="true"></i><span><strong>Currículo completo</strong><small>Experiências, habilidades, projetos e certificações.</small></span></li>
+                <li><i class="ph-bold ph-download-simple" aria-hidden="true"></i><span><strong>PDF e DOCX</strong><small>Baixe pronto para enviar ou editar no Word.</small></span></li>
+                <li><i class="ph-bold ph-globe" aria-hidden="true"></i><span><strong>Perfil compartilhável</strong><small>Um link público para recrutadores.</small></span></li>
+                <li><i class="ph-bold ph-briefcase" aria-hidden="true"></i><span><strong>Vagas e candidaturas</strong><small>Candidate-se e acompanhe cada processo.</small></span></li>
+              </ul>
+              <a href="register.html" class="btn btn-primary btn-lg">Criar Conta Grátis →</a>
+            </article>
+
+            <article class="flip-face flip-back" aria-label="Para empresas" aria-hidden="true">
+              <header>
+                <h3>Para empresas</h3>
+                <span>Login por e-mail ou CNPJ</span>
+              </header>
+              <ul class="flip-list">
+                <li><i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i><span><strong>Busca de talentos</strong><small>Encontre alunos por curso e habilidades.</small></span></li>
+                <li><i class="ph-bold ph-megaphone" aria-hidden="true"></i><span><strong>Publicação de vagas</strong><small>Com requisitos e habilidades desejadas.</small></span></li>
+                <li><i class="ph-bold ph-users-three" aria-hidden="true"></i><span><strong>Candidatos compatíveis</strong><small>Veja quem combina com cada vaga.</small></span></li>
+                <li><i class="ph-bold ph-chat-circle-text" aria-hidden="true"></i><span><strong>Mensagens diretas</strong><small>Fale com o aluno e acompanhe as enviadas.</small></span></li>
+              </ul>
+              <a href="cadastro-empresa.html" class="btn btn-primary btn-lg" tabindex="-1">Cadastrar Empresa →</a>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. FECHAMENTO -->
+    <section class="lp-close" aria-labelledby="fimTitulo">
+      <div class="container">
+        <span class="close-stamp" id="closeStamp" aria-hidden="true">PRONTO PARA ENVIAR</span>
+        <h2 id="fimTitulo">Comece agora mesmo<span data-nome-virgula></span></h2>
+        <p>Crie sua conta gratuita e comece a construir seu currículo profissional em minutos.</p>
+        <div class="actions">
+          <a href="register.html" class="btn btn-primary btn-lg">Criar Conta Grátis →</a>
+          <a href="cadastro-empresa.html" class="btn btn-secondary btn-lg">Sou empresa</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
+
+  <!-- Confirmação de sessão ativa -->
+  <div id="confirmaSessao" hidden
+    style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px;">
+    <div class="card" style="max-width:380px;width:100%;" role="dialog" aria-modal="true" aria-labelledby="confirmaTitulo">
+      <div class="card-body" style="text-align:center;">
+        <h2 id="confirmaTitulo" style="margin-bottom:6px;">Você já está conectado</h2>
+        <p class="subtitle" id="confirmaMsg" style="margin-bottom:20px;"></p>
+        <button type="button" class="btn btn-primary" style="width:100%;" id="btnConfirmaContinuar">Continuar</button>
+        <button type="button" class="btn btn-secondary" style="width:100%;margin-top:10px;" id="btnConfirmaOutra">Entrar com outra conta</button>
+        <button type="button" class="btn btn-outline" style="width:100%;margin-top:10px;" id="btnConfirmaFechar">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config/config.js"></script>
+  <script src="js/config/supabase-client.js"></script>
+  <script src="js/services/aluno-service.js"></script>
+  <script src="js/security/auth.js"></script>
+  <script>
+    // Quando há sessão ativa, não leva direto ao painel: pergunta antes,
+    // para evitar entrar sem querer na conta de outra pessoa.
+    Auth.onAuthChange = function (loggedIn, tipoConta) {
+      const nav = document.getElementById('navLinks');
+      const heroBtn = document.getElementById('heroBtn');
+
+      if (!loggedIn) {
+        nav.innerHTML = '<a href="login.html" class="btn btn-secondary btn-sm">Entrar</a><a href="register.html" class="btn btn-primary btn-sm">Criar Conta</a>';
+        return;
+      }
+
+      const ehEmpresa = tipoConta === 'empresa';
+      const destino = ehEmpresa ? 'busca-talentos.html' : 'dashboard.html';
+      const rotulo = ehEmpresa ? 'Buscar Talentos' : 'Meu Currículo';
+
+      nav.innerHTML = '<a href="#" id="navMeuPainel" class="btn btn-primary btn-sm">' + rotulo + '</a>';
+      heroBtn.href = '#';
+      heroBtn.textContent = ehEmpresa ? 'Acessar Busca de Talentos →' : 'Acessar Meu Currículo →';
+
+      function abrirConfirmacao(e) {
+        e.preventDefault();
+        document.getElementById('confirmaMsg').textContent =
+          'Conectado como ' + (Auth.user?.nome || Auth.user?.email || 'usuário') + '.';
+        document.getElementById('confirmaSessao').hidden = false;
+        document.getElementById('btnConfirmaContinuar').focus();
+      }
+
+      document.getElementById('navMeuPainel').addEventListener('click', abrirConfirmacao);
+      heroBtn.addEventListener('click', abrirConfirmacao);
+
+      document.getElementById('btnConfirmaContinuar').onclick = function () {
+        window.location.href = destino;
+      };
+      document.getElementById('btnConfirmaOutra').onclick = async function () {
+        await Auth.logout(false);
+        window.location.href = 'login.html';
+      };
+      document.getElementById('btnConfirmaFechar').onclick = function () {
+        document.getElementById('confirmaSessao').hidden = true;
+      };
+    };
+    Auth.init();
+  </script>
+  <script src="js/pages/home.js?v=1" defer></script>
+  <script src="js/utils/ux.js?v=6" defer></script>
+  <script src="js/utils/mobile-nav.js" defer></script>
+  <script src="js/components/theme-toggle.js"></script>
+  <script src="js/components/scroll-fx.js?v=6"></script>
+</body>
+
+</html>
