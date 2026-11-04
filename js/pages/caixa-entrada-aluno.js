@@ -3,6 +3,7 @@
 
   let allMsgs = [];
   let openId = null;
+  const esc = window.escapeHtml;
 
   function initials(nome) {
     if (!nome) return '?';
@@ -93,33 +94,33 @@
       item.innerHTML = `
         <div class="msg-item-top">
           <div class="msg-item-who">
-            <div class="msg-avatar">${initials(m.remetenteNome)}</div>
+            <div class="msg-avatar">${esc(initials(m.remetenteNome))}</div>
             <div>
-              <h4>${m.remetenteNome || 'Empresa'}</h4>
-              <div class="sub">${m.assunto || ''}</div>
+              <h4>${esc(m.remetenteNome || 'Empresa')}</h4>
+              <div class="sub">${esc(m.assunto)}</div>
             </div>
           </div>
           <div class="msg-item-meta">
-            ${m.vagaRelacionada ? `<span class="vaga-tag">Vaga: ${m.vagaRelacionada}</span>` : ''}
-            <span class="badge ${STATUS_BADGE[m.status] || 'badge-gray'}">${STATUS_LABEL_ALUNO[m.status] || m.status || 'Nova'}</span>
+            ${m.vagaRelacionada ? `<span class="vaga-tag">Vaga: ${esc(m.vagaRelacionada)}</span>` : ''}
+            <span class="badge ${STATUS_BADGE[m.status] || 'badge-gray'}">${esc(STATUS_LABEL_ALUNO[m.status] || m.status || 'Nova')}</span>
             <span>Recebida em ${fmtDateOnly(m.criadoEm)}</span>
           </div>
         </div>
         ${isOpen ? `
         <div class="msg-thread">
           <div class="msg-bubble sent">
-            <div class="label">${m.remetenteNome || 'Empresa'}: ${m.assunto || ''} <span class="timestamp">${fmtDateTime(m.criadoEm)}</span></div>
-            ${m.mensagem || ''}
+            <div class="label">${esc(m.remetenteNome || 'Empresa')}: ${esc(m.assunto)} <span class="timestamp">${fmtDateTime(m.criadoEm)}</span></div>
+            ${esc(m.mensagem)}
           </div>
           ${m.resposta ? `
           <div class="msg-bubble reply">
             <div class="label">Sua resposta <span class="timestamp">${fmtDateTime(m.resposta.criadoEm)}</span></div>
-            ${m.resposta.texto || ''}
+            ${esc(m.resposta.texto)}
           </div>` : ''}
           <div class="reply-box" style="margin-top:12px;">
-            <textarea id="replyTexto-${m.id}" rows="3" placeholder="Escreva sua resposta..." style="width:100%;"></textarea>
+            <textarea id="replyTexto-${esc(m.id)}" rows="3" placeholder="Escreva sua resposta..." style="width:100%;"></textarea>
             <div style="text-align:right;margin-top:8px;">
-              <button class="btn btn-primary btn-sm" data-reply="${m.id}">Responder</button>
+              <button class="btn btn-primary btn-sm" data-reply="${esc(m.id)}">Responder</button>
             </div>
           </div>
         </div>` : ''}

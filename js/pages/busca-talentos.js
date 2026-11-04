@@ -13,6 +13,7 @@
     return new Date(d + 'T00:00:00').toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
   };
   const isTrue = (v) => v === true || v === 'true';
+  const esc = window.escapeHtml;
 
   function initials(nome) {
     if (!nome) return '?';
@@ -312,15 +313,15 @@
       const skills = normalizarColecao(p.habilidades).slice(0, 4);
       card.innerHTML = `
         <div class="talento-card-top">
-          <div class="talento-avatar">${initials(p.nome)}</div>
+          <div class="talento-avatar">${esc(initials(p.nome))}</div>
           <div class="talento-info">
-            <h3>${p.nome || 'Aluno'}</h3>
-            <div class="curso">${p.curso || ''}${p.periodo ? ' — ' + p.periodo : ''}</div>
-            <div class="loc"><i class="ph ph-map-pin"></i> ${p.cidade || ''}${p.estado ? ', ' + p.estado : ''}</div>
+            <h3>${esc(p.nome || 'Aluno')}</h3>
+            <div class="curso">${esc(p.curso || '')}${p.periodo ? ' — ' + esc(p.periodo) : ''}</div>
+            <div class="loc"><i class="ph ph-map-pin"></i> ${esc(p.cidade || '')}${p.estado ? ', ' + esc(p.estado) : ''}</div>
           </div>
         </div>
         <div class="talento-skills">
-          ${skills.map((s) => `<span class="talento-skill-chip">${s.nome}</span>`).join('')}
+          ${skills.map((s) => `<span class="talento-skill-chip">${esc(s.nome)}</span>`).join('')}
         </div>
         <div class="talento-card-footer">
           <span class="updated">${timeAgo(p.atualizado_em)}</span>
@@ -385,7 +386,7 @@
 
     const tagsEl = document.getElementById('modalSkillTags');
     tagsEl.innerHTML = normalizarColecao(profile.habilidades).slice(0, 6)
-      .map((h) => `<span class="skill-tag">${h.nome}</span>`).join('');
+      .map((h) => `<span class="skill-tag">${esc(h.nome)}</span>`).join('');
 
     document.querySelectorAll('#modalTabs .tab-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
     renderTab('dados');
@@ -410,15 +411,15 @@
       body.innerHTML = `
         <div class="cv-tab-item">
           <h4>Sobre</h4>
-          <div class="desc">${p.bio || 'Aluno ainda não preencheu a biografia.'}</div>
+          <div class="desc">${esc(p.bio || 'Aluno ainda não preencheu a biografia.')}</div>
         </div>
         <div class="cv-tab-item">
           <h4>Curso</h4>
-          <div class="desc">${p.curso || '—'} ${p.periodo ? '(' + p.periodo + ')' : ''}</div>
+          <div class="desc">${esc(p.curso || '—')} ${p.periodo ? '(' + esc(p.periodo) + ')' : ''}</div>
         </div>
         <div class="cv-tab-item">
           <h4>Localização</h4>
-          <div class="desc">${p.cidade || '—'}${p.estado ? ', ' + p.estado : ''}</div>
+          <div class="desc">${esc(p.cidade || '—')}${p.estado ? ', ' + esc(p.estado) : ''}</div>
         </div>`;
       return;
     }
@@ -427,10 +428,10 @@
       const items = normalizarColecao(p.experiencias);
       body.innerHTML = items.length ? items.map((e) => `
         <div class="cv-tab-item">
-          <h4>${e.cargo || ''}</h4>
-          <div class="subtitle">${e.empresa || ''}</div>
-          <div class="date">${fmtDate(e.data_inicio)} — ${isTrue(e.atual) ? 'Presente' : (e.data_fim ? fmtDate(e.data_fim) : 'Presente')}</div>
-          ${e.descricao ? `<div class="desc">${e.descricao}</div>` : ''}
+          <h4>${esc(e.cargo)}</h4>
+          <div class="subtitle">${esc(e.empresa)}</div>
+          <div class="date">${esc(fmtDate(e.data_inicio))} — ${isTrue(e.atual) ? 'Presente' : (e.data_fim ? esc(fmtDate(e.data_fim)) : 'Presente')}</div>
+          ${e.descricao ? `<div class="desc">${esc(e.descricao)}</div>` : ''}
         </div>`).join('') : `<div class="cv-empty-tab">Nenhuma experiência cadastrada.</div>`;
       return;
     }
@@ -439,9 +440,9 @@
       const items = normalizarColecao(p.formacao);
       body.innerHTML = items.length ? items.map((f) => `
         <div class="cv-tab-item">
-          <h4>${f.grau || ''} em ${f.area_estudo || ''}</h4>
-          <div class="subtitle">${f.instituicao || ''}</div>
-          <div class="date">${f.ano_inicio || ''}${f.ano_inicio ? ' — ' : ''}${f.ano_conclusao || 'Em curso'}</div>
+          <h4>${esc(f.grau)} em ${esc(f.area_estudo)}</h4>
+          <div class="subtitle">${esc(f.instituicao)}</div>
+          <div class="date">${esc(f.ano_inicio)}${f.ano_inicio ? ' — ' : ''}${esc(f.ano_conclusao || 'Em curso')}</div>
         </div>`).join('') : `<div class="cv-empty-tab">Nenhuma formação cadastrada.</div>`;
       return;
     }
@@ -449,7 +450,7 @@
     if (tab === 'habilidades') {
       const items = normalizarColecao(p.habilidades);
       body.innerHTML = items.length
-        ? `<div class="skill-tags">${items.map((h) => `<span class="skill-tag">${h.nome} <small style="color:var(--gray-400)">· ${h.nivel || ''}</small></span>`).join('')}</div>`
+        ? `<div class="skill-tags">${items.map((h) => `<span class="skill-tag">${esc(h.nome)} <small style="color:var(--gray-400)">· ${esc(h.nivel)}</small></span>`).join('')}</div>`
         : `<div class="cv-empty-tab">Nenhuma habilidade cadastrada.</div>`;
       return;
     }
@@ -458,9 +459,9 @@
       const items = normalizarColecao(p.projetos);
       body.innerHTML = items.length ? items.map((pr) => `
         <div class="cv-tab-item">
-          <h4>${pr.nome || ''}</h4>
-          ${pr.descricao ? `<div class="desc">${pr.descricao}</div>` : ''}
-          ${pr.url ? `<div class="date"><a href="${pr.url}" target="_blank" rel="noopener">${pr.url}</a></div>` : ''}
+          <h4>${esc(pr.nome)}</h4>
+          ${pr.descricao ? `<div class="desc">${esc(pr.descricao)}</div>` : ''}
+          ${window.safeUrl(pr.url) ? `<div class="date"><a href="${window.safeUrl(pr.url)}" target="_blank" rel="noopener">${esc(pr.url)}</a></div>` : ''}
         </div>`).join('') : `<div class="cv-empty-tab">Nenhum projeto cadastrado.</div>`;
       return;
     }
@@ -469,9 +470,9 @@
       const items = normalizarColecao(p.certificados);
       body.innerHTML = items.length ? items.map((c) => `
         <div class="cv-tab-item">
-          <h4>${c.nome || ''}</h4>
-          <div class="subtitle">${c.emissor || ''}</div>
-          <div class="date">Emitido em ${fmtDate(c.data_emissao)}${isTrue(c.sem_validade) ? ' · Sem validade' : (c.data_validade ? ' · Válido até ' + fmtDate(c.data_validade) : '')}</div>
+          <h4>${esc(c.nome)}</h4>
+          <div class="subtitle">${esc(c.emissor)}</div>
+          <div class="date">Emitido em ${esc(fmtDate(c.data_emissao))}${isTrue(c.sem_validade) ? ' · Sem validade' : (c.data_validade ? ' · Válido até ' + esc(fmtDate(c.data_validade)) : '')}</div>
         </div>`).join('') : `<div class="cv-empty-tab">Nenhum certificado cadastrado.</div>`;
       return;
     }

@@ -3,6 +3,7 @@
 
   let allMsgs = [];
   let openId = null;
+  const esc = window.escapeHtml;
 
   function initials(nome) {
     if (!nome) return '?';
@@ -91,28 +92,28 @@
       item.innerHTML = `
         <div class="msg-item-top">
           <div class="msg-item-who">
-            <div class="msg-avatar">${initials(m.destinatarioNome)}</div>
+            <div class="msg-avatar">${esc(initials(m.destinatarioNome))}</div>
             <div>
-              <h4>${m.destinatarioNome || 'Candidato'}</h4>
-              <div class="sub">${m.assunto || ''}</div>
+              <h4>${esc(m.destinatarioNome || 'Candidato')}</h4>
+              <div class="sub">${esc(m.assunto)}</div>
             </div>
           </div>
           <div class="msg-item-meta">
-            ${m.vagaRelacionada ? `<span class="vaga-tag">Vaga: ${m.vagaRelacionada}</span>` : ''}
-            <span class="badge ${STATUS_BADGE[m.status] || 'badge-gray'}">${m.status || 'Enviada'}</span>
+            ${m.vagaRelacionada ? `<span class="vaga-tag">Vaga: ${esc(m.vagaRelacionada)}</span>` : ''}
+            <span class="badge ${STATUS_BADGE[m.status] || 'badge-gray'}">${esc(m.status || 'Enviada')}</span>
             <span>Enviada em ${fmtDateOnly(m.criadoEm)}</span>
           </div>
         </div>
         ${isOpen ? `
         <div class="msg-thread">
           <div class="msg-bubble sent">
-            <div class="label">Sua mensagem: ${m.assunto || ''} <span class="timestamp">${fmtDateTime(m.criadoEm)}</span></div>
-            ${m.mensagem || ''}
+            <div class="label">Sua mensagem: ${esc(m.assunto)} <span class="timestamp">${fmtDateTime(m.criadoEm)}</span></div>
+            ${esc(m.mensagem)}
           </div>
           ${m.resposta ? `
           <div class="msg-bubble reply">
-            <div class="label">Resposta de ${m.destinatarioNome || 'candidato'} <span class="timestamp">${fmtDateTime(m.resposta.criadoEm)}</span></div>
-            ${m.resposta.texto || ''}
+            <div class="label">Resposta de ${esc(m.destinatarioNome || 'candidato')} <span class="timestamp">${fmtDateTime(m.resposta.criadoEm)}</span></div>
+            ${esc(m.resposta.texto)}
           </div>` : ''}
         </div>` : ''}
       `;

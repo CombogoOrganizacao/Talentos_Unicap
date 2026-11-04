@@ -3,6 +3,7 @@
 // ============================================
 
 let profile = null;
+const escHtml = (v) => window.escapeHtml(v);
 let currentTab = 'personal';
 
 // Itens marcados para exclusão em lote, por seção: { experiencia: Set<id>, ... }
@@ -617,12 +618,12 @@ const sectionConfig = {
     render: item => `
       <div>
         <strong>
-          ${item.cargo || ''}
+          ${escHtml(item.cargo)}
         </strong>
       </div>
 
       <div style="font-size:13px;color:var(--gray-500)">
-        ${item.empresa || ''}
+        ${escHtml(item.empresa)}
         ${item.data_inicio
         ? ` | ${fmtDate(item.data_inicio)}`
         : ''
@@ -636,7 +637,7 @@ const sectionConfig = {
       ${item.descricao
         ? `
             <div style="font-size:13px;color:var(--gray-600)">
-              ${item.descricao}
+              ${escHtml(item.descricao)}
             </div>
           `
         : ''
@@ -658,7 +659,7 @@ const sectionConfig = {
 
             <input
               id="experiencia_f_empresa"
-              value="${edit?.empresa || ''}"
+              value="${escHtml(edit?.empresa)}"
               required
             >
           </div>
@@ -671,7 +672,7 @@ const sectionConfig = {
 
             <input
               id="experiencia_f_cargo"
-              value="${edit?.cargo || ''}"
+              value="${escHtml(edit?.cargo)}"
               required
             >
           </div>
@@ -685,7 +686,7 @@ const sectionConfig = {
           <textarea
             id="experiencia_f_descricao"
             rows="3"
-          >${edit?.descricao || ''}</textarea>
+          >${escHtml(edit?.descricao)}</textarea>
 
         </div>
 
@@ -701,7 +702,7 @@ const sectionConfig = {
             <input
               type="date"
               id="experiencia_f_data_inicio"
-              value="${edit?.data_inicio || ''}"
+              value="${escHtml(edit?.data_inicio)}"
               required
             >
 
@@ -719,7 +720,7 @@ const sectionConfig = {
             <input
               type="date"
               id="experiencia_f_data_fim"
-              value="${edit?.data_fim || ''}"
+              value="${escHtml(edit?.data_fim)}"
             >
 
           </div>
@@ -819,29 +820,27 @@ const sectionConfig = {
     render: item => `
       <div>
         <strong>
-          ${item.nivel || item.grau || ''}
+          ${escHtml(item.nivel || item.grau)}
           ${item.curso || item.area_estudo
-        ? ` em ${item.curso ||
-        item.area_estudo ||
-        ''
-        }`
+        ? ` em ${escHtml(item.curso ||
+        item.area_estudo)}`
         : ''
       }
         </strong>
       </div>
 
       <div style="font-size:13px;color:var(--gray-500)">
-        ${item.instituicao || ''}
+        ${escHtml(item.instituicao)}
 
         ${item.ano_inicio
-        ? ` | ${item.ano_inicio}`
+        ? ` | ${escHtml(item.ano_inicio)}`
         : item.data_inicio
           ? ` | ${fmtDate(item.data_inicio)}`
           : ''
       }
 
         ${item.ano_conclusao
-        ? ` — ${item.ano_conclusao}`
+        ? ` — ${escHtml(item.ano_conclusao)}`
         : ' — <span class="badge badge-green">Em curso</span>'
       }
       </div>
@@ -887,7 +886,7 @@ const sectionConfig = {
 
             <input
               id="formacao_f_instituicao"
-              value="${edit?.instituicao || ''}"
+              value="${escHtml(edit?.instituicao)}"
               required
             >
 
@@ -1133,14 +1132,14 @@ const sectionConfig = {
     render: item => `
       <div>
         <strong>
-          ${item.nome || item.habilidade || ''}
+          ${escHtml(item.nome || item.habilidade)}
         </strong>
       </div>
 
       <div style="font-size:13px;color:var(--gray-500)">
-        ${[item.categoria, item.nivel]
+        ${escHtml([item.categoria, item.nivel]
         .filter(Boolean)
-        .join(' | ')}
+        .join(' | '))}
       </div>
     `,
 
@@ -1154,7 +1153,7 @@ const sectionConfig = {
 
         <input
           id="habilidade_f_nome"
-          value="${edit?.nome || ''}"
+          value="${escHtml(edit?.nome)}"
           required
         >
 
@@ -1244,16 +1243,15 @@ const sectionConfig = {
       <div>
 
         <strong>
-          ${item.titulo || ''}
+          ${escHtml(item.titulo)}
         </strong>
 
-        ${item.link_github ||
-        item.linkGithub
+        ${window.safeUrl(item.link_github ||
+        item.linkGithub)
         ? `
               <a
-                href="${item.link_github ||
-        item.linkGithub
-        }"
+                href="${window.safeUrl(item.link_github ||
+        item.linkGithub)}"
                 target="_blank"
                 rel="noopener noreferrer"
                 style="font-size:12px"
@@ -1271,7 +1269,7 @@ const sectionConfig = {
             <div
               style="font-size:13px;color:var(--gray-600)"
             >
-              ${item.descricao}
+              ${escHtml(item.descricao)}
             </div>
           `
         : ''
@@ -1282,7 +1280,7 @@ const sectionConfig = {
             <div
               style="font-size:12px;color:var(--gray-500)"
             >
-              Status: ${item.status}
+              Status: ${escHtml(item.status)}
             </div>
           `
         : ''
@@ -1299,7 +1297,7 @@ const sectionConfig = {
 
         <input
           id="projeto_f_nome"
-          value="${edit?.titulo || ''}"
+          value="${escHtml(edit?.titulo)}"
           required
         >
 
@@ -1312,7 +1310,7 @@ const sectionConfig = {
         <textarea
           id="projeto_f_descricao"
           rows="3"
-        >${edit?.descricao || ''}</textarea>
+        >${escHtml(edit?.descricao)}</textarea>
 
       </div>
 
@@ -1322,10 +1320,8 @@ const sectionConfig = {
 
         <input
           id="projeto_f_url"
-          value="${edit?.link_github ||
-      edit?.linkGithub ||
-      ''
-      }"
+          value="${escHtml(edit?.link_github ||
+      edit?.linkGithub)}"
           placeholder="https://..."
         >
 
@@ -1421,11 +1417,11 @@ const sectionConfig = {
       <div>
 
         <strong>
-          ${item.nome || ''}
+          ${escHtml(item.nome)}
         </strong>
 
         ${item.instituicao
-        ? ` — ${item.instituicao}`
+        ? ` — ${escHtml(item.instituicao)}`
         : ''
       }
 
@@ -1459,13 +1455,13 @@ const sectionConfig = {
 
       </div>
 
-      ${item.link_certificado
+      ${window.safeUrl(item.link_certificado)
         ? `
             <div
               style="font-size:12px;margin-top:4px"
             >
               <a
-                href="${item.link_certificado}"
+                href="${window.safeUrl(item.link_certificado)}"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -1495,7 +1491,7 @@ const sectionConfig = {
 
             <input
               id="certificado_f_nome"
-              value="${edit?.nome || ''}"
+              value="${escHtml(edit?.nome)}"
               required
             >
 
@@ -1507,7 +1503,7 @@ const sectionConfig = {
 
             <input
               id="certificado_f_emissor"
-              value="${edit?.instituicao || ''}"
+              value="${escHtml(edit?.instituicao)}"
             >
 
           </div>
@@ -1526,7 +1522,7 @@ const sectionConfig = {
             <input
               type="date"
               id="certificado_f_data_emissao"
-              value="${edit?.data_emissao || ''}"
+              value="${escHtml(edit?.data_emissao)}"
               required
             >
 
@@ -1547,7 +1543,7 @@ const sectionConfig = {
             <input
               type="date"
               id="certificado_f_data_validade"
-              value="${edit?.data_validade || ''}"
+              value="${escHtml(edit?.data_validade)}"
             >
 
           </div>
@@ -1588,9 +1584,7 @@ const sectionConfig = {
 
             <input
               id="certificado_f_url"
-              value="${edit?.link_certificado ||
-        ''
-        }"
+              value="${escHtml(edit?.link_certificado)}"
             >
 
           </div>
@@ -1607,9 +1601,7 @@ const sectionConfig = {
               step="1"
               inputmode="numeric"
               id="certificado_f_carga_horaria"
-              value="${edit?.carga_horaria ||
-        ''
-        }"
+              value="${escHtml(edit?.carga_horaria)}"
               placeholder="Ex: 40"
               oninput="this.value=this.value.replace(/[^0-9]/g,'')"
             >
@@ -1853,15 +1845,10 @@ function renderListBase(section, type) {
                   class="badge badge-blue"
                   style="margin-right:4px"
                 >
-                  ${item.categoria ||
-            ''
-            }
+                  ${escHtml(item.categoria)}
                 </span>
 
-                ${item.nome ||
-            item.habilidade ||
-            ''
-            }
+                ${escHtml(item.nome || item.habilidade)}
 
                 <span
                   style="
@@ -1869,7 +1856,7 @@ function renderListBase(section, type) {
                     font-size:11px
                   "
                 >
-                  ${item.nivel || ''}
+                  ${escHtml(item.nivel)}
                 </span>
 
                 <button
@@ -2969,11 +2956,11 @@ function updateProgress() {
       publicLink.innerHTML = `
         Seu perfil público:
         <a
-          href="${pubUrl}"
+          href="${escHtml(pubUrl)}"
           target="_blank"
           rel="noopener noreferrer"
         >
-          /${profile.slug}
+          /${escHtml(profile.slug)}
         </a>
       `;
     }

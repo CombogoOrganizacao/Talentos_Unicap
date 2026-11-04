@@ -2182,6 +2182,10 @@ img, svg, video { max-width: 100%; height: auto; }
 /* Importação de currículo (PDF/DOCX): campos editáveis de cada item */
 .li-item { flex-wrap: wrap; }
 .li-item [hidden] { display: none !important; }
+/* Dados pessoais: o próprio <label> é o item. Mantém caixinha + texto alinhados
+   à esquerda, como nas demais seções (sem space-between nem quebra de linha). */
+label.li-item { flex-direction: row; justify-content: flex-start; flex-wrap: nowrap; }
+.li-item > label > span, label.li-item > span { flex: 1; min-width: 0; }
 .li-item.li-bloqueado { background: var(--orange-50, #fff7ed); border-radius: 8px; padding-left: 8px; padding-right: 8px; }
 .li-edit { flex: 1 1 100%; margin: 2px 0 4px 26px; font-size: 13px; }
 .li-edit > summary { cursor: pointer; color: var(--unicap-500, #b0102b); font-weight: 600; width: fit-content; padding: 2px 0; }

@@ -9,6 +9,11 @@ function renderCVPreview(profile, showLogo = true) {
     return new Date(d + 'T00:00:00').toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
   };
   const isTrue = (v) => v === true || v === 'true';
+  const esc = window.escapeHtml;
+  const linkHtml = (url, rotulo) => {
+    const href = window.safeUrl(url);
+    return href ? ` <a href="${href}" target="_blank" rel="noopener" style="font-size:12px">${rotulo}</a>` : '';
+  };
 
   let html = `<div class="cv-preview">`;
   // Header
@@ -16,22 +21,22 @@ function renderCVPreview(profile, showLogo = true) {
     <div class="cv-header-top">
       ${showLogo ? `<img class="cv-logo" src="${LOGO_PATH}" alt="UNICAP">` : ''}
       <div class="cv-header-text">
-        <h1>${profile.nome || 'Seu Nome'}</h1>
-        <div class="course">${profile.curso || ''}</div>
+        <h1>${esc(profile.nome || 'Seu Nome')}</h1>
+        <div class="course">${esc(profile.curso)}</div>
       </div>
     </div>
     <div class="contacts">
-      ${profile.telefone ? `<span><strong>Telefone:</strong> ${profile.telefone}</span>` : ''}
-      ${profile.cidade ? `<span><strong>Localização:</strong> ${profile.cidade}${profile.estado ? ' - ' + profile.estado : ''}</span>` : ''}
-      ${profile.linkedin ? `<span><strong>LinkedIn:</strong> ${profile.linkedin}</span>` : ''}
-      ${profile.github ? `<span><strong>GitHub:</strong> ${profile.github}</span>` : ''}
-      ${profile.portfolio ? `<span><strong>Portfólio:</strong> ${profile.portfolio}</span>` : ''}
+      ${profile.telefone ? `<span><strong>Telefone:</strong> ${esc(profile.telefone)}</span>` : ''}
+      ${profile.cidade ? `<span><strong>Localização:</strong> ${esc(profile.cidade)}${profile.estado ? ' - ' + esc(profile.estado) : ''}</span>` : ''}
+      ${profile.linkedin ? `<span><strong>LinkedIn:</strong> ${esc(profile.linkedin)}</span>` : ''}
+      ${profile.github ? `<span><strong>GitHub:</strong> ${esc(profile.github)}</span>` : ''}
+      ${profile.portfolio ? `<span><strong>Portfólio:</strong> ${esc(profile.portfolio)}</span>` : ''}
     </div>
   </div>`;
 
   // Bio
   if (profile.bio) {
-    html += `<div class="cv-section"><h2>SOBRE MIM</h2><p>${profile.bio}</p></div>`;
+    html += `<div class="cv-section"><h2>SOBRE MIM</h2><p>${esc(profile.bio)}</p></div>`;
   }
 
   // Experiências
@@ -39,9 +44,9 @@ function renderCVPreview(profile, showLogo = true) {
     html += `<div class="cv-section"><h2>EXPERIÊNCIA PROFISSIONAL</h2>`;
     profile.experiencias.forEach(e => {
       html += `<div class="item">
-        <h3>${e.cargo} — ${e.empresa}</h3>
-        <div class="date">${formatDate(e.data_inicio)} — ${isTrue(e.atual) ? 'Presente' : (e.data_fim ? formatDate(e.data_fim) : 'Presente')}${isTrue(e.atual) ? ' <span class="badge badge-green">Atual</span>' : ''}</div>
-        ${e.descricao ? `<div class="desc">${e.descricao}</div>` : ''}
+        <h3>${esc(e.cargo)} — ${esc(e.empresa)}</h3>
+        <div class="date">${esc(formatDate(e.data_inicio))} — ${isTrue(e.atual) ? 'Presente' : (e.data_fim ? esc(formatDate(e.data_fim)) : 'Presente')}${isTrue(e.atual) ? ' <span class="badge badge-green">Atual</span>' : ''}</div>
+        ${e.descricao ? `<div class="desc">${esc(e.descricao)}</div>` : ''}
       </div>`;
     });
     html += `</div>`;
@@ -52,9 +57,9 @@ function renderCVPreview(profile, showLogo = true) {
     html += `<div class="cv-section"><h2>FORMAÇÃO ACADÊMICA</h2>`;
     profile.formacoes.forEach(e => {
       html += `<div class="item">
-        <h3>${e.nivel || ''}${e.curso ? ` em ${e.curso}` : ''}</h3>
-        <div class="subtitle">${e.instituicao || ''}</div>
-        <div class="date">${e.ano_inicio || ''}${e.ano_inicio ? ' — ' : ''}${e.ano_conclusao || 'Em curso'}${e.ano_conclusao ? '' : ' <span class="badge badge-green">Em curso</span>'}</div>
+        <h3>${esc(e.nivel)}${e.curso ? ` em ${esc(e.curso)}` : ''}</h3>
+        <div class="subtitle">${esc(e.instituicao)}</div>
+        <div class="date">${esc(e.ano_inicio)}${e.ano_inicio ? ' — ' : ''}${esc(e.ano_conclusao || 'Em curso')}${e.ano_conclusao ? '' : ' <span class="badge badge-green">Em curso</span>'}</div>
       </div>`;
     });
     html += `</div>`;
@@ -68,7 +73,7 @@ function renderCVPreview(profile, showLogo = true) {
       const items = profile.habilidades.filter(h => h.categoria === cat);
       if (!items.length) return;
       html += `<div class="skill-category"><h4>${cat}</h4><div class="skill-list">
-        ${items.map(s => `<span class="skill-chip">${s.nome} <small>(${s.nivel})</small></span>`).join('')}
+        ${items.map(s => `<span class="skill-chip">${esc(s.nome)} <small>(${esc(s.nivel)})</small></span>`).join('')}
       </div></div>`;
     });
     html += `</div>`;
@@ -79,9 +84,9 @@ function renderCVPreview(profile, showLogo = true) {
     html += `<div class="cv-section"><h2>PROJETOS</h2>`;
     profile.projetos.forEach(p => {
       html += `<div class="item">
-        <h3>${p.titulo || ''}${p.link_github ? ` <a href="${p.link_github}" target="_blank" style="font-size:12px">GitHub ↗</a>` : ''}${p.link_demo ? ` <a href="${p.link_demo}" target="_blank" style="font-size:12px">Demo ↗</a>` : ''}</h3>
-        ${p.descricao ? `<div class="desc">${p.descricao}</div>` : ''}
-        ${p.tecnologias ? `<div class="desc"><strong>Tecnologias:</strong> ${p.tecnologias}</div>` : ''}
+        <h3>${esc(p.titulo)}${linkHtml(p.link_github, 'GitHub ↗')}${linkHtml(p.link_demo, 'Demo ↗')}</h3>
+        ${p.descricao ? `<div class="desc">${esc(p.descricao)}</div>` : ''}
+        ${p.tecnologias ? `<div class="desc"><strong>Tecnologias:</strong> ${esc(p.tecnologias)}</div>` : ''}
       </div>`;
     });
     html += `</div>`;
@@ -92,12 +97,12 @@ function renderCVPreview(profile, showLogo = true) {
     html += `<div class="cv-section"><h2>CERTIFICAÇÕES</h2>`;
     profile.certificacoes.forEach(c => {
       html += `<div class="item">
-        <h3>${c.nome}${c.instituicao ? ` — ${c.instituicao}` : ''}${c.link_certificado ? ` <a href="${c.link_certificado}" target="_blank" style="font-size:12px">↗</a>` : ''}</h3>
+        <h3>${esc(c.nome)}${c.instituicao ? ` — ${esc(c.instituicao)}` : ''}${linkHtml(c.link_certificado, '↗')}</h3>
         <div class="date">
-          ${c.data_emissao ? formatDate(c.data_emissao) : ''}
-          ${isTrue(c.sem_validade) ? ' <span class="badge badge-green">Sem validade</span>' : (c.data_validade ? ` — Válido até ${formatDate(c.data_validade)}` : '')}
+          ${c.data_emissao ? esc(formatDate(c.data_emissao)) : ''}
+          ${isTrue(c.sem_validade) ? ' <span class="badge badge-green">Sem validade</span>' : (c.data_validade ? ` — Válido até ${esc(formatDate(c.data_validade))}` : '')}
         </div>
-        ${c.carga_horaria ? `<div class="desc">${c.carga_horaria} horas</div>` : ''}
+        ${c.carga_horaria ? `<div class="desc">${esc(c.carga_horaria)} horas</div>` : ''}
       </div>`;
     });
     html += `</div>`;
@@ -137,17 +142,46 @@ async function exportPDF() {
     // Em celulares/tablets o currículo fica estreito na tela; para o PDF sair
     // sempre igual ao do desktop, fixamos a largura (A4 ≈ 794px) só durante a captura.
     el.classList.add('is-exporting');
-    let canvas;
+    let canvas, cortesCss, alturaCss;
     try {
+      // Medidos com a largura de exportação já aplicada, a mesma da captura.
+      cortesCss = coletarPontosDeCorte(el);
+      alturaCss = el.getBoundingClientRect().height;
       canvas = await html2canvas(el, { scale: 2, useCORS: true, logging: false, windowWidth: 1024 });
     } finally {
       el.classList.remove('is-exporting');
     }
-    const imgData = canvas.toDataURL('image/png');
+
     const pdf = new jsPDF('p', 'mm', 'a4');
-    const w = pdf.internal.pageSize.getWidth();
-    const h = (canvas.height * w) / canvas.width;
-    pdf.addImage(imgData, 'PNG', 0, 0, w, h);
+    const larguraMm = pdf.internal.pageSize.getWidth();
+    const alturaMm = pdf.internal.pageSize.getHeight();
+    const mmPorPx = larguraMm / canvas.width;
+    const pxPorMm = 1 / mmPorPx;
+    const escala = canvas.height / alturaCss;
+
+    // A 1ª página começa no topo (cabeçalho encostado na borda); as demais
+    // ganham margem em cima. Todas deixam margem embaixo.
+    const paginas = calcularPaginasPDF(
+      canvas.height,
+      (alturaMm - PDF_MARGEM_INFERIOR_MM) * pxPorMm,
+      (alturaMm - PDF_MARGEM_SUPERIOR_MM - PDF_MARGEM_INFERIOR_MM) * pxPorMm,
+      cortesCss.map(y => y * escala)
+    );
+
+    paginas.forEach(([inicio, fim], i) => {
+      const fatia = document.createElement('canvas');
+      fatia.width = canvas.width;
+      fatia.height = fim - inicio;
+      const ctx = fatia.getContext('2d');
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, fatia.width, fatia.height);
+      ctx.drawImage(canvas, 0, inicio, canvas.width, fatia.height, 0, 0, canvas.width, fatia.height);
+
+      if (i > 0) pdf.addPage();
+      const topoMm = i > 0 ? PDF_MARGEM_SUPERIOR_MM : 0;
+      pdf.addImage(fatia.toDataURL('image/png'), 'PNG', 0, topoMm, larguraMm, fatia.height * mmPorPx);
+    });
+
     pdf.save(`curriculo_${profile?.nome?.replace(/\s+/g, '_') || 'aluno'}.pdf`);
   } catch (err) {
     console.error('Erro ao exportar PDF:', err);
@@ -159,6 +193,47 @@ async function exportPDF() {
       btn.innerHTML = originalBtnHtml;
     }
   }
+}
+
+// ---------- Paginação do PDF ----------
+const PDF_MARGEM_SUPERIOR_MM = 12;
+const PDF_MARGEM_INFERIOR_MM = 10;
+
+// Posições (px, a partir do topo de `el`) onde é seguro trocar de página:
+// início de cada seção, de cada item e de cada grupo de habilidades.
+// O primeiro item logo após o título da seção fica de fora, para o título
+// nunca ficar sozinho no fim de uma página.
+function coletarPontosDeCorte(el) {
+  const topo = el.getBoundingClientRect().top;
+  const pontos = [];
+  el.querySelectorAll('.cv-section, .cv-section .item, .cv-section .skill-category').forEach(n => {
+    if (n.previousElementSibling?.tagName === 'H2') return;
+    pontos.push(n.getBoundingClientRect().top - topo);
+  });
+  return pontos;
+}
+
+// Divide uma imagem de `alturaTotal` px em páginas: [[inicio, fim], ...].
+// Cada página termina no último ponto de corte que cabe nela; se nenhum
+// ponto cabe na metade de baixo da página (um item maior que meia página),
+// corta no limite da página para não desperdiçar espaço.
+function calcularPaginasPDF(alturaTotal, alturaPrimeira, alturaDemais, cortes) {
+  const paginas = [];
+  let inicio = 0;
+  while (alturaTotal - inicio > 1) {
+    const disponivel = paginas.length ? alturaDemais : alturaPrimeira;
+    const limite = inicio + disponivel;
+    if (limite >= alturaTotal) {
+      paginas.push([inicio, alturaTotal]);
+      break;
+    }
+    const minimo = inicio + disponivel * 0.5;
+    const cabem = cortes.filter(c => c > minimo && c <= limite);
+    const fim = Math.floor(cabem.length ? Math.max(...cabem) : limite);
+    paginas.push([inicio, fim]);
+    inicio = fim;
+  }
+  return paginas;
 }
 
 // Carrega um módulo ESM tentando algumas fontes diferentes, já que CDNs
