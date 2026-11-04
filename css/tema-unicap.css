@@ -3,8 +3,7 @@
    Carregar DEPOIS de style.css e ANTES de interno.css
    ============================================ */
 
-/* Fontes da identidade: títulos (Schibsted Grotesk) e nome no currículo (Source Serif 4) */
-@import url('https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&display=swap');
+/* Fontes da identidade (Inter, Schibsted Grotesk e Source Serif 4): carregadas no <head> de cada página */
 
 :root {
   /* PALETA UNICAP: vermelho -> vermelho bordô, com o dourado da logo da Asa Branca (#C28330) como cor de apoio */
@@ -33,14 +32,10 @@
 /* botão e barra de progresso */
 .btn-primary {
   background: var(--grad-brand-h);
-  background-size: 140% 100%;
-  background-position: 0% 0;
   color: white;
   transition: background-position 0.35s ease, box-shadow 0.2s, transform 0.2s, opacity 0.2s;
 }
-.btn-primary:hover { background-position: 100% 0; box-shadow: 0 6px 16px rgba(176, 16, 43, 0.35); }
 .progress-fill { background: var(--grad-brand-h); }
-.form-group input:focus, .form-group textarea:focus, .form-group select:focus { box-shadow: 0 0 0 3px rgba(176, 16, 43, .15); }
 
 /* faixas de topo e card de post */
 .company-hero, .empresa-hero { background: var(--grad-brand); }
@@ -115,7 +110,7 @@
 .hero-item-inner {
   width: var(--s, 64px);
   height: var(--s, 64px);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -178,11 +173,11 @@
 
 @media (max-width: 768px) {
   .hero-item:nth-child(n+10) { display: none; }
-  .hero-item-inner { --s: 48px !important; border-radius: 14px; }
+  .hero-item-inner { --s: 48px !important; border-radius: var(--radius); }
   .hero-blob { filter: blur(40px); }
 }
 
-@media not all /* reduzir movimento ignorado de propósito */ {
+@media (prefers-reduced-motion: reduce) {
   .hero, .hero-blob, .hero-grid, .hero-item-inner { animation: none !important; }
   .hero-item-inner { transform: none; }
   .hero-glow, .hero-ripple { display: none; }
@@ -233,7 +228,7 @@ input[type="checkbox"], input[type="radio"], input[type="range"], progress { acc
 a { text-underline-offset: 3px; }
 html { scrollbar-color: #dc8f9f transparent; }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-thumb { background: #e3a4b1; border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-thumb { background: #e3a4b1; border-radius: var(--radius-md); border: 2px solid transparent; background-clip: padding-box; }
 ::-webkit-scrollbar-thumb:hover { background: #b0102b; background-clip: padding-box; }
 ::-webkit-scrollbar-track { background: transparent; }
 [data-theme="dark"] { scrollbar-color: #7a4553 transparent; }

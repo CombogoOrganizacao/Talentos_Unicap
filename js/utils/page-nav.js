@@ -41,7 +41,7 @@
   // Nome exibido nos botões para cada destino (a lista de vagas muda com o perfil).
   var NOMES = {
     'dashboard.html': 'Meu Currículo',
-    'preview.html': 'Preview',
+    'preview.html': 'Pré-visualização',
     'lista-vagas.html': function () {
       // `modo` só existe dentro da própria lista; nas telas de aluno vem da página atual.
       var telasAluno = ['preview.html', 'minhas-candidaturas.html', 'caixa-entrada-aluno.html'];
@@ -105,7 +105,8 @@
   function montarBarra() {
     var pagina = paginaAtual();
     if (pagina === 'index.html') return;   // página inicial: sem Voltar/Próximo
-    var ehDashboard = !!document.querySelector('.tabs .tab-btn[data-tab]');
+    // Só o editor de currículo navega por abas (outras telas têm abas dentro de modais).
+    var ehDashboard = pagina === 'dashboard.html' && !!document.querySelector('.tabs .tab-btn[data-tab]');
     var rota = ROTAS[pagina];
 
     var nav = document.createElement('nav');
@@ -178,7 +179,7 @@
       var lista = botoesAba(), i = indiceAtual(), ultimo = lista.length - 1;
       voltar.disabled = i <= 0;
       definirRotulo(voltar, 'Voltar', i > 0 ? nomeAba(lista[i - 1]) : '');
-      definirRotulo(proximo, 'Próximo', i >= ultimo ? 'Preview' : nomeAba(lista[i + 1]));
+      definirRotulo(proximo, 'Próximo', i >= ultimo ? 'Pré-visualização' : nomeAba(lista[i + 1]));
     };
 
     voltar.addEventListener('click', function () { irParaAba(indiceAtual() - 1); });

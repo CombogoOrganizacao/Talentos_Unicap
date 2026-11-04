@@ -33,12 +33,9 @@
       window.location.href = 'index.html';
       return;
     }
-    document.getElementById('alunoNome').textContent = perfil.nome || 'Aluno';
-    document.getElementById('alunoAvatar').textContent = initials(perfil.nome)[0] || 'A';
     carregarMensagens();
   };
   Auth.init();
-  document.getElementById('btnSair').addEventListener('click', () => Auth.logout());
 
   async function carregarMensagens() {
     allMsgs = await Mensagens.listarRecebidasPeloAluno();

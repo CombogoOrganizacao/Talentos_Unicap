@@ -8,33 +8,21 @@
   <meta name="description" content="A plataforma oficial para alunos da UNICAP criarem currículos, se candidatarem a vagas e serem encontrados por empresas.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Schibsted+Grotesk:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=8">
-  <link rel="stylesheet" href="css/tema-unicap.css?v=8">
-  <link rel="stylesheet" href="css/interno.css?v=8">
-  <link rel="stylesheet" href="css/home.css?v=2">
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Schibsted+Grotesk:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+  <link rel="icon" type="image/png" href="img/asabranca_Unicap.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/tema-unicap.css">
+  <link rel="stylesheet" href="css/interno.css">
+  <link rel="stylesheet" href="css/home.css">
 </head>
 
 <body class="lp">
   <!-- NAVBAR -->
-  <nav class="navbar">
-    <div class="container">
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <img src="img/asabranca_Unicap.png" width="40" alt="" style="display: block;">
-        <a href="index.html" class="navbar-brand" style="display: inline-flex; align-items: center; line-height: 1;">
-          Talentos<span>UNICAP</span>
-        </a>
-      </div>
-      <div class="nav-links">
-        <a href="cadastro-empresa.html" class="nav-text-link">Área da Empresa</a>
-        <div class="nav-links" id="navLinks"></div>
-      </div>
-    </div>
-  </nav>
+  <nav class="navbar" data-area="home"></nav>
+  <script src="js/components/navbar.js"></script>
 
   <main>
     <!-- 1. HERO: a folha editável -->
@@ -48,7 +36,7 @@
           <div class="lp-hero-actions">
             <a href="register.html" class="btn btn-primary btn-lg" id="heroBtn">Criar Meu Currículo →</a>
             <a href="login.html" class="btn btn-secondary btn-lg">Já tenho conta</a>
-            <a href="lista-vagas.html" class="btn-link"><i class="ph-bold ph-briefcase" aria-hidden="true"></i> Painel de Vagas</a>
+            <a href="lista-vagas.html" class="btn-link"><i class="ph-bold ph-briefcase" aria-hidden="true"></i> Portal de Vagas</a>
           </div>
           <p class="lp-hero-hint"><i class="ph-bold ph-cursor-text" aria-hidden="true"></i> Escreva seu nome na folha ao lado e veja como fica.</p>
         </div>
@@ -249,7 +237,7 @@
     <!-- 3. DOIS LADOS: aluno / empresa -->
     <section class="lp-sides" aria-labelledby="ladosTitulo">
       <div class="container sides-layout">
-        <div class="lp-head" style="margin-bottom:0;">
+        <div class="lp-head mb-0">
           <h2 id="ladosTitulo">Uma folha, <span class="marca" data-marca>dois lados</span></h2>
           <p>De um lado, o aluno monta o currículo. Do outro, a empresa encontra quem procura.</p>
           <div class="side-switch" role="group" aria-label="Escolha o seu lado">
@@ -307,18 +295,18 @@
     </section>
   </main>
 
-  <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
+  <footer class="footer">© 2026 TalentoUNICAP — Universidade Católica de Pernambuco</footer>
 
   <!-- Confirmação de sessão ativa -->
-  <div id="confirmaSessao" hidden
-    style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px;">
-    <div class="card" style="max-width:380px;width:100%;" role="dialog" aria-modal="true" aria-labelledby="confirmaTitulo">
-      <div class="card-body" style="text-align:center;">
-        <h2 id="confirmaTitulo" style="margin-bottom:6px;">Você já está conectado</h2>
-        <p class="subtitle" id="confirmaMsg" style="margin-bottom:20px;"></p>
-        <button type="button" class="btn btn-primary" style="width:100%;" id="btnConfirmaContinuar">Continuar</button>
-        <button type="button" class="btn btn-secondary" style="width:100%;margin-top:10px;" id="btnConfirmaOutra">Entrar com outra conta</button>
-        <button type="button" class="btn btn-outline" style="width:100%;margin-top:10px;" id="btnConfirmaFechar">Cancelar</button>
+  <div class="confirma-overlay" id="confirmaSessao" hidden
+   >
+    <div class="card confirma-card" role="dialog" aria-modal="true" aria-labelledby="confirmaTitulo">
+      <div class="card-body text-center">
+        <h2 id="confirmaTitulo">Você já está conectado</h2>
+        <p class="subtitle mb-5" id="confirmaMsg"></p>
+        <button type="button" class="btn btn-primary w-full" id="btnConfirmaContinuar">Continuar</button>
+        <button type="button" class="btn btn-secondary w-full mt-3" id="btnConfirmaOutra">Entrar com outra conta</button>
+        <button type="button" class="btn btn-outline w-full mt-3" id="btnConfirmaFechar">Cancelar</button>
       </div>
     </div>
   </div>
@@ -372,11 +360,11 @@
     };
     Auth.init();
   </script>
-  <script src="js/pages/home.js?v=1" defer></script>
-  <script src="js/utils/ux.js?v=6" defer></script>
+  <script src="js/pages/home.js" defer></script>
+  <script src="js/utils/ux.js" defer></script>
   <script src="js/utils/mobile-nav.js" defer></script>
   <script src="js/components/theme-toggle.js"></script>
-  <script src="js/components/scroll-fx.js?v=6"></script>
+  <script src="js/components/scroll-fx.js"></script>
 </body>
 
 </html>

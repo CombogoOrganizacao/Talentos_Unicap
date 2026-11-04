@@ -5,43 +5,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Minhas Candidaturas - TalentoUNICAP</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=8">
-<link rel="stylesheet" href="css/tema-unicap.css?v=8">
-<link rel="stylesheet" href="css/interno.css?v=8">
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Schibsted+Grotesk:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+  <link rel="icon" type="image/png" href="img/asabranca_Unicap.png">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/tema-unicap.css">
+<link rel="stylesheet" href="css/interno.css">
 </head>
 
 <body>
-  <nav class="navbar">
-    <div class="container">
-      <a href="index.html" class="navbar-brand">
-        <img src="img/asabranca_Unicap.png" width="40" alt="UNICAP">
-        Talento<span>UNICAP</span>
-      </a>
-      <div class="nav-links">
-        <a href="dashboard.html" class="btn btn-secondary btn-sm">
-          <i class="ph-fill ph-scroll"></i> Meu Currículo
-        </a>
-        <a href="lista-vagas.html" class="btn btn-secondary btn-sm">
-          <i class="ph-fill ph-briefcase"></i> Portal de Vagas
-        </a>
-        <button class="btn btn-secondary btn-sm" type="button" onclick="Auth.logout()">
-          <i class="ph-fill ph-sign-out"></i> Sair
-        </button>
-      </div>
-    </div>
-  </nav>
+  <nav class="navbar" data-area="aluno"></nav>
+  <script src="js/components/navbar.js"></script>
 
-  <main class="container" style="padding-top:32px;padding-bottom:64px;max-width:900px;">
+  <main class="container page-shell page-shell--inbox">
     <div class="page-intro">
       <p class="eyebrow"><i class="ph-fill ph-paper-plane-tilt"></i> Candidaturas</p>
       <div class="page-intro-row">
         <div>
-          <h1 style="font-size:28px;margin-bottom:8px;">Minhas Candidaturas</h1>
+          <h1 class="page-title">Minhas Candidaturas</h1>
           <p class="page-desc">Acompanhe o andamento das vagas para as quais você se candidatou.</p>
         </div>
         <a class="btn btn-secondary" href="lista-vagas.html">
@@ -55,7 +40,7 @@
     </div>
   </main>
 
-  <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
+  <footer class="footer">© 2026 TalentoUNICAP — Universidade Católica de Pernambuco</footer>
 
   <template id="candidaturaTemplate">
     <article class="card candidatura-card">
@@ -98,11 +83,11 @@
   <script src="js/services/candidatura-service.js"></script>
   <script src="js/pages/minhas-candidaturas.js"></script>
   <script src="js/utils/page-nav.js" defer></script>
-  <script src="js/utils/ux.js?v=6" defer></script>
+  <script src="js/utils/ux.js" defer></script>
   <script src="js/utils/mobile-nav.js" defer></script>
 <script src="js/components/theme-toggle.js"></script>
-<script src="js/components/scroll-fx.js?v=6"></script>
-  <script src="js/components/bg-icons.js?v=8" defer></script>
+<script src="js/components/scroll-fx.js"></script>
+  <script src="js/components/bg-icons.js" defer></script>
 </body>
 
 </html>

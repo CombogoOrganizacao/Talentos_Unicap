@@ -5,89 +5,64 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meu Currículo - TalentoUNICAP</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=8">
-<link rel="stylesheet" href="css/tema-unicap.css?v=8">
-<link rel="stylesheet" href="css/interno.css?v=8">
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Schibsted+Grotesk:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+  <link rel="icon" type="image/png" href="img/asabranca_Unicap.png">
+  <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/tema-unicap.css">
+<link rel="stylesheet" href="css/interno.css">
 
 </head>
 
 <body>
 
   <body>
-    <nav class="navbar">
-      <div class="container">
+    <nav class="navbar" data-area="aluno"></nav>
+  <script src="js/components/navbar.js"></script>
 
-        <a href="index.html" class="navbar-brand">
-          <img src="img/asabranca_Unicap.png" width="40px" alt="">
-          Talento<span>UNICAP</span>
-        </a>
-
-        <div class="nav-links">
-          <span id="userName" style="font-size:14px;color:var(--gray-600)"></span>
-
-          <a href="lista-vagas.html" class="btn btn-secondary btn-sm">
-            <i class="ph-fill ph-briefcase" style="font-size:18px; vertical-align:middle;"></i>
-            Portal de Vagas
-          </a>
-
-          <a href="minhas-candidaturas.html" class="btn btn-secondary btn-sm">
-            <i class="ph-fill ph-paper-plane-tilt" style="font-size:18px; vertical-align:middle;"></i>
-            Minhas Candidaturas
-          </a>
-
-          <button class="btn btn-secondary btn-sm" onclick="Auth.logout()">
-            <i class="ph-fill ph-sign-out" style="font-size:18px; vertical-align:middle;"></i>
-            Sair
-          </button>
-        </div>
-
-      </div>
-    </nav>
-
-    <div class="container" style="padding-top:32px;padding-bottom:48px;">
-      <div
-        style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
+    <div class="container page-shell">
+      <div class="page-head"
+       >
         <div>
-          <h1 style="font-size:28px;">Meu Currículo</h1>
-          <p style="color:var(--gray-500)">Preencha suas informações para construir seu currículo profissional.</p>
+          <h1 class="page-title">Meu Currículo</h1>
+          <p class="text-muted">Preencha suas informações para construir seu currículo profissional.</p>
         </div>
-        <button class="btn btn-primary" onclick="goToPreview()"><i class="ph-fill ph-scroll"></i> Preview &
+        <button class="btn btn-primary" onclick="goToPreview()"><i class="ph-fill ph-scroll"></i> Pré-visualizar e
           Exportar</button>
       </div>
 
       <!-- Progress -->
-      <div class="card progress-card"
-        style="background:linear-gradient(135deg,var(--unicap-50),#fdf2f4);border-color:var(--unicap-200);margin-bottom:24px;">
+      <div class="card progress-card progress-card mb-6"
+       >
         <div class="card-body">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <span style="font-weight:600;"><i class="ph-fill ph-chart-bar"></i> Completude do Currículo</span>
-            <span id="progressText" style="font-size:20px;font-weight:700;color:var(--unicap-500)">0%</span>
+          <div class="row-between mb-3">
+            <span class="fw-600"><i class="ph-fill ph-chart-bar"></i> Completude do Currículo</span>
+            <span class="progress-value" id="progressText">0%</span>
           </div>
           <div class="progress-bar">
             <div class="progress-fill" id="progressFill" style="width:0%"></div>
           </div>
-          <p id="progressMsg" style="font-size:13px;color:var(--gray-500);margin-top:8px;">Carregando...</p>
+          <p class="text-sm text-muted mt-2" id="progressMsg">Carregando...</p>
           <div id="progressMissing" class="progress-missing"></div>
         </div>
       </div>
 
       <!-- Importar dados para o currículo (LinkedIn ou currículo em PDF/Word) -->
-      <div class="card" id="linkedinImportCard" style="margin-bottom:24px;">
-        <div class="card-body"
-          style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
-          <div style="flex:1;min-width:240px;">
+      <div class="card mb-6" id="linkedinImportCard">
+        <div class="card-body row-between"
+         >
+          <div class="flex-1 minw-240">
             <strong><i class="ph-fill ph-download-simple"></i> Importar dados para o currículo</strong>
-            <p style="font-size:13px;color:var(--gray-500);margin-top:4px;">
+            <p class="text-sm text-muted mt-1">
               Preencha dados pessoais, experiências, formação, habilidades, projetos e certificações a partir do
               seu LinkedIn ou de um currículo que você já tem em PDF ou Word. Você revisa tudo antes de salvar.
             </p>
           </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <div class="row-gap">
             <button class="btn btn-secondary" onclick="abrirImportacaoLinkedIn()">
               <i class="ph-fill ph-linkedin-logo"></i> Do LinkedIn
             </button>
@@ -99,9 +74,9 @@
       </div>
 
       <!-- Public Link -->
-      <div class="card hidden" id="publicLinkCard" style="margin-bottom:24px;">
-        <div class="card-body" style="padding:12px 24px;">
-          <span style="font-size:13px;color:var(--gray-600)" id="publicLink"></span>
+      <div class="card hidden mb-6" id="publicLinkCard">
+        <div class="card-body card-body--compact">
+          <span class="text-sm text-muted" id="publicLink"></span>
         </div>
       </div>
 
@@ -115,7 +90,7 @@
         <button class="tab-btn" data-tab="certificates"><i class="ph-fill ph-trophy"></i> Certificados</button>
         <button class="tab-btn" data-tab="messages" id="messagesTabBtn">
           <i class="ph-fill ph-chat-circle-text"></i> Mensagens
-          <span id="messagesUnreadBadge" class="badge badge-blue hidden" style="margin-left:6px;">0</span>
+          <span id="messagesUnreadBadge" class="badge badge-blue hidden ml-badge">0</span>
         </button>
       </div>
 
@@ -123,7 +98,7 @@
       <div class="tab-content active" id="tab-personal">
         <div class="card">
           <div class="card-header">
-            <h3>Dados Pessoais</h3>
+            <h2>Dados Pessoais</h2>
           </div>
           <div class="card-body">
             <div class="form-alert hidden" id="alert-personal">
@@ -183,7 +158,7 @@
               <div class="form-group"><label>GitHub</label><input id="github" placeholder="github.com/seuuser"></div>
             </div>
             <div class="form-group"><label>Portfólio</label><input id="portfolio" placeholder="seusite.com"></div>
-            <label class="checkbox-field" style="margin:16px 0;">
+            <label class="checkbox-field my-4">
               <input type="checkbox" id="visivel_para_empresas" checked>
               <span class="checkbox-text">
                 <span class="checkbox-title">Visível para empresas (Busca de Talentos)</span>
@@ -201,7 +176,7 @@
                 </span>
               </label>
             </div>
-            <div style="text-align:right;margin-top:16px;">
+            <div class="text-right mt-4">
               <button class="btn btn-primary" id="savePersonalBtn" onclick="savePersonal()"><i
                   class="ph-fill ph-floppy-disk"></i> Salvar Dados Pessoais</button>
             </div>
@@ -213,7 +188,7 @@
       <div class="tab-content" id="tab-experience">
         <div class="card">
           <div class="card-header">
-            <h3>Experiências Profissionais</h3>
+            <h2>Experiências Profissionais</h2>
             <button class="btn btn-primary btn-sm" onclick="showEditForm('experiencia')">+ Adicionar</button>
           </div>
           <div class="card-body">
@@ -227,7 +202,7 @@
       <div class="tab-content" id="tab-education">
         <div class="card">
           <div class="card-header">
-            <h3>Formação Acadêmica</h3>
+            <h2>Formação Acadêmica</h2>
             <button class="btn btn-primary btn-sm" onclick="showEditForm('formacao')">+ Adicionar</button>
           </div>
           <div class="card-body">
@@ -242,7 +217,7 @@
       <div class="tab-content" id="tab-skills">
         <div class="card">
           <div class="card-header">
-            <h3>Habilidades</h3>
+            <h2>Habilidades</h2>
             <button class="btn btn-primary btn-sm" onclick="showEditForm('habilidade')">+ Adicionar</button>
           </div>
           <div class="card-body">
@@ -256,7 +231,7 @@
       <div class="tab-content" id="tab-projects">
         <div class="card">
           <div class="card-header">
-            <h3>Projetos</h3>
+            <h2>Projetos</h2>
             <button class="btn btn-primary btn-sm" onclick="showEditForm('projeto')">+ Adicionar</button>
           </div>
           <div class="card-body">
@@ -271,8 +246,8 @@
         <div class="card">
           <div class="card-header">
             <div>
-              <h3>Mensagens</h3>
-              <p style="font-size:13px;color:var(--gray-500);margin-top:4px;">
+              <h2>Mensagens</h2>
+              <p class="text-sm text-muted mt-1">
                 Mensagens enviadas pelas empresas interessadas no seu perfil.
               </p>
             </div>
@@ -314,7 +289,7 @@
       <div class="tab-content" id="tab-certificates">
         <div class="card">
           <div class="card-header">
-            <h3>Certificações</h3>
+            <h2>Certificações</h2>
             <button class="btn btn-primary btn-sm" onclick="showEditForm('certificado')">+ Adicionar</button>
           </div>
           <div class="card-body">
@@ -325,7 +300,7 @@
       </div>
     </div>
 
-    <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
+    <footer class="footer">© 2026 TalentoUNICAP — Universidade Católica de Pernambuco</footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config/config.js"></script>
@@ -346,12 +321,12 @@
     <script src="js/pages/linkedin-import.js"></script>
     <script>initDashboard();</script>
     <script src="js/utils/page-nav.js" defer></script>
-    <script src="js/utils/ux.js?v=6" defer></script>
+    <script src="js/utils/ux.js" defer></script>
     <script src="js/utils/mobile-nav.js" defer></script>
     <script src="js/utils/notify.js"></script>
 <script src="js/components/theme-toggle.js"></script>
-<script src="js/components/scroll-fx.js?v=6"></script>
-  <script src="js/components/bg-icons.js?v=8" defer></script>
+<script src="js/components/scroll-fx.js"></script>
+  <script src="js/components/bg-icons.js" defer></script>
 </body>
 
 </html>

@@ -6,56 +6,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Confirme seu e-mail - TalentoUNICAP</title>
+  <title>Confirmar E-mail - TalentoUNICAP</title>
 
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  >
 
-<link rel="stylesheet" href="css/style.css?v=8">
-<link rel="stylesheet" href="css/tema-unicap.css?v=8">
-<link rel="stylesheet" href="css/interno.css?v=8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Schibsted+Grotesk:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+  <link rel="icon" type="image/png" href="img/asabranca_Unicap.png">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/tema-unicap.css">
+<link rel="stylesheet" href="css/interno.css">
 </head>
 
 <body>
 
-  <nav class="navbar">
-    <div class="container">
-
-  <a href="index.html" class="navbar-brand">
-    <img
-      src="img/asabranca_Unicap.png"
-      width="40"
-      alt="UNICAP"
-    >
-
-    Talento<span>UNICAP</span>
-  </a>
-
-
-
-  </nav>
+  <nav class="navbar" data-area="simples"></nav>
+  <script src="js/components/navbar.js"></script>
 
   <div class="auth-page">
 
 
 <div class="card auth-card">
 
-  <div class="card-body" style="text-align:center;">
+  <div class="card-body text-center">
 
     <!-- ÍCONE -->
-    <div
-      id="statusIcon"
-      style="font-size:48px;margin-bottom:12px;"
-    >
-      ✉️
-    </div>
+    <div id="statusIcon" class="status-icon" aria-hidden="true"><i class="ph-fill ph-envelope-simple"></i></div>
 
     <!-- TÍTULO -->
-    <h2 id="title">
+    <h1 id="title">
       Confirme seu e-mail
-    </h2>
+    </h1>
 
     <!-- MENSAGEM -->
     <p
@@ -66,44 +50,27 @@
     </p>
 
     <!-- E-MAIL -->
-    <div
-      id="emailBox"
-      style="
-        background:var(--gray-50);
-        border-radius:8px;
-        padding:12px;
-        margin:20px 0;
-        font-size:14px;
-        word-break:break-word;
-      "
-    >
-    </div>
+    <div id="emailBox" class="email-box"></div>
 
     <!-- REENVIO -->
     <div id="resendArea">
 
-      <p
-        style="
-          font-size:13px;
-          color:var(--gray-600);
-          margin-bottom:10px;
-        "
-      >
+      <p class="text-sm text-muted mb-3">
         Não recebeu? Verifique o spam ou solicite um novo e-mail.
       </p>
 
       <button
         id="resendBtn"
-        class="btn btn-primary"
-        style="width:100%;"
+        class="btn btn-primary w-full"
+       
       >
         Reenviar confirmação
       </button>
 
       <div
         id="feedback"
-        class="error-msg hidden"
-        style="margin-top:12px;"
+        class="error-msg hidden mt-3"
+       
       >
       </div>
 
@@ -113,12 +80,7 @@
     <a
       id="loginLink"
       href="login.html"
-      class="btn btn-secondary"
-      style="
-        display:block;
-        width:100%;
-        margin-top:12px;
-      "
+      class="btn btn-secondary w-full mt-3"
     >
       Voltar para o login
     </a>
@@ -130,6 +92,8 @@
   </div>
 
   <!-- SUPABASE -->
+
+  <footer class="footer">© 2026 TalentoUNICAP — Universidade Católica de Pernambuco</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -191,7 +155,8 @@
 
     function mostrarConfirmacao(user) {
 
-      statusIcon.textContent = '✅';
+      statusIcon.innerHTML = '<i class="ph-fill ph-check-circle"></i>';
+      statusIcon.classList.add('is-ok');
 
       title.textContent = 'E-mail confirmado!';
 
@@ -218,7 +183,8 @@
 
     function mostrarErro(mensagemErro) {
 
-      statusIcon.textContent = '❌';
+      statusIcon.innerHTML = '<i class="ph-fill ph-x-circle"></i>';
+      statusIcon.classList.add('is-erro');
 
       title.textContent = 'Não foi possível confirmar o e-mail';
 
@@ -501,11 +467,11 @@
 
   </script>
 
-  <script src="js/utils/ux.js?v=6" defer></script>
+  <script src="js/utils/ux.js" defer></script>
   <script src="js/utils/mobile-nav.js" defer></script>
 <script src="js/components/theme-toggle.js"></script>
-<script src="js/components/scroll-fx.js?v=6"></script>
-  <script src="js/components/bg-icons.js?v=8" defer></script>
+<script src="js/components/scroll-fx.js"></script>
+  <script src="js/components/bg-icons.js" defer></script>
 </body>
 
 </html>

@@ -6,17 +6,6 @@
 (function () {
   "use strict";
 
-  function initials(nome) {
-    if (!nome) return '?';
-
-    const parts = nome.trim().split(/\s+/);
-
-    return (
-      (parts[0]?.[0] || '') +
-      (parts[1]?.[0] || '')
-    ).toUpperCase();
-  }
-
   Auth.onAuthChange = async function (loggedIn) {
 
     if (!loggedIn) {
@@ -32,21 +21,10 @@
       return;
     }
 
-    document.getElementById('empresaNome').textContent =
-      perfil.nome_empresa || 'Empresa';
-
-    document.getElementById('empresaAvatar').textContent =
-      initials(perfil.nome_empresa)[0] || 'E';
-
     carregarCurriculo();
   };
 
   Auth.init();
-
-  document.getElementById('btnSair').addEventListener(
-    'click',
-    () => Auth.logout()
-  );
 
   async function carregarCurriculo() {
 
@@ -153,7 +131,7 @@
      * Renderiza o currículo completo.
      */
     cvContent.innerHTML =
-      renderCVPreview(profile, true);
+      renderCVPreview(profile, true, 'h2');
   }
 
 })();

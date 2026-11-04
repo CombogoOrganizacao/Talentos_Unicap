@@ -5,37 +5,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Caixa de Entrada - TalentoUNICAP</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=8">
-<link rel="stylesheet" href="css/tema-unicap.css?v=8">
-<link rel="stylesheet" href="css/interno.css?v=8">
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Schibsted+Grotesk:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+  <link rel="icon" type="image/png" href="img/asabranca_Unicap.png">
+  <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/tema-unicap.css">
+<link rel="stylesheet" href="css/interno.css">
 </head>
 
 <body>
-  <nav class="navbar">
-    <div class="container">
-      <a href="index.html" class="navbar-brand">
-        <img src="img/asabranca_Unicap.png" width="40px" alt="">
-        Talentos<span>UNICAP</span>
-      </a>
-      <div class="nav-links">
-        <a href="dashboard.html" class="nav-text-link">Meu Currículo</a>
-        <a href="lista-vagas.html" class="nav-text-link">Painel de Vagas</a>
-        <a href="caixa-entrada-aluno.html" class="nav-text-link active">Mensagens</a>
-        <span class="avatar" id="alunoAvatar" style="width:32px;height:32px;border-radius:50%;background:var(--unicap-500);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">A</span>
-        <span id="alunoNome" style="font-size:14px;font-weight:600;color:var(--gray-800);"></span>
-        <button class="btn btn-secondary btn-sm" id="btnSair">Sair</button>
-      </div>
-    </div>
-  </nav>
+  <nav class="navbar" data-area="aluno"></nav>
+  <script src="js/components/navbar.js"></script>
 
-  <div class="container" style="padding-top:32px;padding-bottom:64px;max-width:900px;">
+  <div class="container page-shell page-shell--inbox">
     <div class="page-intro">
-      <h1 style="font-size:26px;margin-bottom:8px;">Caixa de Entrada</h1>
+      <h1 class="page-title">Caixa de Entrada</h1>
       <p class="page-desc">Mensagens enviadas pelas empresas interessadas no seu perfil. Responda por aqui — seu
         contato pessoal não é compartilhado.</p>
     </div>
@@ -69,7 +57,7 @@
     </div>
   </div>
 
-  <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
+  <footer class="footer">© 2026 TalentoUNICAP — Universidade Católica de Pernambuco</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config/config.js"></script>
@@ -80,12 +68,12 @@
   <script src="js/services/mensagem-service.js"></script>
   <script src="js/pages/caixa-entrada-aluno.js"></script>
   <script src="js/utils/page-nav.js" defer></script>
-  <script src="js/utils/ux.js?v=6" defer></script>
+  <script src="js/utils/ux.js" defer></script>
   <script src="js/utils/mobile-nav.js" defer></script>
 
 <script src="js/components/theme-toggle.js"></script>
-<script src="js/components/scroll-fx.js?v=6"></script>
-  <script src="js/components/bg-icons.js?v=8" defer></script>
+<script src="js/components/scroll-fx.js"></script>
+  <script src="js/components/bg-icons.js" defer></script>
 </body>
 
 </html>

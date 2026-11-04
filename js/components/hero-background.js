@@ -9,7 +9,7 @@
 (function () {
   'use strict';
 
-  var reduceMotion = false /* forçado: ignora "reduzir movimento" do sistema */;
+  var reduceMotion = (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
   // Ícones em traço (24x24). Cada um tem a área a que se refere.
   function svg(paths) {

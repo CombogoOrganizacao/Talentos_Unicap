@@ -5,45 +5,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Busca de Talentos - TalentoUNICAP</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=8">
-<link rel="stylesheet" href="css/tema-unicap.css?v=8">
-<link rel="stylesheet" href="css/interno.css?v=8">
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Schibsted+Grotesk:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+  <link rel="icon" type="image/png" href="img/asabranca_Unicap.png">
+  <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/tema-unicap.css">
+<link rel="stylesheet" href="css/interno.css">
 </head>
 
 <body>
-  <nav class="navbar">
-    <div class="container">
-      <a href="index.html" class="navbar-brand">
-        <img src="img/asabranca_Unicap.png" width="40px" alt="">
-        Talento<span>UNICAP</span>
-      </a>
-      <div class="nav-links">
-        <a href="busca-talentos.html" class="nav-text-link active">Buscar Talentos</a>
-        <a href="caixa-saida-empresa.html" class="nav-text-link">Mensagens Enviadas</a>
-        <a href="lista-vagas.html" class="nav-text-link">Minhas Vagas</a>
-        <a href="cadastro-vaga.html" class="btn btn-primary btn-sm" id="btnNovaVaga">
-          <i class="ph-fill ph-plus"></i> Nova Vaga
-        </a>
-        <label class="empresa-foto" id="empresaFotoLabel" title="Clique para alterar a imagem da empresa">
-          <span class="empresa-foto-inicial" id="empresaAvatar">T</span>
-          <img id="empresaFoto" alt="Imagem da empresa" hidden>
-          <span class="empresa-foto-edit"><i class="ph-fill ph-camera"></i></span>
-          <input type="file" id="inputFotoEmpresa" accept="image/png,image/jpeg,image/webp" hidden>
-        </label>
-        <span id="empresaNome" style="font-size:14px;font-weight:600;color:var(--gray-800);"></span>
-        <button class="btn btn-secondary btn-sm" id="btnSair">Sair</button>
-      </div>
-    </div>
-  </nav>
+  <nav class="navbar" data-area="empresa"></nav>
+  <script src="js/components/navbar.js"></script>
 
   <section class="empresa-hero">
     <div class="container">
-      <h1>Busca de Talentos UNICAP</h1>
+      <h1>Busca de Talentos</h1>
       <p>Explore perfis de estudantes preparados para as demandas do mercado de trabalho</p>
       <div class="search-bar-lg">
         <span class="icon-inline"><i class="ph ph-magnifying-glass"></i></span>
@@ -55,7 +35,7 @@
 
   <div class="container">
     <div class="filters-panel">
-      <h3>Filtros Avançados</h3>
+      <h2>Filtros Avançados</h2>
       <div class="filters-grid">
         <div class="form-group">
           <label>Curso/Área</label>
@@ -123,18 +103,18 @@
 
     <div class="talentos-grid" id="talentosGrid"></div>
 
-    <div class="empty-state" id="emptyState" hidden style="max-width:1100px;margin:0 auto;">
+    <div class="empty-state container-box" id="emptyState" hidden>
       <div class="icon"><i class="ph-fill ph-users"></i></div>
       <h2 id="emptyStateTitle">Nenhum talento encontrado</h2>
       <p id="emptyStateMsg">Ajuste a busca ou os filtros para ver outros perfis.</p>
     </div>
 
-    <div style="text-align:center;margin:24px 0 8px;">
+    <div class="text-center load-more">
       <button class="btn btn-secondary" id="btnCarregarMais" hidden>Carregar mais</button>
     </div>
   </div>
 
-  <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
+  <footer class="footer">© 2026 TalentoUNICAP — Universidade Católica de Pernambuco</footer>
 
   <!-- Modal de pré-visualização -->
   <div class="modal-overlay hidden" id="cvModalOverlay">
@@ -144,13 +124,13 @@
       </div>
       <div class="cv-modal-header">
         <div class="cv-modal-avatar" id="modalAvatar">?</div>
-        <div style="flex:1;">
+        <div class="flex-1">
           <h2><span id="modalNome"></span> <span class="badge" id="modalDisponibilidade" hidden></span></h2>
           <div class="subline" id="modalSubline"></div>
           <div class="skill-tags" id="modalSkillTags"></div>
         </div>
       </div>
-      <div class="tabs" style="margin:0 24px;" id="modalTabs">
+      <div class="tabs tabs--modal" id="modalTabs">
         <button class="tab-btn active" data-tab="dados">Dados Pessoais</button>
         <button class="tab-btn" data-tab="experiencias">Experiências</button>
         <button class="tab-btn" data-tab="formacao">Formação</button>
@@ -171,7 +151,7 @@
 
   <!-- Modal de envio de mensagem -->
   <div class="modal-overlay hidden" id="msgModalOverlay">
-    <div class="modal" style="max-width:480px;">
+    <div class="modal modal--sm">
       <div class="modal-header">
         <h3>Enviar mensagem para <span id="msgDestNome"></span></h3>
       </div>
@@ -207,11 +187,11 @@
   <script src="js/services/mensagem-service.js"></script>
   <script src="js/pages/busca-talentos.js"></script>
   <script src="js/utils/page-nav.js" defer></script>
-  <script src="js/utils/ux.js?v=6" defer></script>
+  <script src="js/utils/ux.js" defer></script>
   <script src="js/utils/mobile-nav.js" defer></script>
 <script src="js/components/theme-toggle.js"></script>
-<script src="js/components/scroll-fx.js?v=6"></script>
-  <script src="js/components/bg-icons.js?v=8" defer></script>
+<script src="js/components/scroll-fx.js"></script>
+  <script src="js/components/bg-icons.js" defer></script>
 </body>
 
 </html>

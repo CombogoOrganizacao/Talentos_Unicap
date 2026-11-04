@@ -35,15 +35,6 @@ const filtroOrdem =
 const btnNovaVaga =
   document.getElementById("btnNovaVaga");
 
-const btnMeuCurriculo =
-  document.getElementById("btnMeuCurriculo");
-
-const btnMinhasCandidaturas =
-  document.getElementById("btnMinhasCandidaturas");
-
-const btnPainelEmpresa =
-  document.getElementById("btnPainelEmpresa");
-
 const emptyState =
   document.getElementById("emptyState");
 
@@ -98,6 +89,17 @@ function normalizarTexto(texto) {
     .trim();
 }
 
+// Preenche um elemento com ícone Phosphor + texto (sem emojis no lugar de ícones).
+function comIcone(el, icone, texto) {
+  if (!el) return;
+  el.textContent = "";
+  if (!texto) return;
+  const i = document.createElement("i");
+  i.className = "ph-fill " + icone + " ico-inline";
+  i.setAttribute("aria-hidden", "true");
+  el.append(i, " " + texto);
+}
+
 function mostrarElemento(elemento, mostrar) {
   if (!elemento) return;
 
@@ -129,10 +131,6 @@ function aplicarModoAluno() {
       "Encontre oportunidades de estágio e emprego que combinam com seu perfil.";
   }
 
-  mostrarElemento(btnMeuCurriculo, true);
-  mostrarElemento(btnMinhasCandidaturas, true);
-  mostrarElemento(btnPainelEmpresa, false);
-
   mostrarElemento(btnNovaVaga, false);
   mostrarElemento(emptyCta, false);
   mostrarElemento(statusTabsContainer, false);
@@ -163,10 +161,6 @@ function aplicarModoEmpresa() {
     descricao.textContent =
       "Acompanhe, edite e gerencie todas as oportunidades cadastradas para estudantes e egressos da UNICAP.";
   }
-
-  mostrarElemento(btnMeuCurriculo, false);
-  mostrarElemento(btnMinhasCandidaturas, false);
-  mostrarElemento(btnPainelEmpresa, true);
 
   mostrarElemento(btnNovaVaga, true);
   mostrarElemento(emptyCta, true);
@@ -458,17 +452,20 @@ function atualizarBotaoCandidatura(botao, vagaId) {
   }
 
   const textos = {
-    ENVIADA: "✓ Candidatura enviada",
+    ENVIADA: "Candidatura enviada",
     EM_ANALISE: "Em análise",
-    SELECIONADO: "🎉 Selecionado",
+    SELECIONADO: "Selecionado",
     RECUSADO: "Não selecionado"
   };
 
   botao.disabled = true;
   botao.classList.add("disabled");
-  botao.textContent =
-    textos[candidatura.status] ||
-    CandidaturaService.textoStatus(candidatura.status);
+  const icones = { ENVIADA: "ph-check-circle", SELECIONADO: "ph-confetti" };
+  comIcone(
+    botao,
+    icones[candidatura.status] || "ph-hourglass",
+    textos[candidatura.status] || CandidaturaService.textoStatus(candidatura.status)
+  );
 }
 
 function configurarBotaoCandidatura(node, vaga) {
@@ -640,15 +637,15 @@ function render() {
     }
 
     if (carga) {
-      carga.textContent = vaga.carga ? "⏱ " + vaga.carga : "";
+      comIcone(carga, "ph-clock", vaga.carga);
     }
 
     if (local) {
-      local.textContent = vaga.local ? "📍 " + vaga.local : "";
+      comIcone(local, "ph-map-pin", vaga.local);
     }
 
     if (salario) {
-      salario.textContent = vaga.remuneracao ? "$ " + vaga.remuneracao : "";
+      comIcone(salario, "ph-currency-circle-dollar", vaga.remuneracao);
 
       if (
         modo === "aluno" &&

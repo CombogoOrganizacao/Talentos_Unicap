@@ -31,12 +31,9 @@
       window.location.href = 'index.html';
       return;
     }
-    document.getElementById('empresaNome').textContent = perfil.nome_empresa || 'Empresa';
-    document.getElementById('empresaAvatar').textContent = initials(perfil.nome_empresa)[0] || 'E';
     carregarMensagens();
   };
   Auth.init();
-  document.getElementById('btnSair').addEventListener('click', () => Auth.logout());
 
   async function carregarMensagens() {
     allMsgs = await Mensagens.listarEnviadasPelaEmpresa();

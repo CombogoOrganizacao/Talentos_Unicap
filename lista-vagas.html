@@ -7,85 +7,30 @@
 
   <title>Portal de Vagas - TalentoUNICAP</title>
 
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-    rel="stylesheet">
 
-  <link rel="stylesheet" href="css/style.css?v=8">
-<link rel="stylesheet" href="css/tema-unicap.css?v=8">
-<link rel="stylesheet" href="css/interno.css?v=8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Schibsted+Grotesk:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+  <link rel="icon" type="image/png" href="img/asabranca_Unicap.png">
+  <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/tema-unicap.css">
+<link rel="stylesheet" href="css/interno.css">
 
-  <link
-    rel="stylesheet"
-    type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
 
-  <link
-    rel="stylesheet"
-    type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
 </head>
 
 <body>
 
   <!-- NAVBAR -->
-  <nav class="navbar">
-    <div class="container">
-
-      <a href="index.html" class="navbar-brand">
-        <img
-          src="img/asabranca_Unicap.png"
-          width="40"
-          alt="UNICAP">
-        Talento<span>UNICAP</span>
-      </a>
-
-      <div class="nav-links">
-
-        <!-- ALUNO -->
-        <a
-          href="dashboard.html"
-          id="btnMeuCurriculo"
-          class="btn btn-secondary btn-sm"
-          hidden>
-          <i class="ph-fill ph-scroll"></i>
-          Meu Currículo
-        </a>
-
-        <a
-          href="minhas-candidaturas.html"
-          id="btnMinhasCandidaturas"
-          class="btn btn-secondary btn-sm"
-          hidden>
-          <i class="ph-fill ph-paper-plane-tilt"></i>
-          Minhas Candidaturas
-        </a>
-
-        <!-- EMPRESA -->
-        <a
-          href="busca-talentos.html"
-          id="btnPainelEmpresa"
-          class="btn btn-secondary btn-sm"
-          hidden>
-          <i class="ph-fill ph-buildings"></i>
-          Painel da Empresa
-        </a>
-
-        <button
-          class="btn btn-secondary btn-sm"
-          type="button"
-          onclick="Auth.logout()">
-          <i class="ph-fill ph-sign-out"></i>
-          Sair
-        </button>
-
-      </div>
-    </div>
-  </nav>
+  <nav class="navbar" data-area="conta"></nav>
+  <script src="js/components/navbar.js"></script>
 
   <main
-    class="container"
-    style="padding-top:32px;padding-bottom:64px;">
+    class="container page-shell"
+   >
 
     <!-- CABEÇALHO -->
     <div class="page-intro">
@@ -98,9 +43,9 @@
       <div class="page-intro-row">
 
         <div>
-          <h1
+          <h1 class="page-title"
             id="pageTitle"
-            style="font-size:28px;margin-bottom:8px;">
+           >
             Minhas Vagas
           </h1>
 
@@ -295,10 +240,7 @@
   </main>
 
   <!-- FOOTER -->
-  <footer class="footer">
-    © 2026 TalentosUNICAP —
-    Universidade Católica de Pernambuco
-  </footer>
+  <footer class="footer">© 2026 TalentoUNICAP — Universidade Católica de Pernambuco</footer>
 
   <!-- TEMPLATE DOS CARDS -->
   <template id="vagaCardTemplate">
@@ -359,7 +301,7 @@
         </div>
       </div>
 
-      <h3 data-role="titulo"></h3>
+      <h2 data-role="titulo"></h2>
 
       <div class="vaga-empresa-row">
 
@@ -458,9 +400,9 @@
   </script>
 
   <script src="js/utils/page-nav.js" defer></script>
-  <script src="js/utils/ux.js?v=6" defer></script>
+  <script src="js/utils/ux.js" defer></script>
 <script src="js/components/theme-toggle.js"></script>
-<script src="js/components/scroll-fx.js?v=6"></script>
-  <script src="js/components/bg-icons.js?v=8" defer></script>
+<script src="js/components/scroll-fx.js"></script>
+  <script src="js/components/bg-icons.js" defer></script>
 </body>
 </html>

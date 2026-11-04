@@ -4,23 +4,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Perfil - TalentoUNICAP</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=8">
-<link rel="stylesheet" href="css/tema-unicap.css?v=8">
-<link rel="stylesheet" href="css/interno.css?v=8">
+  <title>Perfil do Aluno - TalentoUNICAP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Schibsted+Grotesk:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+  <link rel="icon" type="image/png" href="img/asabranca_Unicap.png">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/tema-unicap.css">
+<link rel="stylesheet" href="css/interno.css">
 </head>
 
 <body>
-  <nav class="navbar">
-    <div class="container">
-      <a href="index.html" class="navbar-brand">🎓 Talento<span>UNICAP</span></a>
-    </div>
-  </nav>
-  <div class="container" style="padding:32px 20px;min-height:calc(100vh - 60px);">
-    <div id="content" style="text-align:center;padding:60px;color:var(--gray-400);">Carregando...</div>
+  <nav class="navbar" data-area="simples"></nav>
+  <script src="js/components/navbar.js"></script>
+  <div class="container page-shell page-shell--public">
+    <div class="cv-loading" id="content">Carregando...</div>
   </div>
-  <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
+  <footer class="footer">© 2026 TalentoUNICAP — Universidade Católica de Pernambuco</footer>
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config/config.js"></script>
@@ -30,11 +33,11 @@
   <script src="js/services/export-service.js"></script>
   <script src="js/pages/public-profile.js"></script>
   <script src="js/utils/page-nav.js" defer></script>
-  <script src="js/utils/ux.js?v=6" defer></script>
+  <script src="js/utils/ux.js" defer></script>
   <script src="js/utils/mobile-nav.js" defer></script>
 <script src="js/components/theme-toggle.js"></script>
-<script src="js/components/scroll-fx.js?v=6"></script>
-  <script src="js/components/bg-icons.js?v=8" defer></script>
+<script src="js/components/scroll-fx.js"></script>
+  <script src="js/components/bg-icons.js" defer></script>
 </body>
 
 </html>

@@ -4,54 +4,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Preview - TalentoUNICAP</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=8">
-<link rel="stylesheet" href="css/tema-unicap.css?v=8">
-<link rel="stylesheet" href="css/interno.css?v=8">
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+  <title>Pré-visualização do Currículo - TalentoUNICAP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Schibsted+Grotesk:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+  <link rel="icon" type="image/png" href="img/asabranca_Unicap.png">
+  <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/tema-unicap.css">
+<link rel="stylesheet" href="css/interno.css">
 </head>
 
 <body>
-  <nav class="navbar">
-    <div class="container">
-      <a href="index.html" class="navbar-brand"><img src="img/asabranca_Unicap.png" width="40px" alt=""
-          style="display: block;"> Talento<span>UNICAP</span></a>
-      <div class="nav-links">
-        <a href="dashboard.html" class="btn btn-secondary btn-sm"><i style="font-size:18px; vertical-align:middle;"></i>
-          Voltar ao Editor</a>
-      </div>
-    </div>
-  </nav>
-  <div class="container" style="padding-top:32px;padding-bottom:48px;">
-    <div
-      style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
-      <h1 style="font-size:24px;">Preview do Currículo</h1>
-      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-        <label style="display:flex;align-items:center;gap:6px;font-size:14px;color:var(--gray-600);cursor:pointer;">
+  <nav class="navbar" data-area="aluno"></nav>
+  <script src="js/components/navbar.js"></script>
+  <div class="container page-shell">
+    <div class="page-head"
+     >
+      <h1 class="page-title">Pré-visualização do Currículo</h1>
+      <div class="row-gap row-gap--lg">
+        <label class="inline-check">
           <input type="checkbox" id="toggleLogo" checked onchange="onToggleLogo()">
           Incluir logo da UNICAP
         </label>
-        <div style="display:flex;gap:8px;">
+        <div class="row-gap">
           <button class="btn btn-secondary" onclick="exportPDF()">
-            <div class="icon"><i class="ph-bold ph-scroll" style="font-size:18px;"></i></div> Exportar PDF
+            <div class="icon"><i class="ph-bold ph-scroll"></i></div> Exportar PDF
           </button>
           <button id="btnExportDocx" class="btn btn-primary"
             onclick="exportDOCX(document.getElementById('toggleLogo').checked)">
-            <i class="ph-bold ph-floppy-disk" style="font-size:18px;"></i> Exportar DOCX
+            <i class="ph-bold ph-floppy-disk"></i> Exportar DOCX
           </button>
         </div>
       </div>
     </div>
-    <div id="cvContent"
-      style="background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.1);overflow:hidden;width:100%;">
-      <div style="text-align:center;padding:60px;color:var(--gray-400);">Carregando...</div>
+    <div class="cv-sheet" id="cvContent"
+     >
+      <div class="cv-loading">Carregando...</div>
     </div>
   </div>
-  <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
+  <footer class="footer">© 2026 TalentoUNICAP — Universidade Católica de Pernambuco</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config/config.js"></script>
@@ -66,7 +60,7 @@
     function onToggleLogo() {
       if (!profile) return;
       const showLogo = document.getElementById('toggleLogo').checked;
-      document.getElementById('cvContent').innerHTML = renderCVPreview(profile, showLogo);
+      document.getElementById('cvContent').innerHTML = renderCVPreview(profile, showLogo, 'h2');
     }
 
     Auth.onAuthChange = async function (loggedIn) {
@@ -90,15 +84,15 @@
           document.getElementById('toggleLogo').checked;
 
         document.getElementById('cvContent').innerHTML =
-          renderCVPreview(profile, showLogo);
+          renderCVPreview(profile, showLogo, 'h2');
 
       } catch (error) {
         console.error('Erro ao carregar Preview:', error);
 
         document.getElementById('cvContent').innerHTML = `
-      <div style="text-align:center;padding:60px;">
+      <div class="cv-loading">
         <h3>Não foi possível carregar o currículo</h3>
-        <p style="color:var(--gray-500);margin-top:8px;">
+        <p class="text-muted mt-2">
           ${error.message || 'Erro desconhecido.'}
         </p>
       </div>
@@ -108,11 +102,11 @@
     Auth.init();
   </script>
   <script src="js/utils/page-nav.js" defer></script>
-  <script src="js/utils/ux.js?v=6" defer></script>
+  <script src="js/utils/ux.js" defer></script>
   <script src="js/utils/mobile-nav.js" defer></script>
 <script src="js/components/theme-toggle.js"></script>
-<script src="js/components/scroll-fx.js?v=6"></script>
-  <script src="js/components/bg-icons.js?v=8" defer></script>
+<script src="js/components/scroll-fx.js"></script>
+  <script src="js/components/bg-icons.js" defer></script>
 </body>
 
 </html>

@@ -7,7 +7,7 @@
   var REPLAY = true;
 
   // "Reduzir movimento" no sistema: em vez de desligar tudo, usa só um fade suave (sem deslocamento).
-  var reduce = false /* forçado: ignora "reduzir movimento" do sistema */;
+  var reduce = (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   // Sem IntersectionObserver (navegador antigo): não esconde nada, o conteúdo fica visível normalmente.
   if (!('IntersectionObserver' in window)) return;
   if (reduce) document.documentElement.classList.add('sfx-soft');

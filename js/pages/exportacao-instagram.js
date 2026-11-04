@@ -110,11 +110,12 @@
   const tipoVaga = tipoVagaFromTitulo(vaga.titulo);
   const linkCandidatura = vaga.contato || "vagas.unicap.br";
 
-  // Linhas de meta (só as que têm dado)
+  // Linhas de meta (só as que têm dado): ícone Phosphor + texto,
+  // iguais na prévia (HTML) e na imagem baixada (canvas).
   const metaItems = [
-    vaga.carga ? "⏱ " + vaga.carga : "",
-    vaga.remuneracao ? "$ " + vaga.remuneracao : "",
-    vaga.local ? "📍 " + vaga.local : ""
+    vaga.carga ? { icone: "ph-clock", texto: vaga.carga } : null,
+    vaga.remuneracao ? { icone: "ph-currency-circle-dollar", texto: vaga.remuneracao } : null,
+    vaga.local ? { icone: "ph-map-pin", texto: vaga.local } : null
   ].filter(Boolean);
 
   // ---------- 3. Preencher o card visual ----------
@@ -126,9 +127,20 @@
   setText("postTitulo", vaga.titulo || "");
   setText("postEmpresa", vaga.empresa || "");
   setText("postTipoPill", tipoVaga);
-  setText("postCarga", vaga.carga ? "⏱ " + vaga.carga : "");
-  setText("postSalario", vaga.remuneracao ? "$ " + vaga.remuneracao : "");
-  setText("postLocal", vaga.local ? "📍 " + vaga.local : "");
+  function setMeta(id, icone, texto) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = "";
+    if (!texto) return;
+    const i = document.createElement("i");
+    i.className = "ph-fill " + icone;
+    i.setAttribute("aria-hidden", "true");
+    el.append(i, " " + texto);
+  }
+
+  setMeta("postCarga", "ph-clock", vaga.carga);
+  setMeta("postSalario", "ph-currency-circle-dollar", vaga.remuneracao);
+  setMeta("postLocal", "ph-map-pin", vaga.local);
   setText("postPrazo", prazoFim ? `Seleção até ${prazoFim}` : "");
   setText("postCtaLabel", `CANDIDATE-SE! ${linkCandidatura.toUpperCase()}`);
 
@@ -177,7 +189,7 @@
     if (prazoFim) linhas.push(`⏳ Inscrições abertas até ${prazoFim}.`, "");
 
     linhas.push(
-      `🔗 Candidate-se enviando seu currículo pelo portal Talentos UNICAP: ${linkCandidatura}`,
+      `🔗 Candidate-se enviando seu currículo pelo portal TalentoUNICAP: ${linkCandidatura}`,
       "",
       hashtags.join(" ")
     );
@@ -280,6 +292,21 @@
     return lines.length;
   }
 
+  // Caractere e fonte de um ícone Phosphor, para desenhá-lo no canvas.
+  function glifo(icone) {
+    const i = document.createElement("i");
+    i.className = "ph-fill " + icone;
+    i.setAttribute("aria-hidden", "true");
+    i.hidden = false;
+    i.style.position = "absolute";
+    i.style.visibility = "hidden";
+    document.body.appendChild(i);
+    const conteudo = getComputedStyle(i, "::before").content.replace(/^["']|["']$/g, "");
+    const fonte = getComputedStyle(i).fontFamily;
+    i.remove();
+    return { conteudo, fonte };
+  }
+
   function roundRect(context, x, y, w, h, r) {
     context.beginPath();
     context.moveTo(x + r, y);
@@ -321,7 +348,7 @@
     ctx.fillStyle = "#ffffff";
     ctx.font = "700 26px Inter, Arial, sans-serif";
     ctx.textBaseline = "middle";
-    ctx.fillText("Talentos UNICAP", pad + 64, pad + 18);
+    ctx.fillText("TalentoUNICAP", pad + 64, pad + 18);
     ctx.fillStyle = "#c28330";
     ctx.font = "700 14px Inter, Arial, sans-serif";
     ctx.fillText("VAGAS EXCLUSIVAS", pad + 64, pad + 44);
@@ -367,7 +394,11 @@
     ctx.fillStyle = "rgba(255,255,255,0.92)";
     ctx.font = "500 26px Inter, Arial, sans-serif";
     metaItems.forEach((item) => {
-      ctx.fillText(item, pad, cursorY);
+      const g = glifo(item.icone);
+      ctx.font = `26px ${g.fonte}`;
+      ctx.fillText(g.conteudo, pad, cursorY);
+      ctx.font = "500 26px Inter, Arial, sans-serif";
+      ctx.fillText(item.texto, pad + 40, cursorY);
       cursorY += 46;
     });
 

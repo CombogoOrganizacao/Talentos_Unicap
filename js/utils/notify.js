@@ -9,7 +9,7 @@
 (function () {
   'use strict';
 
-  var reduzir = !!(false /* forçado: ignora "reduzir movimento" do sistema */);
+  var reduzir = !!((window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches));
 
   var ICONES = {
     success: 'ph-fill ph-check-circle',

@@ -49,7 +49,7 @@
 
   function chips(lista, classe) {
     return (lista || [])
-      .map((item) => `<span class="skill-chip ${classe}">${classe === "ok" ? "✓" : "✗"} ${esc(item)}</span>`)
+      .map((item) => `<span class="skill-chip ${classe}"><i class="ph-bold ${classe === "ok" ? "ph-check" : "ph-x"}" aria-hidden="true"></i> ${esc(item)}</span>`)
       .join("");
   }
 
@@ -87,7 +87,7 @@
       return;
     }
 
-    document.getElementById("tituloVaga").textContent = vaga.titulo || "Candidatos da vaga";
+    document.getElementById("tituloVaga").textContent = vaga.titulo || "Candidatos da Vaga";
     document.getElementById("subtituloVaga").textContent =
       "Os candidatos aparecem do melhor encaixe para o pior, comparando o perfil de cada aluno com os requisitos da vaga.";
 
@@ -131,7 +131,7 @@
       : "Esta vaga não tem requisitos cadastrados, então o ranking considera só o perfil do aluno.";
 
     resumoMelhor.innerHTML =
-      `🏆 Melhor encaixe até agora: <strong>${esc(melhor.nome || "Aluno")}</strong> ` +
+      `<i class="ph-fill ph-trophy ico-inline" aria-hidden="true"></i> Melhor encaixe até agora: <strong>${esc(melhor.nome || "Aluno")}</strong> ` +
       `com <strong>${compat.score ?? 0}%</strong> de compatibilidade.` +
       `<small>${esc(detalhe)}</small>`;
     resumoMelhor.hidden = false;

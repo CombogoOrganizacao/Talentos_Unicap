@@ -11,7 +11,7 @@ const selectedIds = {};
 
 const reduzMovimento = !!(
   window.matchMedia &&
-  false /* forçado */
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
 );
 
 // Chave de cada seção dentro do objeto `profile`
@@ -266,11 +266,7 @@ async function loadProfile() {
       return;
     }
 
-    const userName = document.getElementById('userName');
-
-    if (userName) {
-      userName.textContent = profile.nome || '';
-    }
+    if (window.Navbar) window.Navbar.setNome(profile.nome || '');
 
     fillPersonalForm();
     renderAllSections();
@@ -530,10 +526,7 @@ async function savePersonal() {
 
     data.nome = nome;
 
-    const userName = document.getElementById('userName');
-    if (userName) {
-      userName.textContent = nome;
-    }
+    if (window.Navbar) window.Navbar.setNome(nome);
 
     /*
      * Atualiza o profile local com os nomes utilizados

@@ -4,6 +4,18 @@
 (function () {
   "use strict";
 
+  // Preenche um elemento com ícone Phosphor + texto (sem emojis no lugar de ícones).
+  function comIcone(el, icone, texto) {
+    if (!el) return;
+    el.textContent = "";
+    if (!texto) return;
+    const i = document.createElement("i");
+    i.className = "ph-fill " + icone + " ico-inline";
+    i.setAttribute("aria-hidden", "true");
+    el.append(i, " " + texto);
+  }
+
+
   const container = document.getElementById("candidaturasContainer");
   const template = document.getElementById("candidaturaTemplate");
 
@@ -79,9 +91,9 @@
 
     q("titulo").textContent = vaga.titulo || "Vaga";
     q("empresa").textContent = vaga.empresa || "";
-    q("modalidade").textContent = MODALIDADE[vaga.modalidade] ? "💼 " + MODALIDADE[vaga.modalidade] : "";
-    q("local").textContent = vaga.local ? "📍 " + vaga.local : "";
-    q("remuneracao").textContent = vaga.remuneracao ? "$ " + vaga.remuneracao : "";
+    comIcone(q("modalidade"), "ph-briefcase", MODALIDADE[vaga.modalidade]);
+    comIcone(q("local"), "ph-map-pin", vaga.local);
+    comIcone(q("remuneracao"), "ph-currency-circle-dollar", vaga.remuneracao);
     q("data").textContent = formatarData(c.data_candidatura);
     q("prazo").textContent = vaga.periodo_fim ? `Seleção até ${formatarData(vaga.periodo_fim)}` : "";
 

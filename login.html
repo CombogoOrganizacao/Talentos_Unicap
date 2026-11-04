@@ -5,34 +5,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Entrar - TalentoUNICAP</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=8">
-<link rel="stylesheet" href="css/tema-unicap.css?v=8">
-<link rel="stylesheet" href="css/interno.css?v=8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Schibsted+Grotesk:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+  <link rel="icon" type="image/png" href="img/asabranca_Unicap.png">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/tema-unicap.css">
+<link rel="stylesheet" href="css/interno.css">
 </head>
 
 <body>
-  <nav class="navbar">
-    <div class="container">
-      <a href="index.html" class="navbar-brand">
-        <img src="img/asabranca_Unicap.png" width="40px" alt="">
-        Talento<span>UNICAP</span>
-      </a>
-
-      <div class="nav-links"><a href="register.html" class="btn btn-primary btn-sm">Criar Conta</a></div>
-    </div>
-  </nav>
+  <nav class="navbar" data-area="login"></nav>
+  <script src="js/components/navbar.js"></script>
   <div class="auth-page">
     <div class="card auth-card">
       <div class="card-body">
-        <h2>Bem-vindo de volta</h2>
+        <h1>Bem-vindo de volta</h1>
         <p class="subtitle">Entre na sua conta para acessar seu currículo</p>
 
-<div id="jaLogado" class="hidden" style="text-align:center;">
-          <h2>Você já está conectado</h2>
+<div id="jaLogado" class="hidden text-center">
+          <h1>Você já está conectado</h1>
           <p class="subtitle" id="jaLogadoMsg"></p>
-          <button type="button" class="btn btn-primary" style="width:100%;" id="btnContinuar">Continuar</button>
-          <button type="button" class="btn btn-secondary" style="width:100%;margin-top:10px;" id="btnOutraConta">Entrar com outra conta</button>
+          <button type="button" class="btn btn-primary w-full" id="btnContinuar">Continuar</button>
+          <button type="button" class="btn btn-secondary w-full mt-3" id="btnOutraConta">Entrar com outra conta</button>
         </div>
                 <div id="errorMsg" class="error-msg hidden"></div>
         <form id="loginForm">
@@ -44,18 +42,20 @@
             <label>Senha</label>
             <input type="password" id="password" placeholder="••••••" required>
           </div>
-          <button type="submit" class="btn btn-primary" style="width:100%;" id="loginBtn">Entrar</button>
+          <button type="submit" class="btn btn-primary w-full" id="loginBtn">Entrar</button>
         </form>
-        <p style="text-align:center;margin-top:12px;font-size:13px;">
+        <p class="text-center text-sm mt-3">
           <a href="recuperar-senha.html">Esqueci minha senha</a>
         </p>
-        <p style="text-align:center;margin-top:20px;font-size:14px;color:var(--gray-600);">
+        <p class="text-center text-muted mt-5 auth-foot">
           Não tem uma conta? <a href="register.html">Criar conta de aluno</a><br>
-          <span style="font-size:13px;">É uma empresa? <a href="cadastro-empresa.html">Cadastre sua empresa aqui</a></span>
+          <span class="text-sm">É uma empresa? <a href="cadastro-empresa.html">Cadastre sua empresa aqui</a></span>
         </p>
       </div>
     </div>
   </div>
+  <footer class="footer">© 2026 TalentoUNICAP — Universidade Católica de Pernambuco</footer>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config/config.js"></script>
   <script src="js/config/supabase-client.js"></script>
@@ -137,7 +137,7 @@
           errDiv.innerHTML = `
             <strong>E-mail ainda não confirmado.</strong><br>
             Verifique sua caixa de entrada para ativar a conta.
-            <br><a href="confirmacao-email.html" style="display:inline-block;margin-top:6px;">
+            <br><a class="mt-2 d-inline-block" href="confirmacao-email.html">
               Reenviar e-mail de confirmação
             </a>`;
         } else if (message.toLowerCase().includes('invalid login credentials')) {
@@ -154,11 +154,11 @@
     });
   </script>
   <script src="js/utils/password-toggle.js" defer></script>
-  <script src="js/utils/ux.js?v=6" defer></script>
+  <script src="js/utils/ux.js" defer></script>
   <script src="js/utils/mobile-nav.js" defer></script>
 <script src="js/components/theme-toggle.js"></script>
-<script src="js/components/scroll-fx.js?v=6"></script>
-  <script src="js/components/bg-icons.js?v=8" defer></script>
+<script src="js/components/scroll-fx.js"></script>
+  <script src="js/components/bg-icons.js" defer></script>
 </body>
 
 </html>

@@ -14,7 +14,7 @@
   'use strict';
 
   var html = document.documentElement;
-  var reduzir = !!(false /* forçado: ignora "reduzir movimento" do sistema */);
+  var reduzir = !!((window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches));
 
   // ------------------------------------------------------------
   // 1. Transição entre páginas

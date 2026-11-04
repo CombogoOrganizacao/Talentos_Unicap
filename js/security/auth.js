@@ -25,6 +25,8 @@ window.Auth = {
     if (session) {
       try {
         await this._carregarUsuario(session.user.id);
+        // A navbar (js/components/navbar.js) preenche nome e avatar a partir deste evento.
+        document.dispatchEvent(new CustomEvent('auth:usuario', { detail: this.user }));
         this.onAuthChange(true, this.user?.tipoConta);
       } catch (e) {
         console.error('Sessão inválida:', e);

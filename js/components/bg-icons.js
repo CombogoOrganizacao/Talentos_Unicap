@@ -13,7 +13,7 @@
 
   // false = ignora "reduzir movimento" do sistema (decisão do projeto).
   // true  = respeita a preferência e não cria o fundo animado.
-  var RESPEITAR_REDUCAO = false;
+  var RESPEITAR_REDUCAO = true;
   if (RESPEITAR_REDUCAO && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   if (document.querySelector('.bgfx')) return;
 

@@ -5,37 +5,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cadastre sua Empresa - TalentoUNICAP</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=8">
-<link rel="stylesheet" href="css/tema-unicap.css?v=8">
-<link rel="stylesheet" href="css/interno.css?v=8">
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" />
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css" />
-  <link rel="stylesheet" type="text/css"
-    href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Schibsted+Grotesk:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,600&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/bold/style.css">
+  <link rel="icon" type="image/png" href="img/asabranca_Unicap.png">
+  <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/tema-unicap.css">
+<link rel="stylesheet" href="css/interno.css">
 </head>
 
 <body>
   <!-- NAVBAR -->
-  <nav class="navbar">
-    <div class="container">
-      <a href="index.html" class="navbar-brand">
-        <img src="img/asabranca_Unicap.png" width="40px" alt="">
-        Talento<span>UNICAP</span>
-      </a>
-      <div class="nav-links">
-        <a href="index.html" class="nav-text-link">Para Alunos</a>
-        <a href="cadastro-empresa.html" class="nav-text-link active">Área da Empresa</a>
-      </div>
-    </div>
-  </nav>
+  <nav class="navbar" data-area="empresa-publica"></nav>
+  <script src="js/components/navbar.js"></script>
 
   <!-- HERO -->
   <section class="company-hero">
     <div class="container">
-      <p class="brand-line"><i class="ph-fill ph-feather"></i> Talentos UNICAP</p>
+      <p class="brand-line"><i class="ph-fill ph-feather"></i> TalentoUNICAP</p>
       <h1>Cadastre sua Empresa</h1>
       <p>Encontre os melhores alunos e egressos da Universidade Católica de Pernambuco para impulsionar o seu
         negócio.</p>
@@ -43,10 +33,10 @@
   </section>
 
   <!-- FORMULÁRIO -->
-  <div style="background:var(--gray-50);padding:48px 20px 64px;">
-    <div class="card" style="max-width:800px;margin:0 auto;">
-      <div class="card-body" style="padding:32px 36px;">
-        <h2 style="margin-bottom:24px;">Dados de Cadastro</h2>
+  <div class="company-form-band">
+    <div class="card company-form-card">
+      <div class="card-body card-body--roomy">
+        <h2 class="mb-6">Dados de Cadastro</h2>
 
         <div class="form-alert hidden" id="formAlert">
           <i class="ph-bold ph-warning-circle"></i>
@@ -128,15 +118,15 @@
               </div>
               <div class="dropzone-preview hidden" id="dropzonePreview">
                 <img id="logoPreviewImg" alt="Logo da empresa">
-                <div style="text-align:left;">
-                  <div style="font-size:13px;font-weight:600;color:var(--gray-900);" id="logoFileName"></div>
+                <div class="text-left">
+                  <div class="text-sm fw-600 text-strong" id="logoFileName"></div>
                   <button type="button" class="dz-remove" id="removeLogo">Remover</button>
                 </div>
               </div>
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary btn-lg" style="width:100%;margin-top:8px;" id="submitBtn">
+          <button type="submit" class="btn btn-primary btn-lg w-full mt-2" id="submitBtn">
             Criar Conta
           </button>
 
@@ -149,7 +139,7 @@
     </div>
   </div>
 
-  <footer class="footer">© 2026 TalentosUNICAP — Universidade Católica de Pernambuco</footer>
+  <footer class="footer">© 2026 TalentoUNICAP — Universidade Católica de Pernambuco</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config/config.js"></script>
@@ -159,11 +149,11 @@
   <script src="js/services/empresa-service.js"></script>
   <script src="js/utils/mascaras.js"></script>
   <script src="js/pages/cadastro-empresa.js"></script>
-  <script src="js/utils/ux.js?v=6" defer></script>
+  <script src="js/utils/ux.js" defer></script>
   <script src="js/utils/mobile-nav.js" defer></script>
   <script src="js/components/theme-toggle.js"></script>
-  <script src="js/components/scroll-fx.js?v=6"></script>
-  <script src="js/components/bg-icons.js?v=8" defer></script>
+  <script src="js/components/scroll-fx.js"></script>
+  <script src="js/components/bg-icons.js" defer></script>
 </body>
 
 </html>

@@ -3,7 +3,9 @@
 // ============================================
 const LOGO_PATH = 'img/asabranca_Unicap.png';
 
-function renderCVPreview(profile, showLogo = true) {
+// tagNome: "h1" quando o currículo é a página (perfil público); "h2" quando
+// aparece dentro de outra tela que já tem o seu h1 (prévia, visão da empresa).
+function renderCVPreview(profile, showLogo = true, tagNome = 'h1') {
   const formatDate = (d) => {
     if (!d) return '';
     return new Date(d + 'T00:00:00').toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
@@ -21,7 +23,7 @@ function renderCVPreview(profile, showLogo = true) {
     <div class="cv-header-top">
       ${showLogo ? `<img class="cv-logo" src="${LOGO_PATH}" alt="UNICAP">` : ''}
       <div class="cv-header-text">
-        <h1>${esc(profile.nome || 'Seu Nome')}</h1>
+        <${tagNome}>${esc(profile.nome || 'Seu Nome')}</${tagNome}>
         <div class="course">${esc(profile.curso)}</div>
       </div>
     </div>

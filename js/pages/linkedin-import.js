@@ -47,7 +47,7 @@
       <div class="modal li-modal" role="dialog" aria-modal="true" aria-labelledby="liTitulo">
         <div class="modal-header">
           <h3 id="liTitulo"><i class="ph-fill ${MODOS[estado.modo].icone}"></i> ${MODOS[estado.modo].titulo}</h3>
-          <button type="button" class="btn btn-secondary btn-sm" data-li="fechar" aria-label="Fechar">✕</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-li="fechar" aria-label="Fechar"><i class="ph ph-x" aria-hidden="true"></i></button>
         </div>
         <div id="liCorpo"></div>
       </div>`;
